@@ -219,9 +219,10 @@ class ProjectInfoHandleMiddleware(object):
             subpinfo['ProjectSaleSum'] = {'null': True}
             sale_list = subpinfo_sel.xpath('//table[@class="cont_titlebg2" and not(@id)]/tr[2]/td/table[1]/tr[position()>1]')
             for sale_item in sale_list:
-                    subpinfo['ProjectSaleSum'][sale_item.xpath('./td[1]/text()').extract()[0]] = {'已签约套数': int(sale_item.xpath('./td[2]/text()').extract()[0]),
-                                                                                                    '已签约面积': float(sale_item.xpath('./td[3]/text()').extract()[0]),
-                                                                                                    '成交均价': float(sale_item.xpath('./td[4]/text()').extract()[0])}
+                subpinfo['ProjectSaleSum']['null'] = False
+                subpinfo['ProjectSaleSum'][sale_item.xpath('./td[1]/text()').extract()[0]] = {'已签约套数': int(sale_item.xpath('./td[2]/text()').extract()[0]),
+                                                                                                '已签约面积': float(sale_item.xpath('./td[3]/text()').extract()[0]),
+                                                                                                '成交均价': float(sale_item.xpath('./td[4]/text()').extract()[0])}
             result.append(subpinfo)
         return result
 
