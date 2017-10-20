@@ -6,7 +6,7 @@ from HouseNew.models import *
 
 def run():
     num = 0
-    r = redis.Redis('10.30.1.18')
+    r = redis.Redis('10.30.1.20')
     cur = BuildingInfo.objects.all()
     for item in cur:
         try:
