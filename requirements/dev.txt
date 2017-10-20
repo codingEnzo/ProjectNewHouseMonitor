@@ -1,0 +1,2 @@
+-r std.txt
+ipython==5.4.1
