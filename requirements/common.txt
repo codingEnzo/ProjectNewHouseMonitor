@@ -27,4 +27,3 @@ pandas
 django_pandas
 fdfs_client
 scrapy-djangoitem
-django_mongoengine
