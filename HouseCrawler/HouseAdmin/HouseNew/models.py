@@ -20,10 +20,13 @@ class ProjectBase(Document):
     ProjectRegTime = fields.StringField(default='', max_length=255, null=False)
     meta = {
         'indexes': [
+            'CurTimeStamp',
+            'ProjectUUID',
             'ProjectName',
             'ProjectType',
             'ProjectURL',
-            'ProjectRegName'
+            'ProjectRegName',
+            'ProjectRegTime'
         ]
     }
 
@@ -35,7 +38,7 @@ class ProjectInfo(Document):
     ProjectUUID = fields.UUIDField(default=uuid.uuid3(uuid.NAMESPACE_DNS, ''),
                                     binary=False, null=False)
     SubProjectUUID = fields.UUIDField(default=uuid.uuid3(uuid.NAMESPACE_DNS, ''),
-                                    binary=False, null=False)
+                                        binary=False, null=False)
     ProjectName = fields.StringField(default='', max_length=255, null=False)
     ProjectAddress = fields.StringField(default='', max_length=255, null=False)
     SubProjectAddress = fields.StringField(default='', max_length=255, null=False)
@@ -49,6 +52,18 @@ class ProjectInfo(Document):
     ProjectUsage = fields.StringField(default='', max_length=255, null=False)
     ProjectArea = fields.StringField(default='', max_length=255, null=False)
     ProjectSaleSum = fields.DictField(default={'null': True}, null=False)
+    meta = {
+        'indexes': [
+            'CurTimeStamp',
+            'ProjectUUID',
+            'SubProjectUUID',
+            'ProjectName',
+            'ProjectRegName',
+            'ProjectRegTime',
+            'ProjectLicenseCode',
+            'ProjectLicenseDate',
+        ]
+    }
 
 
 class BuildingInfo(Document):
@@ -65,6 +80,16 @@ class BuildingInfo(Document):
     BuildingSaleStatusLatest = fields.StringField(default='', max_length=255, null=False)
     BuildingSalePrice = fields.FloatField(default=0.0, null=False)
     BuildingURL = fields.URLField(default=None, null=True, blank=True)
+    meta = {
+        'indexes': [
+            'CurTimeStamp',
+            'ProjectName',
+            'BuildingUUID',
+            'BuildingName',
+            'BuildingSaleStatus',
+            'BuildingSaleStatusLatest',
+        ]
+    }
 
 
 class HouseInfo(Document):
@@ -88,3 +113,18 @@ class HouseInfo(Document):
     HouseInnerArea = fields.FloatField(default=0.0, null=False)
     HouseBuildingUnitPrice = fields.FloatField(default=0.0, null=False)
     HouseInnerUnitPrice = fields.FloatField(default=0.0, null=False)
+    meta = {
+        'indexes': [
+            'CurTimeStamp',
+            'ProjectName',
+            'BuildingName',
+            'HouseUUID',
+            'HouseName',
+            'HouseFloor',
+            'HouseFloorSale',
+            'HouseState',
+            'HouseStateLatest',
+            'HouseSubState',
+            'HouseSubStateLatest',
+        ]
+    }

@@ -14,4 +14,4 @@ def get_ip_address(ifname):
     )[20:24])
 
 
-LOCALIP = get_ip_address(b'wlp3s0')
+LOCALIP = get_ip_address(b'eth0')

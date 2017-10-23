@@ -1,5 +1,4 @@
 # coding = utf-8
-import time
 import json
 from scrapy.http import Request
 from scrapy_redis.spiders import RedisSpider

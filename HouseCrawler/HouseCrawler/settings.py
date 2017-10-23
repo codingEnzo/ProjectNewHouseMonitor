@@ -39,7 +39,7 @@ COMMANDS_MODULE = 'HouseCrawler.Commands'
 ROBOTSTXT_OBEY = False
 
 # Configure maximum concurrent requests performed by Scrapy (default: 16)
-CONCURRENT_REQUESTS = 8
+CONCURRENT_REQUESTS = 4
 
 # Configure a delay for requests for the same website (default: 0)
 # See http://scrapy.readthedocs.org/en/latest/topics/settings.html#download-delay
@@ -67,8 +67,6 @@ SPIDER_MIDDLEWARES = {
     'HouseCrawler.SpiderMiddleWares.SpiderMiddleWaresBJJS.ProjectInfoHandleMiddleware': 103,
     'HouseCrawler.SpiderMiddleWares.SpiderMiddleWaresBJJS.BuildingListHandleMiddleware': 104,
     'HouseCrawler.SpiderMiddleWares.SpiderMiddleWaresBJJS.HouseInfoHandleMiddleware': 105,
-    # 'HouseCrawler.SpiderMiddleWares.SpiderMiddleWaresBJJS.ProjectBaseHandleMiddleware2': 543,
-    # 'HouseCrawler.SpiderMiddleWares.SpiderMiddleWaresBJJS.ProjectBaseHandleMiddleware1': 542,
 }
 
 # Enable or disable downloader middlewares
