@@ -23,7 +23,7 @@ class BJJSPipeline(object):
 
     def safe_format_value(self, value):
         try:
-            value = '%.05' % float(value)
+            value = '%.05f' % float(value)
         except Exception:
             pass
         return str(value)
