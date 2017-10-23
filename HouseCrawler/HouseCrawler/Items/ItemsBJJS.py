@@ -17,19 +17,3 @@ class BuildingInfoItem(DjangoItem):
 
 class HouseInfoItem(DjangoItem):
     django_model = HouseInfo
-
-
-class ProjectBaseStateItem(DjangoItem):
-    django_model = ProjectBaseState
-
-
-class ProjectInfoStateItem(DjangoItem):
-    django_model = ProjectInfoState
-
-
-class BuildingInfoStateItem(DjangoItem):
-    django_model = BuildingInfoState
-
-
-class HouseInfoStateItem(DjangoItem):
-    django_model = HouseInfoState
