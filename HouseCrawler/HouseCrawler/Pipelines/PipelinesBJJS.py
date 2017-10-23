@@ -21,7 +21,7 @@ class BJJSPipeline(object):
     def from_crawler(cls, crawler):
         return cls(crawler.settings)
 
-    def safe_format_value(value):
+    def safe_format_value(self, value):
         try:
             value = '%.05' % float(value)
         except Exception:
