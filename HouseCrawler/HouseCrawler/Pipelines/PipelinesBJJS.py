@@ -4,6 +4,7 @@ import os
 import logging
 import uuid
 import datetime
+from HouseCrawler.Items.ItemsBJJS import *
 sys.path.append(os.path.abspath('.'))
 sys.path.append(os.path.abspath('..'))
 sys.path.append(os.path.abspath('../..'))
@@ -20,9 +21,85 @@ class BJJSPipeline(object):
     def from_crawler(cls, crawler):
         return cls(crawler.settings)
 
-    def process_item(self, item, spider):
+    def check_item_exist(self, item):
+        exist_flag = False
+        q_object = item.django_model.objects
+        if isinstance(item, ProjectBaseItem):
+            if q_object.filter(ProjectUUID=item['ProjectUUID']).latest(field_name='CurTimeStamp'):
+                exist_flag = True
+        elif isinstance(item, ProjectInfoItem):
+            if q_object.filter(ProjectUUID=item['SubProjectUUID']).latest(field_name='CurTimeStamp'):
+                exist_flag = True
+        elif isinstance(item, BuildingInfoItem):
+            if q_object.filter(ProjectUUID=item['BuildingUUID']).latest(field_name='CurTimeStamp'):
+                exist_flag = True
+        elif isinstance(item, HouseInfoItem):
+            if q_object.filter(ProjectUUID=item['HouseUUID']).latest(field_name='CurTimeStamp'):
+                exist_flag = True
+        else:
+            pass
+        return exist_flag
+
+    def check_item_change(self, item):
+        diff_flag = False
+        q_object = item.django_model.objects
+        if isinstance(item, ProjectBaseItem):
+            res_object = q_object.filter(ProjectUUID=item['ProjectUUID']).latest(field_name='CurTimeStamp')
+            for key in item:
+                if not hasattr(res_object, key):
+                    diff_flag = True
+                    break
+                if item.get(key) != getattr(res_object, key):
+                    diff_flag = True
+                    break
+        elif isinstance(item, ProjectInfoItem):
+            res_object = q_object.filter(ProjectUUID=item['SubProjectUUID']).latest(field_name='CurTimeStamp')
+            for key in item:
+                if not hasattr(res_object, key):
+                    diff_flag = True
+                    break
+                if item.get(key) != getattr(res_object, key):
+                    diff_flag = True
+                    break
+        elif isinstance(item, BuildingInfoItem):
+            res_object = q_object.filter(ProjectUUID=item['BuildingUUID']).latest(field_name='CurTimeStamp')
+            for key in item:
+                if not hasattr(res_object, key):
+                    diff_flag = True
+                    break
+                if item.get(key) != getattr(res_object, key):
+                    diff_flag = True
+                    break
+            if diff_flag:
+                item['BuildingSaleStatusLatest'] = getattr(res_object, 'BuildingSaleStatus')
+        elif isinstance(item, HouseInfoItem):
+            res_object = q_object.filter(ProjectUUID=item['HouseUUID']).latest(field_name='CurTimeStamp')
+            for key in item:
+                if not hasattr(res_object, key):
+                    diff_flag = True
+                    break
+                if item.get(key) != getattr(res_object, key):
+                    diff_flag = True
+                    break
+            if diff_flag:
+                item['HouseStateLatest'] = getattr(res_object, 'HouseState')
+                item['HouseSubStateLatest'] = getattr(res_object, 'HouseSubState')
+        return diff_flag, item
+
+    def storage_item(self, item):
         if hasattr(item, 'save') and hasattr(item, 'django_model'):
             item['RecordID'] = uuid.uuid1()
             item['CurTimeStamp'] = str(datetime.datetime.now())
             item.save()
-        return item
+            logger.debug("storage item: %(item)s",
+                         {'item': item})
+
+    def process_item(self, item, spider):
+        if item:
+            if self.check_item_exist(item):
+                diff_result, diff_item = self.check_item_change(item)
+                if diff_result:
+                    self.storage_item(item)
+            else:
+                self.storage_item(item)
+            return item

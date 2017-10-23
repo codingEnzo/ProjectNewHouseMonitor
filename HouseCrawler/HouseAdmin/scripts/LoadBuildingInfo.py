@@ -14,7 +14,7 @@ def run():
                 builfing_info = {'source_url': item.BuildingURL,
                                     'meta': {'PageType': 'HouseInfo',
                                                 'ProjectName': item.ProjectName,
-                                                'Building': item.BuildingName}}
+                                                'BuildingName': item.BuildingName}}
                 builfing_info_json = json.dumps(builfing_info)
                 r.sadd('HouseCrawler:start_urls:Default', builfing_info_json)
                 num += 1

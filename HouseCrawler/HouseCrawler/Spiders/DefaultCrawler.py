@@ -73,7 +73,7 @@ class DefaultcrawlerSpider(RedisSpider):
             data_raw = fetch_one(self.redis_key)
             if not data_raw:
                 break
-            data = json.loads(data_raw)
+            data = json.loads(data_raw.decode())
             if "source_url" not in data:
                 break
             req = Request(url=data['source_url'],

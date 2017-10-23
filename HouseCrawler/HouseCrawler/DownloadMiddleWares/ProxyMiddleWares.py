@@ -50,7 +50,6 @@ class ProxyMiddleware(object):
         return cls(crawler.settings.get('PROXY_POOL_NAME', 'GZYF_Test:Proxy_Pool'))
 
     def process_request(self, request, spider):
-        hostname = urlparse.urlparse(request.url).hostname
         proxy_status = b'True'
         if proxy_status == b'True':
             if 'anjuke' in request.url:
