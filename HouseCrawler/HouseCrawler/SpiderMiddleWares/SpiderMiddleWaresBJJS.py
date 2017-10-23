@@ -412,7 +412,6 @@ class HouseInfoHandleMiddleware(object):
                 return []
             floor_list = Selector(response).xpath('//table[@id="table_Buileing"]/tbody/tr[not(@bgcolor)]')
             for floor_item in floor_list:
-                print('papapapap')
                 cur_floor = floor_item.xpath('./td[1]/text()').extract_first()
                 cur_floor_sale = floor_item.xpath('./td[2]/text()').extract_first()
                 house_list = floor_item.xpath('./td[3]/div')

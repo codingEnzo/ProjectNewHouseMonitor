@@ -49,7 +49,7 @@ class BJJSPipeline(object):
                 if not hasattr(res_object, key):
                     diff_flag = True
                     break
-                if item.get(key) != getattr(res_object, key):
+                if str(item.get(key)) != str(getattr(res_object, key)):
                     diff_flag = True
                     break
         elif isinstance(item, ProjectInfoItem):
@@ -58,7 +58,7 @@ class BJJSPipeline(object):
                 if not hasattr(res_object, key):
                     diff_flag = True
                     break
-                if item.get(key) != getattr(res_object, key):
+                if str(item.get(key)) != str(getattr(res_object, key)):
                     diff_flag = True
                     break
         elif isinstance(item, BuildingInfoItem):
@@ -67,7 +67,7 @@ class BJJSPipeline(object):
                 if not hasattr(res_object, key):
                     diff_flag = True
                     break
-                if item.get(key) != getattr(res_object, key):
+                if str(item.get(key)) != str(getattr(res_object, key)):
                     diff_flag = True
                     break
             if diff_flag:
@@ -78,7 +78,7 @@ class BJJSPipeline(object):
                 if not hasattr(res_object, key):
                     diff_flag = True
                     break
-                if item.get(key) != getattr(res_object, key):
+                if str(item.get(key)) != str(getattr(res_object, key)):
                     diff_flag = True
                     break
             if diff_flag:
