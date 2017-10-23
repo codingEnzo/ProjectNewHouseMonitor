@@ -28,13 +28,13 @@ class BJJSPipeline(object):
             if q_object.filter(ProjectUUID=item['ProjectUUID']).latest(field_name='CurTimeStamp'):
                 exist_flag = True
         elif isinstance(item, ProjectInfoItem):
-            if q_object.filter(ProjectUUID=item['SubProjectUUID']).latest(field_name='CurTimeStamp'):
+            if q_object.filter(SubProjectUUID=item['SubProjectUUID']).latest(field_name='CurTimeStamp'):
                 exist_flag = True
         elif isinstance(item, BuildingInfoItem):
-            if q_object.filter(ProjectUUID=item['BuildingUUID']).latest(field_name='CurTimeStamp'):
+            if q_object.filter(BuildingUUID=item['BuildingUUID']).latest(field_name='CurTimeStamp'):
                 exist_flag = True
         elif isinstance(item, HouseInfoItem):
-            if q_object.filter(ProjectUUID=item['HouseUUID']).latest(field_name='CurTimeStamp'):
+            if q_object.filter(HouseUUID=item['HouseUUID']).latest(field_name='CurTimeStamp'):
                 exist_flag = True
         else:
             pass
@@ -53,7 +53,7 @@ class BJJSPipeline(object):
                     diff_flag = True
                     break
         elif isinstance(item, ProjectInfoItem):
-            res_object = q_object.filter(ProjectUUID=item['SubProjectUUID']).latest(field_name='CurTimeStamp')
+            res_object = q_object.filter(SubProjectUUID=item['SubProjectUUID']).latest(field_name='CurTimeStamp')
             for key in item:
                 if not hasattr(res_object, key):
                     diff_flag = True
@@ -62,7 +62,7 @@ class BJJSPipeline(object):
                     diff_flag = True
                     break
         elif isinstance(item, BuildingInfoItem):
-            res_object = q_object.filter(ProjectUUID=item['BuildingUUID']).latest(field_name='CurTimeStamp')
+            res_object = q_object.filter(BuildingUUID=item['BuildingUUID']).latest(field_name='CurTimeStamp')
             for key in item:
                 if not hasattr(res_object, key):
                     diff_flag = True
@@ -73,7 +73,7 @@ class BJJSPipeline(object):
             if diff_flag:
                 item['BuildingSaleStatusLatest'] = getattr(res_object, 'BuildingSaleStatus')
         elif isinstance(item, HouseInfoItem):
-            res_object = q_object.filter(ProjectUUID=item['HouseUUID']).latest(field_name='CurTimeStamp')
+            res_object = q_object.filter(HouseUUID=item['HouseUUID']).latest(field_name='CurTimeStamp')
             for key in item:
                 if not hasattr(res_object, key):
                     diff_flag = True
