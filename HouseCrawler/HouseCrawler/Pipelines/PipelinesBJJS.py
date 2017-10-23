@@ -21,6 +21,13 @@ class BJJSPipeline(object):
     def from_crawler(cls, crawler):
         return cls(crawler.settings)
 
+    def safe_format_value(value):
+        try:
+            value = '%.05' % float(value)
+        except Exception:
+            pass
+        return str(value)
+
     def check_item_exist(self, item):
         exist_flag = False
         q_object = item.django_model.objects
@@ -49,7 +56,7 @@ class BJJSPipeline(object):
                 if not hasattr(res_object, key):
                     diff_flag = True
                     break
-                if str(item.get(key)) != str(getattr(res_object, key)):
+                if self.safe_format_value(item.get(key)) != self.safe_format_value(getattr(res_object, key)):
                     diff_flag = True
                     break
         elif isinstance(item, ProjectInfoItem):
@@ -58,7 +65,7 @@ class BJJSPipeline(object):
                 if not hasattr(res_object, key):
                     diff_flag = True
                     break
-                if str(item.get(key)) != str(getattr(res_object, key)):
+                if self.safe_format_value(item.get(key)) != self.safe_format_value(getattr(res_object, key)):
                     diff_flag = True
                     break
         elif isinstance(item, BuildingInfoItem):
@@ -67,7 +74,7 @@ class BJJSPipeline(object):
                 if not hasattr(res_object, key):
                     diff_flag = True
                     break
-                if str(item.get(key)) != str(getattr(res_object, key)):
+                if self.safe_format_value(item.get(key)) != self.safe_format_value(getattr(res_object, key)):
                     diff_flag = True
                     break
             if diff_flag:
@@ -78,7 +85,7 @@ class BJJSPipeline(object):
                 if not hasattr(res_object, key):
                     diff_flag = True
                     break
-                if str(item.get(key)) != str(getattr(res_object, key)):
+                if self.safe_format_value(item.get(key)) != self.safe_format_value(getattr(res_object, key)):
                     diff_flag = True
                     break
             if diff_flag:
