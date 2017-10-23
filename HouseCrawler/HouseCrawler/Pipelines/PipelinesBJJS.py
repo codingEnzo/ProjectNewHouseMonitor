@@ -97,9 +97,15 @@ class BJJSPipeline(object):
     def process_item(self, item, spider):
         if item:
             if self.check_item_exist(item):
+                logger.debug("item: %(item)s UUID existed",
+                                {'item': item})
                 diff_result, diff_item = self.check_item_change(item)
                 if diff_result:
+                    logger.debug("item: %(item)s changed",
+                                    {'item': item})
                     self.storage_item(item)
             else:
+                logger.debug("item: %(item)s met first",
+                                {'item': item})
                 self.storage_item(item)
             return item
