@@ -204,11 +204,12 @@ class ProjectInfoHandleMiddleware(object):
                 subpinfo['ProjectLicenseCode'] = subpinfo_item.xpath('./td[2]/a/text()').extract()[0]
                 subpinfo['ProjectLicenseDate'] = subpinfo_item.xpath('./td[3]/text()').extract()[0]\
                                                     .replace('\r\n', '').replace(' ', '')
-                subpinfo['SubProjectUUID'] = uuid.uuid3(uuid.NAMESPACE_DNS, subpinfo['ProjectName'] + subpinfo['ProjectLicenseCode'])
                 parsed_url = urlparse.urlparse(response.url)
                 pinfo_host = parsed_url.scheme + "://" + parsed_url.hostname
                 subproject_href = urlparse.urljoin(pinfo_host,
                                     subpinfo_item.xpath('./td[2]/a/@href').extract()[0])
+                subpinfo['SubProjectUUID'] = uuid.uuid3(uuid.NAMESPACE_DNS,
+                                    subpinfo['ProjectName'] + subpinfo['ProjectRegName'] + subpinfo['ProjectLicenseCode'] + subproject_href)
                 req_list.append(Request(url=subproject_href, meta={'PageType': 'SubProjectInfo', 'item': subpinfo}, method='GET', dont_filter=True))
             result.extend(req_list)
 
@@ -280,6 +281,16 @@ class BuildingListHandleMiddleware(object):
 
         if response.meta.get('PageType') in ('ProjectInfo', 'SubProjectInfo'):
             building_list_sel = Selector(response)
+            if response.meta.get('PageType') == 'ProjectInfo':
+                p_name = pinfo_sel.xpath('//td[@id="项目名称"]/text()').extract()[0]\
+                                    .replace('\r\n', '').replace(' ', '')
+                p_regname = pinfo_sel.xpath('//td[@id="预售许可证编号"]/text()').extract()[0]\
+                                    .replace('\r\n', '').replace(' ', '')
+                p_uuid = uuid.uuid3(uuid.NAMESPACE_DNS, p_name + p_regname)
+                sp_uuid = p_uuid
+            elif response.meta.get('PageType') == 'SubProjectInfo':
+                p_uuid = response.meta.get('item').get('ProjectUUID')
+                sp_uuid = response.meta.get('item').get('SubProjectUUID')
             if building_list_sel.xpath('//a[text()="查看更多>>"]/@href') != []:
                 parsed_url = urlparse.urlparse(response.url)
                 p_host = parsed_url.scheme + "://" + parsed_url.hostname
@@ -288,6 +299,8 @@ class BuildingListHandleMiddleware(object):
                 binfo = BuildingInfoItem()
                 binfo['ProjectName'] = building_list_sel.xpath('//td[@id="项目名称"]/text()').extract_first()\
                                         .replace('\r\n', '').replace(' ', '')
+                binfo['ProjectUUID'] = p_uuid
+                binfo['SubProjectUUID'] = sp_uuid
                 building_list_req = Request(url=building_list_href, method='GET',
                                             headers=self.headers, meta={'PageType': 'SubBuildingList', 'item': binfo})
                 result.append(building_list_req)
@@ -299,6 +312,8 @@ class BuildingListHandleMiddleware(object):
                     p_host = parsed_url.scheme + "://" + parsed_url.hostname
                     binfo['ProjectName'] = building_list_sel.xpath('//td[@id="项目名称"]/text()').extract_first()\
                                             .replace('\r\n', '').replace(' ', '')
+                    binfo['ProjectUUID'] = p_uuid
+                    binfo['SubProjectUUID'] = sp_uuid
                     binfo['BuildingName'] = building_item.xpath('./td[1]/text()').extract_first() or ''
                     binfo['BuildingUUID'] = uuid.uuid3(uuid.NAMESPACE_DNS, binfo['ProjectName'] + binfo['BuildingName'])
                     binfo['BuildingSaleNum'] = building_item.xpath('./td[2]/text()').extract_first() or 0
@@ -406,7 +421,9 @@ class HouseInfoHandleMiddleware(object):
             return []
 
         if response.meta.get('PageType') == 'HouseInfo':
-            if (not response.meta.get('ProjectName')) or (not response.meta.get('BuildingName')):
+            if (not response.meta.get('ProjectName')) or (not response.meta.get('BuildingName'))\
+            or (not response.meta.get('ProjectUUID')) or (not response.meta.get('SubProjectUUID'))\
+            or (not response.meta.get('BuildingUUID')):
                 if result:
                     return result
                 return []
@@ -419,6 +436,9 @@ class HouseInfoHandleMiddleware(object):
                     hinfo = HouseInfoItem()
                     hinfo['ProjectName'] = response.meta.get('ProjectName')
                     hinfo['BuildingName'] = response.meta.get('BuildingName')
+                    hinfo['ProjectUUID'] = response.meta.get('ProjectUUID')
+                    hinfo['SubProjectUUID'] = response.meta.get('SubProjectUUID')
+                    hinfo['BuildingUUID'] = response.meta.get('BuildingUUID')
                     hinfo['HouseName'] = house_item.xpath('./a/text()').extract_first()
                     hinfo['HouseUUID'] = uuid.uuid3(uuid.NAMESPACE_DNS, hinfo['ProjectName'] + hinfo['BuildingName'] + hinfo['HouseName'])
                     hinfo['HouseFloor'] = cur_floor

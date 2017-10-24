@@ -71,6 +71,10 @@ class BuildingInfo(Document):
                                     binary=True, primary_key=True, null=False)
     CurTimeStamp = fields.StringField(default=str(datetime.datetime.now()), index=True)
     ProjectName = fields.StringField(default='', max_length=255, null=False)
+    ProjectUUID = fields.UUIDField(default=uuid.uuid3(uuid.NAMESPACE_DNS, ''),
+                                    binary=False, null=False)
+    SubProjectUUID = fields.UUIDField(default=uuid.uuid3(uuid.NAMESPACE_DNS, ''),
+                                        binary=False, null=False)
     BuildingUUID = fields.UUIDField(default=uuid.uuid3(uuid.NAMESPACE_DNS, ''),
                                     binary=False, null=False)
     BuildingName = fields.StringField(default='', max_length=255, null=False)
@@ -98,6 +102,12 @@ class HouseInfo(Document):
     CurTimeStamp = fields.StringField(default=str(datetime.datetime.now()), index=True)
     ProjectName = fields.StringField(default='', max_length=255, null=False)
     BuildingName = fields.StringField(default='', max_length=255, null=False)
+    ProjectUUID = fields.UUIDField(default=uuid.uuid3(uuid.NAMESPACE_DNS, ''),
+                                    binary=False, null=False)
+    SubProjectUUID = fields.UUIDField(default=uuid.uuid3(uuid.NAMESPACE_DNS, ''),
+                                        binary=False, null=False)
+    BuildingUUID = fields.UUIDField(default=uuid.uuid3(uuid.NAMESPACE_DNS, ''),
+                                    binary=False, null=False)
     HouseUUID = fields.UUIDField(default=uuid.uuid3(uuid.NAMESPACE_DNS, ''),
                                     binary=False, null=False)
     HouseName = fields.StringField(default='', max_length=255, null=False)
