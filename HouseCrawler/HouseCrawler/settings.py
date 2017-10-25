@@ -39,7 +39,7 @@ COMMANDS_MODULE = 'HouseCrawler.Commands'
 ROBOTSTXT_OBEY = False
 
 # Configure maximum concurrent requests performed by Scrapy (default: 16)
-CONCURRENT_REQUESTS = 8
+CONCURRENT_REQUESTS = 16
 
 # Configure a delay for requests for the same website (default: 0)
 # See http://scrapy.readthedocs.org/en/latest/topics/settings.html#download-delay
@@ -88,7 +88,7 @@ COOKIES_ENABLED = False
 COOKIES_DEBUG = False
 
 DOWNLOAD_DELAY = 0.1
-DOWNLOAD_TIMEOUT = 85
+DOWNLOAD_TIMEOUT = 60
 RANDOMIZE_DOWNLOAD_DELAY = True
 # Enable or disable extensions
 # See http://scrapy.readthedocs.org/en/latest/topics/extensions.html
@@ -104,7 +104,7 @@ ITEM_PIPELINES = {
 }
 
 
-# LOG_LEVEL = 'INFO'
+LOG_LEVEL = 'INFO'
 # Enable and configure the AutoThrottle extension (disabled by default)
 # See http://doc.scrapy.org/en/latest/topics/autothrottle.html
 #AUTOTHROTTLE_ENABLED = True
