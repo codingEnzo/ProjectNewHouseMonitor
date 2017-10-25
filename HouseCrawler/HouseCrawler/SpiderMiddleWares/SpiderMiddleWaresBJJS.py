@@ -330,12 +330,15 @@ class BuildingListHandleMiddleware(object):
                     binfo['BuildingUUID'] = uuid.uuid3(uuid.NAMESPACE_DNS, str(binfo['SubProjectUUID']) + binfo['BuildingName'])
                     binfo['BuildingSaleNum'] = (building_item.xpath('./td[2]/text()').extract_first() or '0').\
                                                 replace('\r\n', '').replace(' ', '').replace('\t', '')
+                    binfo['BuildingSaleNum'] = '0' if binfo['BuildingSaleNum'] == '' else binfo['BuildingSaleNum']
                     binfo['BuildingSaleArea'] = (building_item.xpath('./td[3]/text()').extract_first() or '0.0').\
                                                 replace('\r\n', '').replace(' ', '').replace('\t', '')
+                    binfo['BuildingSaleArea'] = '0.0' if binfo['BuildingSaleArea'] == '' else binfo['BuildingSaleArea']
                     binfo['BuildingSaleStatus'] = (building_item.xpath('./td[4]/text()').extract_first() or '').\
                                                 replace('\r\n', '').replace(' ', '').replace('\t', '')
                     binfo['BuildingSalePrice'] = (building_item.xpath('./td[5]/text()').extract_first() or '0.0').\
                                                 replace('\r\n', '').replace(' ', '').replace('\t', '')
+                    binfo['BuildingSalePrice'] = '0.0' if binfo['BuildingSalePrice'] == '' else binfo['BuildingSalePrice']
                     if building_item.xpath('./td[6]/a/@href').extract_first() != "#":
                         binfo['BuildingURL'] = urlparse.urljoin(p_host,
                                                 building_item.xpath('./td[6]/a/@href').extract_first() or '')
@@ -364,12 +367,15 @@ class BuildingListHandleMiddleware(object):
                     binfo['BuildingUUID'] = uuid.uuid3(uuid.NAMESPACE_DNS, str(binfo['SubProjectUUID']) + binfo['BuildingName'])
                     binfo['BuildingSaleNum'] = (sub_b.xpath('./td[2]/text()').extract_first() or '0').\
                                                 replace('\r\n', '').replace(' ', '').replace('\t', '')
+                    binfo['BuildingSaleNum'] = '0' if binfo['BuildingSaleNum'] == '' else binfo['BuildingSaleNum']
                     binfo['BuildingSaleArea'] = (sub_b.xpath('./td[3]/text()').extract_first() or '0.0').\
                                                 replace('\r\n', '').replace(' ', '').replace('\t', '')
+                    binfo['BuildingSaleArea'] = '0.0' if binfo['BuildingSaleArea'] == '' else binfo['BuildingSaleArea']
                     binfo['BuildingSaleStatus'] = (sub_b.xpath('./td[4]/text()').extract_first() or '').\
                                                 replace('\r\n', '').replace(' ', '').replace('\t', '')
                     binfo['BuildingSalePrice'] = (sub_b.xpath('./td[5]/text()').extract_first() or '0.0').\
                                                 replace('\r\n', '').replace(' ', '').replace('\t', '')
+                    binfo['BuildingSalePrice'] = '0.0' if binfo['BuildingSalePrice'] == '' else binfo['BuildingSalePrice']
                     binfo['BuildingURL'] = urlparse.urljoin(p_host,
                                             sub_b.xpath('./td[6]/a/@href').extract_first() or '')
                     result.append(binfo)
