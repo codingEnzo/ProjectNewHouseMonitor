@@ -282,9 +282,9 @@ class BuildingListHandleMiddleware(object):
         if response.meta.get('PageType') in ('ProjectInfo', 'SubProjectInfo'):
             building_list_sel = Selector(response)
             if response.meta.get('PageType') == 'ProjectInfo':
-                p_name = pinfo_sel.xpath('//td[@id="项目名称"]/text()').extract()[0]\
+                p_name = building_list_sel.xpath('//td[@id="项目名称"]/text()').extract()[0]\
                                     .replace('\r\n', '').replace(' ', '')
-                p_regname = pinfo_sel.xpath('//td[@id="预售许可证编号"]/text()').extract()[0]\
+                p_regname = building_list_sel.xpath('//td[@id="预售许可证编号"]/text()').extract()[0]\
                                     .replace('\r\n', '').replace(' ', '')
                 p_uuid = uuid.uuid3(uuid.NAMESPACE_DNS, p_name + p_regname)
                 sp_uuid = p_uuid
