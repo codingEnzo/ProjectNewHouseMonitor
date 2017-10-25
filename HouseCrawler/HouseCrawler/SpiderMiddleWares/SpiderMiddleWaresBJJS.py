@@ -53,6 +53,10 @@ class ProjectBaseHandleMiddleware(object):
 
         print('ProjectBaseHandleMiddleware')
         result = list(result)
+        if not(200 <= response.status < 300):  # common case
+            if result:
+                return result
+            return []
         if response.meta.get('PageType') != 'ProjectBase':
             if result:
                 return result
@@ -147,6 +151,10 @@ class ProjectInfoHandleMiddleware(object):
 
         print('ProjectInfoHandleMiddleware')
         result = list(result)
+        if not(200 <= response.status < 300):  # common case
+            if result:
+                return result
+            return []
         if response.meta.get('PageType') not in ('ProjectInfo', 'SubProjectList', 'SubProjectInfo'):
             if result:
                 return result
@@ -274,6 +282,10 @@ class BuildingListHandleMiddleware(object):
 
         print('BuildingListHandleMiddleware')
         result = list(result)
+        if not(200 <= response.status < 300):  # common case
+            if result:
+                return result
+            return []
         if response.meta.get('PageType') not in ('ProjectInfo', 'SubProjectInfo', 'SubBuildingList'):
             if result:
                 return result
@@ -415,6 +427,10 @@ class HouseInfoHandleMiddleware(object):
 
         print('HouseInfoHandleMiddleware')
         result = list(result)
+        if not(200 <= response.status < 300):  # common case
+            if result:
+                return result
+            return []
         if response.meta.get('PageType') not in ('HouseInfo', 'HouseInfoDetail'):
             if result:
                 return result
