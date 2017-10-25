@@ -15,9 +15,9 @@ def run():
                                     'meta': {'PageType': 'HouseInfo',
                                                 'ProjectName': item.ProjectName,
                                                 'BuildingName': item.BuildingName,
-                                                'ProjectUUID': item.ProjectUUID,
-                                                'SubProjectUUID': item.SubProjectUUID,
-                                                'BuildingUUID': item.BuildingUUID}}
+                                                'ProjectUUID': str(item.ProjectUUID),
+                                                'SubProjectUUID': str(item.SubProjectUUID),
+                                                'BuildingUUID': str(item.BuildingUUID)}}
                 builfing_info_json = json.dumps(builfing_info)
                 r.sadd('HouseCrawler:start_urls:Default', builfing_info_json)
                 num += 1
