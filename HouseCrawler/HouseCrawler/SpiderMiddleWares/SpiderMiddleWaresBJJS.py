@@ -51,7 +51,6 @@ class ProjectBaseHandleMiddleware(object):
                 traceback.print_exc()
             return total_page
 
-        print('ProjectBaseHandleMiddleware')
         result = list(result)
         if not(200 <= response.status < 300):  # common case
             if result:
@@ -61,6 +60,7 @@ class ProjectBaseHandleMiddleware(object):
             if result:
                 return result
             return []
+        print('ProjectBaseHandleMiddleware')
 
         if response.request.method == 'GET':
             req_dict = {'isTrue': 0,
@@ -149,7 +149,6 @@ class ProjectInfoHandleMiddleware(object):
                 traceback.print_exc()
             return total_page
 
-        print('ProjectInfoHandleMiddleware')
         result = list(result)
         if not(200 <= response.status < 300):  # common case
             if result:
@@ -159,6 +158,7 @@ class ProjectInfoHandleMiddleware(object):
             if result:
                 return result
             return []
+        print('ProjectInfoHandleMiddleware')
 
         if response.meta.get('PageType') == 'ProjectInfo':
             pinfo_sel = Selector(response)
@@ -280,7 +280,6 @@ class BuildingListHandleMiddleware(object):
                 traceback.print_exc()
             return total_page
 
-        print('BuildingListHandleMiddleware')
         result = list(result)
         if not(200 <= response.status < 300):  # common case
             if result:
@@ -290,6 +289,7 @@ class BuildingListHandleMiddleware(object):
             if result:
                 return result
             return []
+        print('BuildingListHandleMiddleware')
 
         if response.meta.get('PageType') in ('ProjectInfo', 'SubProjectInfo'):
             building_list_sel = Selector(response)
@@ -425,7 +425,6 @@ class HouseInfoHandleMiddleware(object):
                         '按套内面积拟售单价': 'HouseInnerUnitPrice'}
             return KEY_TAB.get(string)
 
-        print('HouseInfoHandleMiddleware')
         result = list(result)
         if not(200 <= response.status < 300):  # common case
             if result:
@@ -435,6 +434,7 @@ class HouseInfoHandleMiddleware(object):
             if result:
                 return result
             return []
+        print('HouseInfoHandleMiddleware')
 
         if response.meta.get('PageType') == 'HouseInfo':
             if (not response.meta.get('ProjectName')) or (not response.meta.get('BuildingName'))\
