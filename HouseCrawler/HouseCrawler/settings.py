@@ -67,6 +67,7 @@ SPIDER_MIDDLEWARES = {
     'HouseCrawler.SpiderMiddleWares.SpiderMiddleWaresBJJS.ProjectInfoHandleMiddleware': 103,
     'HouseCrawler.SpiderMiddleWares.SpiderMiddleWaresBJJS.BuildingListHandleMiddleware': 104,
     'HouseCrawler.SpiderMiddleWares.SpiderMiddleWaresBJJS.HouseInfoHandleMiddleware': 105,
+    'scrapy.spidermiddlewares.httperror.HttpErrorMiddleware': 101
 }
 
 # Enable or disable downloader middlewares
