@@ -209,7 +209,7 @@ class ProjectInfoHandleMiddleware(object):
                 subproject_href = urlparse.urljoin(pinfo_host,
                                     subpinfo_item.xpath('./td[2]/a/@href').extract()[0])
                 subpinfo['SubProjectUUID'] = uuid.uuid3(uuid.NAMESPACE_DNS,
-                                    subpinfo['ProjectName'] + subpinfo['ProjectRegName'] + subpinfo['ProjectLicenseCode'] + subproject_href)
+                                    subpinfo['ProjectUUID'] + subpinfo['ProjectLicenseCode'] + subproject_href)
                 req_list.append(Request(url=subproject_href, meta={'PageType': 'SubProjectInfo', 'item': subpinfo}, method='GET', dont_filter=True))
             result.extend(req_list)
 
@@ -315,7 +315,7 @@ class BuildingListHandleMiddleware(object):
                     binfo['ProjectUUID'] = p_uuid
                     binfo['SubProjectUUID'] = sp_uuid
                     binfo['BuildingName'] = building_item.xpath('./td[1]/text()').extract_first() or ''
-                    binfo['BuildingUUID'] = uuid.uuid3(uuid.NAMESPACE_DNS, binfo['ProjectName'] + binfo['BuildingName'])
+                    binfo['BuildingUUID'] = uuid.uuid3(uuid.NAMESPACE_DNS, binfo['SubProjectUUID'] + binfo['BuildingName'])
                     binfo['BuildingSaleNum'] = building_item.xpath('./td[2]/text()').extract_first() or 0
                     binfo['BuildingSaleArea'] = building_item.xpath('./td[3]/text()').extract_first() or 0.0
                     binfo['BuildingSaleStatus'] = building_item.xpath('./td[4]/text()').extract_first() or ''
@@ -345,7 +345,7 @@ class BuildingListHandleMiddleware(object):
                 for sub_b in subbuilding_list:
                     binfo = copy.deepcopy(binfo_base)
                     binfo['BuildingName'] = sub_b.xpath('./td[1]/a/text()').extract_first() or ''
-                    binfo['BuildingUUID'] = uuid.uuid3(uuid.NAMESPACE_DNS, binfo['ProjectName'] + binfo['BuildingName'])
+                    binfo['BuildingUUID'] = uuid.uuid3(uuid.NAMESPACE_DNS, binfo['SubProjectUUID'] + binfo['BuildingName'])
                     binfo['BuildingSaleNum'] = sub_b.xpath('./td[2]/text()').extract_first() or '0'
                     binfo['BuildingSaleArea'] = sub_b.xpath('./td[3]/text()').extract_first() or '0.0'
                     binfo['BuildingSaleStatus'] = sub_b.xpath('./td[4]/text()').extract_first() or ''
@@ -440,7 +440,7 @@ class HouseInfoHandleMiddleware(object):
                     hinfo['SubProjectUUID'] = response.meta.get('SubProjectUUID')
                     hinfo['BuildingUUID'] = response.meta.get('BuildingUUID')
                     hinfo['HouseName'] = house_item.xpath('./a/text()').extract_first()
-                    hinfo['HouseUUID'] = uuid.uuid3(uuid.NAMESPACE_DNS, hinfo['ProjectName'] + hinfo['BuildingName'] + hinfo['HouseName'])
+                    hinfo['HouseUUID'] = uuid.uuid3(uuid.NAMESPACE_DNS, hinfo['BuildingUUID'] + hinfo['HouseName'])
                     hinfo['HouseFloor'] = cur_floor
                     hinfo['HouseFloorSale'] = cur_floor_sale
                     hinfo['HouseState'] = get_house_state(house_item.xpath('./@style').extract_first())
