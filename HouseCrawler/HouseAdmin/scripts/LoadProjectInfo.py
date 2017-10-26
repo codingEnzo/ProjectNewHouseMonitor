@@ -11,7 +11,7 @@ def run():
     for item in cur:
         project_info = {'source_url': item.ProjectURL,
                         'meta': {'PageType': 'ProjectInfo'}}
-        project_info_json = json.dumps(project_info)
+        project_info_json = json.dumps(project_info, sort_keys=True)
         r.sadd('HouseCrawler:start_urls:Default', project_info_json)
         num += 1
     print(num)

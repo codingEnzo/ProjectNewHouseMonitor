@@ -8,6 +8,7 @@ from scrapy import Request
 from scrapy import Selector
 from HouseNew.models import *
 from HouseCrawler.Items.ItemsBJJS import *
+from collections import OrderedDict
 if sys.version_info.major >= 3:
     import urllib.parse as urlparse
 else:
@@ -185,13 +186,13 @@ class ProjectInfoHandleMiddleware(object):
             if '点击进入现房销售信息公示' not in response.body_as_unicode():
                 pinfo['SubProjectUUID'] = pinfo['ProjectUUID']
                 pinfo['SubProjectAddress'] = pinfo['ProjectAddress']
-                pinfo['ProjectSaleSum'] = {'null': True}
+                pinfo['ProjectSaleSum'] = OrderedDict([('null', True)])
                 sale_list = pinfo_sel.xpath('//table[@class="cont_titlebg2" and not(@id)]/tr[2]/td/table[1]/tr[position()>1]')
                 for sale_item in sale_list:
                     pinfo['ProjectSaleSum']['null'] = False
-                    pinfo['ProjectSaleSum'][sale_item.xpath('./td[1]/text()').extract()[0]] = {'已签约套数': int(sale_item.xpath('./td[2]/text()').extract()[0]),
-                                                                                                '已签约面积': float(sale_item.xpath('./td[3]/text()').extract()[0]),
-                                                                                                '成交均价': float(sale_item.xpath('./td[4]/text()').extract()[0])}
+                    pinfo['ProjectSaleSum'][sale_item.xpath('./td[1]/text()').extract()[0]] = OrderedDict([('已签约套数', int(sale_item.xpath('./td[2]/text()').extract()[0])),
+                                                                                                ('已签约面积', float(sale_item.xpath('./td[3]/text()').extract()[0])),
+                                                                                                ('成交均价', float(sale_item.xpath('./td[4]/text()').extract()[0]))])
                 result.append(pinfo)
 
             else:
@@ -225,13 +226,13 @@ class ProjectInfoHandleMiddleware(object):
             subpinfo_base = response.meta.get('item')
             subpinfo_sel = Selector(response)
             subpinfo = copy.deepcopy(subpinfo_base)
-            subpinfo['ProjectSaleSum'] = {'null': True}
+            subpinfo['ProjectSaleSum'] = OrderedDict([('null', True)])
             sale_list = subpinfo_sel.xpath('//table[@class="cont_titlebg2" and not(@id)]/tr[2]/td/table[1]/tr[position()>1]')
             for sale_item in sale_list:
                 subpinfo['ProjectSaleSum']['null'] = False
-                subpinfo['ProjectSaleSum'][sale_item.xpath('./td[1]/text()').extract()[0]] = {'已签约套数': int(sale_item.xpath('./td[2]/text()').extract()[0]),
-                                                                                                '已签约面积': float(sale_item.xpath('./td[3]/text()').extract()[0]),
-                                                                                                '成交均价': float(sale_item.xpath('./td[4]/text()').extract()[0])}
+                subpinfo['ProjectSaleSum'][sale_item.xpath('./td[1]/text()').extract()[0]] = OrderedDict([('已签约套数', int(sale_item.xpath('./td[2]/text()').extract()[0])),
+                                                                                                ('已签约面积', float(sale_item.xpath('./td[3]/text()').extract()[0])),
+                                                                                                ('成交均价', float(sale_item.xpath('./td[4]/text()').extract()[0]))])
             result.append(subpinfo)
         return result
 
@@ -327,7 +328,8 @@ class BuildingListHandleMiddleware(object):
                     binfo['ProjectUUID'] = p_uuid
                     binfo['SubProjectUUID'] = sp_uuid
                     binfo['BuildingName'] = building_item.xpath('./td[1]/text()').extract_first() or ''
-                    binfo['BuildingUUID'] = uuid.uuid3(uuid.NAMESPACE_DNS, str(binfo['SubProjectUUID']) + binfo['BuildingName'])
+                    url_namespace = building_item.xpath('./td[6]/a/@href').extract_first()
+                    binfo['BuildingUUID'] = uuid.uuid3(uuid.NAMESPACE_DNS, str(binfo['SubProjectUUID']) + binfo['BuildingName'] + url_namespace)
                     binfo['BuildingSaleNum'] = (building_item.xpath('./td[2]/text()').extract_first() or '0').\
                                                 replace('\r\n', '').replace(' ', '').replace('\t', '')
                     binfo['BuildingSaleNum'] = '0' if binfo['BuildingSaleNum'] == '' else binfo['BuildingSaleNum']
@@ -339,7 +341,7 @@ class BuildingListHandleMiddleware(object):
                     binfo['BuildingSalePrice'] = (building_item.xpath('./td[5]/text()').extract_first() or '0.0').\
                                                 replace('\r\n', '').replace(' ', '').replace('\t', '')
                     binfo['BuildingSalePrice'] = '0.0' if binfo['BuildingSalePrice'] == '' else binfo['BuildingSalePrice']
-                    if building_item.xpath('./td[6]/a/@href').extract_first() != "#":
+                    if url_namespace != "#":
                         binfo['BuildingURL'] = urlparse.urljoin(p_host,
                                                 building_item.xpath('./td[6]/a/@href').extract_first() or '')
                     result.append(binfo)
@@ -364,7 +366,8 @@ class BuildingListHandleMiddleware(object):
                 for sub_b in subbuilding_list:
                     binfo = copy.deepcopy(binfo_base)
                     binfo['BuildingName'] = sub_b.xpath('./td[1]/a/text()').extract_first() or ''
-                    binfo['BuildingUUID'] = uuid.uuid3(uuid.NAMESPACE_DNS, str(binfo['SubProjectUUID']) + binfo['BuildingName'])
+                    url_namespace = building_item.xpath('./td[6]/a/@href').extract_first()
+                    binfo['BuildingUUID'] = uuid.uuid3(uuid.NAMESPACE_DNS, str(binfo['SubProjectUUID']) + binfo['BuildingName'] + url_namespace)
                     binfo['BuildingSaleNum'] = (sub_b.xpath('./td[2]/text()').extract_first() or '0').\
                                                 replace('\r\n', '').replace(' ', '').replace('\t', '')
                     binfo['BuildingSaleNum'] = '0' if binfo['BuildingSaleNum'] == '' else binfo['BuildingSaleNum']
@@ -376,8 +379,9 @@ class BuildingListHandleMiddleware(object):
                     binfo['BuildingSalePrice'] = (sub_b.xpath('./td[5]/text()').extract_first() or '0.0').\
                                                 replace('\r\n', '').replace(' ', '').replace('\t', '')
                     binfo['BuildingSalePrice'] = '0.0' if binfo['BuildingSalePrice'] == '' else binfo['BuildingSalePrice']
-                    binfo['BuildingURL'] = urlparse.urljoin(p_host,
-                                            sub_b.xpath('./td[6]/a/@href').extract_first() or '')
+                    if url_namespace != "#":
+                        binfo['BuildingURL'] = urlparse.urljoin(p_host,
+                                                building_item.xpath('./td[6]/a/@href').extract_first() or '')
                     result.append(binfo)
         return result
 

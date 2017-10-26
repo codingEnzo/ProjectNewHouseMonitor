@@ -88,6 +88,8 @@ class BuildingInfo(Document):
         'indexes': [
             'CurTimeStamp',
             'ProjectName',
+            'ProjectUUID',
+            'SubProjectUUID',
             'BuildingUUID',
             'BuildingName',
             'BuildingSaleStatus',
@@ -128,6 +130,9 @@ class HouseInfo(Document):
             'CurTimeStamp',
             'ProjectName',
             'BuildingName',
+            'ProjectUUID',
+            'SubProjectUUID',
+            'BuildingUUID',
             'HouseUUID',
             'HouseName',
             'HouseFloor',
