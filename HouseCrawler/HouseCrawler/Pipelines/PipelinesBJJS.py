@@ -1,10 +1,12 @@
 # coding = utf-8
 import sys
 import os
+import json
 import logging
 import uuid
 import datetime
 from HouseCrawler.Items.ItemsBJJS import *
+from collections import Iterable
 sys.path.append(os.path.abspath('.'))
 sys.path.append(os.path.abspath('..'))
 sys.path.append(os.path.abspath('../..'))
@@ -26,6 +28,11 @@ class BJJSPipeline(object):
             value = '%.05f' % float(value)
         except Exception:
             pass
+        if isinstance(value, Iterable):
+            try:
+                value = json.dumps(value)
+            except Exception:
+                pass
         return str(value)
 
     def check_item_exist(self, item):
