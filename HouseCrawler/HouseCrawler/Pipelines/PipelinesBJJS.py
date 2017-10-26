@@ -1,12 +1,10 @@
 # coding = utf-8
 import sys
 import os
-import json
 import logging
 import uuid
 import datetime
 from HouseCrawler.Items.ItemsBJJS import *
-from collections import Iterable
 sys.path.append(os.path.abspath('.'))
 sys.path.append(os.path.abspath('..'))
 sys.path.append(os.path.abspath('../..'))
@@ -26,11 +24,19 @@ class BJJSPipeline(object):
     def safe_format_value(self, value):
         try:
             value = '%.05f' % float(value)
+            return str(value)
         except Exception:
             pass
-        if isinstance(value, Iterable):
+        if isinstance(value, dict):
             try:
-                value = json.dumps(value)
+                value = dict(value)
+                return value
+            except Exception:
+                pass
+        if isinstance(value, list):
+            try:
+                value = value.sort()
+                return value
             except Exception:
                 pass
         return str(value)
