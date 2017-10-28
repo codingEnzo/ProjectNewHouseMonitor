@@ -125,6 +125,9 @@ class HouseInfo(Document):
     HouseInnerArea = fields.FloatField(default=0.0, null=False)
     HouseBuildingUnitPrice = fields.FloatField(default=0.0, null=False)
     HouseInnerUnitPrice = fields.FloatField(default=0.0, null=False)
+    HouseUnitPrice = fields.FloatField(default=0.0, null=False)
+    HousePrice = fields.FloatField(default=0.0, null=False)
+    HousePriceFlag = fields.BooleanField(default=False, null=False)
     meta = {
         'indexes': [
             'CurTimeStamp',
@@ -141,5 +144,55 @@ class HouseInfo(Document):
             'HouseStateLatest',
             'HouseSubState',
             'HouseSubStateLatest',
+        ]
+    }
+
+
+class ProjectCountInfo(Document):
+    RecordID = fields.UUIDField(default=uuid.uuid1(),
+                                    binary=True, primary_key=True, null=False)
+    CurTimeStamp = fields.StringField(default=str(datetime.datetime.now()), index=True)
+    ProjectSalingNum = fields.IntField(default=0, index=True)
+    ProjectSaledNum = fields.IntField(default=0, index=True)
+    meta = {
+        'indexes': [
+            'RecordID',
+            'CurTimeStamp',
+        ]
+    }
+
+
+class BuildingCountInfo(Document):
+    RecordID = fields.UUIDField(default=uuid.uuid1(),
+                                    binary=True, primary_key=True, null=False)
+    CurTimeStamp = fields.StringField(default=str(datetime.datetime.now()), index=True)
+    BuildingPreSalingNum = fields.IntField(default=0, index=True)
+    BuildingPreSaledNum = fields.IntField(default=0, index=True)
+    BuildingSalingNum = fields.IntField(default=0, index=True)
+    BuildingCompletedSalingNum = fields.IntField(default=0, index=True)
+    BuildingOpeningNum = fields.IntField(default=0, index=True)
+    BuildingSaledNum = fields.IntField(default=0, index=True)
+    meta = {
+        'indexes': [
+            'RecordID',
+            'CurTimeStamp',
+        ]
+    }
+
+
+class HouseCountInfo(Document):
+    RecordID = fields.UUIDField(default=uuid.uuid1(),
+                                    binary=True, primary_key=True, null=False)
+    CurTimeStamp = fields.StringField(default=str(datetime.datetime.now()), index=True)
+    HouseUnavailableNum = fields.DictField(default={'dafault': 0, 'pledged': 0}, index=True)
+    HouseAvailableNum = fields.DictField(default={'dafault': 0, 'pledged': 0}, index=True)
+    HouseReserveNum = fields.DictField(default={'dafault': 0, 'pledged': 0}, index=True)
+    HouseContractNum = fields.DictField(default={'dafault': 0, 'pledged': 0}, index=True)
+    HouseRecordNum = fields.DictField(default={'dafault': 0, 'pledged': 0}, index=True)
+    HouseAuditNum = fields.DictField(default={'dafault': 0, 'pledged': 0}, index=True)
+    meta = {
+        'indexes': [
+            'RecordID',
+            'CurTimeStamp',
         ]
     }

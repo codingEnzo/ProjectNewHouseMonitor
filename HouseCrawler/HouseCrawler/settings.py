@@ -39,7 +39,7 @@ COMMANDS_MODULE = 'HouseCrawler.Commands'
 ROBOTSTXT_OBEY = False
 
 # Configure maximum concurrent requests performed by Scrapy (default: 16)
-CONCURRENT_REQUESTS = 16
+CONCURRENT_REQUESTS = 4
 
 # Configure a delay for requests for the same website (default: 0)
 # See http://scrapy.readthedocs.org/en/latest/topics/settings.html#download-delay
@@ -80,7 +80,7 @@ DOWNLOADER_MIDDLEWARES = {
 }
 
 RETRY_ENABLED = True
-RETRY_TIMES = 5
+RETRY_TIMES = 10
 RETRY_HTTP_CODES = [500,403,404,501,502,503,504,400,408,411,413,302,301,407,303,304,305,306,307]
 REDIRECT_ENABLED = False
 

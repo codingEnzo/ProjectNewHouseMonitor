@@ -344,6 +344,8 @@ class BuildingListHandleMiddleware(object):
                     if url_namespace != "#":
                         binfo['BuildingURL'] = urlparse.urljoin(p_host,
                                                 building_item.xpath('./td[6]/a/@href').extract_first() or '')
+                    else:
+                        binfo['BuildingURL'] = '#'
                     result.append(binfo)
 
         if response.meta.get('PageType') == 'SubBuildingList':
@@ -382,6 +384,8 @@ class BuildingListHandleMiddleware(object):
                     if url_namespace != "#":
                         binfo['BuildingURL'] = urlparse.urljoin(p_host,
                                                 building_item.xpath('./td[6]/a/@href').extract_first() or '')
+                    else:
+                        binfo['BuildingURL'] = '#'
                     result.append(binfo)
         return result
 
@@ -474,9 +478,10 @@ class HouseInfoHandleMiddleware(object):
                     hinfo['SubProjectUUID'] = response.meta.get('SubProjectUUID')
                     hinfo['BuildingUUID'] = response.meta.get('BuildingUUID')
                     hinfo['HouseName'] = house_item.xpath('./a/text()').extract_first()
-                    hinfo['HouseUUID'] = uuid.uuid3(uuid.NAMESPACE_DNS, hinfo['BuildingUUID'] + hinfo['HouseName'])
                     hinfo['HouseFloor'] = cur_floor
                     hinfo['HouseFloorSale'] = cur_floor_sale
+                    hinfo['HouseUUID'] = uuid.uuid3(uuid.NAMESPACE_DNS,
+                                    hinfo['BuildingUUID'] + hinfo['HouseName'] + hinfo['HouseFloor'] + hinfo['HouseFloorSale'])
                     hinfo['HouseState'] = get_house_state(house_item.xpath('./@style').extract_first())
                     if house_item.xpath('./span[@class="f12a6"]') != []:
                         hinfo['HouseSubState'] = '已办理预售项目抵押'
