@@ -191,8 +191,12 @@ def UpdateHouseAggregateInfo():
                                             'pledged': int(gb_dict.get_group(('不可售', '已办理预售项目抵押')).size)}
     houseCountInfo.HouseAvailableNum = {'dafault': int(gb_dict.get_group(('可售', '')).size),
                                             'pledged': int(gb_dict.get_group(('可售', '已办理预售项目抵押')).size)}
-    houseCountInfo.HouseReserveNum = {'dafault': int(gb_dict.get_group(('已签约', '')).size),
+    try:
+        houseCountInfo.HouseReserveNum = {'dafault': int(gb_dict.get_group(('已签约', '')).size),
                                             'pledged': int(gb_dict.get_group(('已签约', '已办理预售项目抵押')).size)}
+    except Exception:
+        houseCountInfo.HouseReserveNum = {'dafault': int(gb_dict.get_group(('已签约', '')).size),
+                                            'pledged': 0}
     houseCountInfo.HouseContractNum = {'dafault': int(gb_dict.get_group(('已预订', '')).size),
                                             'pledged': int(gb_dict.get_group(('已预订', '已办理预售项目抵押')).size)}
     houseCountInfo.HouseRecordNum = {'dafault': int(gb_dict.get_group(('网上联机备案', '')).size),
