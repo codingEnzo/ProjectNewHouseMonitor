@@ -345,7 +345,7 @@ class BuildingListHandleMiddleware(object):
                         binfo['BuildingURL'] = urlparse.urljoin(p_host,
                                                 building_item.xpath('./td[6]/a/@href').extract_first() or '')
                     else:
-                        binfo['BuildingURL'] = '#'
+                        pass
                     result.append(binfo)
 
         if response.meta.get('PageType') == 'SubBuildingList':
@@ -385,7 +385,7 @@ class BuildingListHandleMiddleware(object):
                         binfo['BuildingURL'] = urlparse.urljoin(p_host,
                                                 building_item.xpath('./td[6]/a/@href').extract_first() or '')
                     else:
-                        binfo['BuildingURL'] = '#'
+                        pass
                     result.append(binfo)
         return result
 
