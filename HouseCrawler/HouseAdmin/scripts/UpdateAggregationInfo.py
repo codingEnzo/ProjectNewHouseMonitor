@@ -152,12 +152,28 @@ def UpdateHousePrice():
         print(unit_price)
         return unit_price
 
+    def fill_bank_field(houseObject):
+            field_list = ['HouseUsage',
+                'HouseStructure',
+                'HouseBuildingArea',
+                'HouseInnerArea',
+                'HouseBuildingUnitPrice',
+                'HouseInnerUnitPrice']
+            houseObjectBase = HouseInfo.objects.filter(HouseUUID=houseObject.HouseUUID).\
+                                filter(HouseBuildingArea__ne=0.0).latest('CurTimeStamp')
+            if houseObjectBase:
+                for field in field_list:
+                    setattr(houseObject, field, getattr(houseObjectBase, field))
+            return houseObject
+
     house_update_list = HouseInfo.objects.filter(HousePriceFlag=False).all()
     for house in house_update_list:
         house.HouseUnitPrice = get_unitprice(house.SubProjectUUID,
                                                 house.BuildingUUID,
                                                 house.HouseUUID,
                                                 houseUsage=house.HouseUsage)
+        if house.HouseBuildingArea == 0.0:
+            house = fill_bank_field(house)
         house.HousePrice = house.HouseUnitPrice * house.HouseBuildingArea
         house.HousePriceFlag = True
         house.save()
