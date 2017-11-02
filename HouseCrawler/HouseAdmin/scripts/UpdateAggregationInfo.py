@@ -62,11 +62,10 @@ def UpdateHousePrice():
                 result_dict = {}
                 houseUsage = str(houseUsage).strip()
                 if not isinstance(source_dict, dict):
-                    if not source_dict.get('null'):
-                        return result_dict
-                    elif source_dict.get('null'):
-                        return result_dict
-                elif houseUsage == '':
+                    return result_dict
+                if not source_dict.get('null'):
+                    return result_dict
+                if houseUsage == '':
                     return result_dict
                 else:
                     if source_dict.get(houseUsage):
@@ -147,6 +146,7 @@ def UpdateHousePrice():
             if price:
                 try:
                     unit_price = float(price)
+                    break
                 except Exception:
                     pass
         print(unit_price)
@@ -184,20 +184,20 @@ def UpdateHouseAggregateInfo():
                             )
                         )
     df = df[df.State != '']
-    df['State'] = df.State.apply(safe_format)
-    df['SubState'] = df.SubState.apply(safe_format)
+    df['State'] = df.State.apply(safe_format)                                            
+    df['SubState'] = df.SubState.apply(safe_format)                                            
     gb_dict = df.groupby([df.State, df.SubState])
     houseCountInfo.HouseUnavailableNum = {'dafault': int(gb_dict.get_group(('不可售', '')).size),
                                             'pledged': int(gb_dict.get_group(('不可售', '已办理预售项目抵押')).size)}
     houseCountInfo.HouseAvailableNum = {'dafault': int(gb_dict.get_group(('可售', '')).size),
                                             'pledged': int(gb_dict.get_group(('可售', '已办理预售项目抵押')).size)}
     try:
-        houseCountInfo.HouseReserveNum = {'dafault': int(gb_dict.get_group(('已签约', '')).size),
+        houseCountInfo.HouseContractNum = {'dafault': int(gb_dict.get_group(('已签约', '')).size),
                                             'pledged': int(gb_dict.get_group(('已签约', '已办理预售项目抵押')).size)}
     except Exception:
-        houseCountInfo.HouseReserveNum = {'dafault': int(gb_dict.get_group(('已签约', '')).size),
+        houseCountInfo.HouseContractNum = {'dafault': int(gb_dict.get_group(('已签约', '')).size),
                                             'pledged': 0}
-    houseCountInfo.HouseContractNum = {'dafault': int(gb_dict.get_group(('已预订', '')).size),
+    houseCountInfo.HouseReserveNum = {'dafault': int(gb_dict.get_group(('已预订', '')).size),
                                             'pledged': int(gb_dict.get_group(('已预订', '已办理预售项目抵押')).size)}
     houseCountInfo.HouseRecordNum = {'dafault': int(gb_dict.get_group(('网上联机备案', '')).size),
                                             'pledged': int(gb_dict.get_group(('网上联机备案', '已办理预售项目抵押')).size)}
