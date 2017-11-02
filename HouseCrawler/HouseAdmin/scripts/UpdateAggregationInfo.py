@@ -1,6 +1,25 @@
 # coding = utf-8
+import functools
+import datetime
 import pandas as pd
 from HouseNew.models import *
+
+
+def just_one_instance(func):
+
+    @functools.wraps(func)
+    def f(*args, **kwargs):
+        import socket
+        try:
+            global s
+            s = socket.socket()
+            host = socket.gethostname()
+            s.bind((host, 60123))
+        except Exception:
+            print('already has an instance')
+            return None
+        return func(*args, **kwargs)
+    return f
 
 
 def UpdateProjectAggregateInfo():
@@ -54,9 +73,9 @@ def UpdateBuildingAggregateInfo():
 
 def UpdateHousePrice():
 
-    def get_unitprice(subProjectUUID, buildingUUID, houseUUID, houseUsage=''):
+    def get_unitprice(subProjectUUID, buildingUUID, houseUUID, houseUsage='', houseTime=str(datetime.datetime.now())):
 
-        def get_project_unitprice(subProjectUUID, houseUsage=''):
+        def get_project_unitprice(subProjectUUID, houseUsage='', houseTime=str(datetime.datetime.now())):
 
             def get_saleinfo(source_dict, houseUsage=''):
                 result_dict = {}
@@ -84,7 +103,15 @@ def UpdateHousePrice():
                 return result_dict
 
             result = None
-            cur_info = ProjectInfo.objects.filter(SubProjectUUID=subProjectUUID).latest('CurTimeStamp')
+            timebase = datetime.datetime.strptime(houseTime, "%Y-%m-%d %H:%M:%S.%f")
+            time_lowbound = str(timebase - datetime.timedelta(days=1))
+            time_upbound = str(timebase + datetime.timedelta(days=1))
+            cur_info = ProjectInfo.objects.filter(SubProjectUUID=subProjectUUID,
+                                                    CurTimeStamp__lt=time_upbound,
+                                                    CurTimeStamp__gt=time_lowbound).\
+                            latest('CurTimeStamp') or\
+                        ProjectInfo.objects.filter(SubProjectUUID=subProjectUUID).\
+                            latest('CurTimeStamp')
             if cur_info:
                 last_info = ProjectInfo.objects.filter(SubProjectUUID=subProjectUUID).\
                                 filter(CurTimeStamp__lt=cur_info.CurTimeStamp).latest('CurTimeStamp')
@@ -139,7 +166,7 @@ def UpdateHousePrice():
             return result
 
         unit_price = 0.0
-        unit_price_list = [get_project_unitprice(subProjectUUID, houseUsage),
+        unit_price_list = [get_project_unitprice(subProjectUUID, houseUsage, houseTime),
                             get_building_unitprice(buildingUUID),
                             get_house_unitprice(houseUUID)]
         for price in unit_price_list:
@@ -171,7 +198,8 @@ def UpdateHousePrice():
         house.HouseUnitPrice = get_unitprice(house.SubProjectUUID,
                                                 house.BuildingUUID,
                                                 house.HouseUUID,
-                                                houseUsage=house.HouseUsage)
+                                                houseUsage=house.HouseUsage,
+                                                houseTime=house.CurTimeStamp)
         if house.HouseBuildingArea == 0.0:
             house = fill_bank_field(house)
         house.HousePrice = house.HouseUnitPrice * house.HouseBuildingArea
