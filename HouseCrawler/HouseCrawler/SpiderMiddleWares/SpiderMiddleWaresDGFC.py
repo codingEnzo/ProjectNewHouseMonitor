@@ -77,7 +77,7 @@ class ProjectBaseHandleMiddleware(object):
                 result.append(Request(url=response.url, body=req_body, method='POST',
                                 headers=self.headers, meta={'PageType': 'ProjectBase', 'item': pb}))
         elif response.request.method == 'POST':
-            print('current area', Selector(response).xpath('//select[@selected="selected"/text()').extract_first())
+            print('current area', Selector(response).xpath('//select[@selected="selected"]/text()').extract_first())
             project_list = Selector(response).xpath('//tr[@class!="tHead"]')
             for p in project_list:
                 p_name = p.xpath('./td[1]/a/text()').extract_first()
