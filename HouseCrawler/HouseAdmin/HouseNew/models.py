@@ -21,11 +21,7 @@ class AreaSaleInfo(Document):
     AreaSumFlag = fields.BooleanField(default=False, null=False)
     meta = {
         'indexes': [
-            'CurTimeStamp',
-            'ProjectUUID',
-            'ProjectName',
-            'ProjectURL',
-        ]
+            'CurTimeStamp']
     }
 
 
