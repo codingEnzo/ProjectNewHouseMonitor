@@ -310,7 +310,7 @@ class HouseInfoHandleMiddleware(object):
                     hinfo['HouseFloor'] = cur_floor
                     hinfo['HouseUUID'] = uuid.uuid3(uuid.NAMESPACE_DNS,
                                     hinfo['BuildingUUID'] + hinfo['HouseName'] + hinfo['HouseFloor'])
-                    hinfo['HouseState'] = get_house_state(house_item.xpath('./@class').extract_first())
+                    hinfo['HouseSaleState'] = get_house_state(house_item.xpath('./@class').extract_first())
                     if not house_item.xpath('./a/@href').extract_first():
                         result.append(hinfo)
                     else:
