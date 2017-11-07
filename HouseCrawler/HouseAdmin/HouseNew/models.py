@@ -135,8 +135,8 @@ class HouseInfo(Document):
     HouseBuildingArea = fields.StringField(default='', max_length=255, null=False)
     HouseInnerArea = fields.StringField(default='', max_length=255, null=False)
     HouseShareArea = fields.StringField(default='', max_length=255, null=False)
-    HouseUnitPrice = fields.FloatField(default=0.0, null=False)
-    HousePrice = fields.FloatField(default=0.0, null=False)
+    HouseUnitPrice = fields.StringField(default=0.0, null=False)
+    HousePrice = fields.StringField(default=0.0, null=False)
     HousePriceFlag = fields.BooleanField(default=False, null=False)
     meta = {
         'indexes': [
