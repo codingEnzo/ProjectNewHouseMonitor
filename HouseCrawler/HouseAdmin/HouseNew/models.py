@@ -5,28 +5,47 @@ from django_mongoengine import *
 from django_mongoengine import fields
 
 
+class AreaSaleInfo(Document):
+    RecordID = fields.UUIDField(default=uuid.uuid1(),
+                                    binary=True, primary_key=True, null=False)
+    CurTimeStamp = fields.StringField(default=str(datetime.datetime.now()), index=True)
+    AreaUUID = fields.UUIDField(default=uuid.uuid3(uuid.NAMESPACE_DNS, ''),
+                                    binary=False, null=False)
+    AreaName = fields.StringField(default='', max_length=255, null=False)
+    AreaSaleNumDay = fields.StringField(default='', max_length=255, null=False)
+    AreaSaleNumSum = fields.StringField(default='', max_length=255, null=False)
+    AreaSaleAreaDay = fields.StringField(default='', max_length=255, null=False)
+    AreaSaleAreaSum = fields.StringField(default='', max_length=255, null=False)
+    AreaSalePriceDay = fields.StringField(default='', max_length=255, null=False)
+    AreaSalePriceSum = fields.StringField(default='', max_length=255, null=False)
+    AreaSumFlag = fields.BooleanField(default=False, null=False)
+    meta = {
+        'indexes': [
+            'CurTimeStamp',
+            'ProjectUUID',
+            'ProjectName',
+            'ProjectURL',
+        ]
+    }
+
+
 class ProjectBase(Document):
-    TYPE = ((0, '期房'),
-            (1, '现房'))
     RecordID = fields.UUIDField(default=uuid.uuid1(),
                                     binary=True, primary_key=True, null=False)
     CurTimeStamp = fields.StringField(default=str(datetime.datetime.now()), index=True)
     ProjectUUID = fields.UUIDField(default=uuid.uuid3(uuid.NAMESPACE_DNS, ''),
                                     binary=False, null=False)
     ProjectName = fields.StringField(default='', max_length=255, null=False)
-    ProjectType = fields.IntField(default=0, choices=TYPE, null=False)
+    ProjectDistrict = fields.StringField(default='', max_length=255, null=False)
+    ProjectAddress = fields.StringField(default='', max_length=255, null=False)
+    ProjectSaleSum = fields.StringField(default='', max_length=255, null=False)
     ProjectURL = fields.URLField(default=None, null=True, blank=True)
-    ProjectRegName = fields.StringField(default='', max_length=255, null=False)
-    ProjectRegTime = fields.StringField(default='', max_length=255, null=False)
     meta = {
         'indexes': [
             'CurTimeStamp',
             'ProjectUUID',
             'ProjectName',
-            'ProjectType',
             'ProjectURL',
-            'ProjectRegName',
-            'ProjectRegTime'
         ]
     }
 
@@ -37,31 +56,31 @@ class ProjectInfo(Document):
     CurTimeStamp = fields.StringField(default=str(datetime.datetime.now()), index=True)
     ProjectUUID = fields.UUIDField(default=uuid.uuid3(uuid.NAMESPACE_DNS, ''),
                                     binary=False, null=False)
-    SubProjectUUID = fields.UUIDField(default=uuid.uuid3(uuid.NAMESPACE_DNS, ''),
-                                        binary=False, null=False)
     ProjectName = fields.StringField(default='', max_length=255, null=False)
     ProjectAddress = fields.StringField(default='', max_length=255, null=False)
-    SubProjectAddress = fields.StringField(default='', max_length=255, null=False)
-    ProjectCompany = fields.StringField(default='', max_length=255, null=False)
-    ProjectCorporation = fields.StringField(default='', max_length=255, null=False)
-    ProjectCorporationCode = fields.StringField(default='', max_length=255, null=False)
-    ProjectRegName = fields.StringField(default='', max_length=255, null=False)
-    ProjectRegTime = fields.StringField(default='', max_length=255, null=False)
-    ProjectLicenseCode = fields.StringField(default='', max_length=255, null=False)
-    ProjectLicenseDate = fields.StringField(default='', max_length=255, null=False)
     ProjectUsage = fields.StringField(default='', max_length=255, null=False)
     ProjectArea = fields.StringField(default='', max_length=255, null=False)
-    ProjectSaleSum = fields.DictField(default={'null': True}, null=False)
+    ProjectHouseNum = fields.StringField(default='', max_length=255, null=False)
+    ProjectCompany = fields.StringField(default='', max_length=255, null=False)
+    ProjectCorporation = fields.StringField(default='', max_length=255, null=False)
+    ProjectRegName = fields.StringField(default='', max_length=255, null=False)
+    ProjectAreaPlanLicenseCode = fields.StringField(default='', max_length=255, null=False)
+    ProjectPlanLicenseCode = fields.StringField(default='', max_length=255, null=False)
+    ProjectConstructionLicenseCode = fields.StringField(default='', max_length=255, null=False)
+    ProjectConstructionCompany = fields.StringField(default='', max_length=255, null=False)
+    ProjectAuthenticFlag = fields.StringField(default='', max_length=255, null=False)
+    ProjectSaleArea = fields.StringField(default='', max_length=255, null=False)
+    ProjectSaleNum = fields.StringField(default='', max_length=255, null=False)
+    ProjectSaledArea = fields.StringField(default='', max_length=255, null=False)
+    ProjectSaledNum = fields.StringField(default='', max_length=255, null=False)
+    ProjectUnavailableArea = fields.StringField(default='', max_length=255, null=False)
+    ProjectUnavailableNum = fields.StringField(default='', max_length=255, null=False)
     meta = {
         'indexes': [
             'CurTimeStamp',
             'ProjectUUID',
-            'SubProjectUUID',
             'ProjectName',
             'ProjectRegName',
-            'ProjectRegTime',
-            'ProjectLicenseCode',
-            'ProjectLicenseDate',
         ]
     }
 
@@ -73,27 +92,23 @@ class BuildingInfo(Document):
     ProjectName = fields.StringField(default='', max_length=255, null=False)
     ProjectUUID = fields.UUIDField(default=uuid.uuid3(uuid.NAMESPACE_DNS, ''),
                                     binary=False, null=False)
-    SubProjectUUID = fields.UUIDField(default=uuid.uuid3(uuid.NAMESPACE_DNS, ''),
-                                        binary=False, null=False)
+    ProjectRegName = fields.StringField(default='', max_length=255, null=False)
     BuildingUUID = fields.UUIDField(default=uuid.uuid3(uuid.NAMESPACE_DNS, ''),
                                     binary=False, null=False)
     BuildingName = fields.StringField(default='', max_length=255, null=False)
-    BuildingSaleNum = fields.IntField(default=0, null=False)
-    BuildingSaleArea = fields.FloatField(default=0.0, null=False)
-    BuildingSaleStatus = fields.StringField(default='', max_length=255, null=False)
-    BuildingSaleStatusLatest = fields.StringField(default='', max_length=255, null=False)
-    BuildingSalePrice = fields.FloatField(default=0.0, null=False)
+    BuildingFloorNum = fields.StringField(default='', max_length=255, null=False)
+    BuildingHouseNum = fields.StringField(default='', max_length=255, null=False)
+    BuildingUsage = fields.StringField(default='', max_length=255, null=False)
+    BuildingSaleArea = fields.StringField(default='', max_length=255, null=False)
     BuildingURL = fields.URLField(default=None, null=True, blank=True)
     meta = {
         'indexes': [
             'CurTimeStamp',
             'ProjectName',
             'ProjectUUID',
-            'SubProjectUUID',
+            'ProjectRegName',
             'BuildingUUID',
             'BuildingName',
-            'BuildingSaleStatus',
-            'BuildingSaleStatusLatest',
         ]
     }
 
@@ -106,25 +121,24 @@ class HouseInfo(Document):
     BuildingName = fields.StringField(default='', max_length=255, null=False)
     ProjectUUID = fields.UUIDField(default=uuid.uuid3(uuid.NAMESPACE_DNS, ''),
                                     binary=False, null=False)
-    SubProjectUUID = fields.UUIDField(default=uuid.uuid3(uuid.NAMESPACE_DNS, ''),
-                                        binary=False, null=False)
     BuildingUUID = fields.UUIDField(default=uuid.uuid3(uuid.NAMESPACE_DNS, ''),
                                     binary=False, null=False)
     HouseUUID = fields.UUIDField(default=uuid.uuid3(uuid.NAMESPACE_DNS, ''),
                                     binary=False, null=False)
     HouseName = fields.StringField(default='', max_length=255, null=False)
     HouseFloor = fields.StringField(default='', max_length=255, null=False)
-    HouseFloorSale = fields.StringField(default='', max_length=255, null=False)
-    HouseState = fields.StringField(default='', max_length=255, null=False)
-    HouseStateLatest = fields.StringField(default='', max_length=255, null=False)
-    HouseSubState = fields.StringField(default='', max_length=255, null=False)
-    HouseSubStateLatest = fields.StringField(default='', max_length=255, null=False)
+    HouseSaleState = fields.StringField(default='', max_length=255, null=False)
+    HouseSaleStateLatest = fields.StringField(default='', max_length=255, null=False)
+    HouseRecordState = fields.StringField(default='', max_length=255, null=False)
+    HouseRecordStateLatest = fields.StringField(default='', max_length=255, null=False)
+    HousePledgeState = fields.StringField(default='', max_length=255, null=False)
+    HousePledgeStateLatest = fields.StringField(default='', max_length=255, null=False)
+    HouseAttachState = fields.StringField(default='', max_length=255, null=False)
+    HouseAttachStateLatest = fields.StringField(default='', max_length=255, null=False)
     HouseUsage = fields.StringField(default='', max_length=255, null=False)
-    HouseStructure = fields.StringField(default='', max_length=255, null=False)
-    HouseBuildingArea = fields.FloatField(default=0.0, null=False)
-    HouseInnerArea = fields.FloatField(default=0.0, null=False)
-    HouseBuildingUnitPrice = fields.FloatField(default=0.0, null=False)
-    HouseInnerUnitPrice = fields.FloatField(default=0.0, null=False)
+    HouseBuildingArea = fields.StringField(default='', max_length=255, null=False)
+    HouseInnerArea = fields.StringField(default='', max_length=255, null=False)
+    HouseShareArea = fields.StringField(default='', max_length=255, null=False)
     HouseUnitPrice = fields.FloatField(default=0.0, null=False)
     HousePrice = fields.FloatField(default=0.0, null=False)
     HousePriceFlag = fields.BooleanField(default=False, null=False)
@@ -134,16 +148,9 @@ class HouseInfo(Document):
             'ProjectName',
             'BuildingName',
             'ProjectUUID',
-            'SubProjectUUID',
             'BuildingUUID',
             'HouseUUID',
-            'HouseName',
-            'HouseFloor',
-            'HouseFloorSale',
-            'HouseState',
-            'HouseStateLatest',
-            'HouseSubState',
-            'HouseSubStateLatest',
+            'HouseName'
         ]
     }
 

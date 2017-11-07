@@ -63,10 +63,10 @@ DEFAULT_REQUEST_HEADERS = {
 # Enable or disable spider middlewares
 # See http://scrapy.readthedocs.org/en/latest/topics/spider-middleware.html
 SPIDER_MIDDLEWARES = {
-    'HouseCrawler.SpiderMiddleWares.SpiderMiddleWaresBJJS.ProjectBaseHandleMiddleware': 102,
-    'HouseCrawler.SpiderMiddleWares.SpiderMiddleWaresBJJS.ProjectInfoHandleMiddleware': 103,
-    'HouseCrawler.SpiderMiddleWares.SpiderMiddleWaresBJJS.BuildingListHandleMiddleware': 104,
-    'HouseCrawler.SpiderMiddleWares.SpiderMiddleWaresBJJS.HouseInfoHandleMiddleware': 105,
+    'HouseCrawler.SpiderMiddleWares.SpiderMiddleWaresDGFC.ProjectBaseHandleMiddleware': 102,
+    'HouseCrawler.SpiderMiddleWares.SpiderMiddleWaresDGFC.ProjectInfoHandleMiddleware': 103,
+    'HouseCrawler.SpiderMiddleWares.SpiderMiddleWaresDGFC.BuildingListHandleMiddleware': 104,
+    'HouseCrawler.SpiderMiddleWares.SpiderMiddleWaresDGFC.HouseInfoHandleMiddleware': 105,
     'scrapy.spidermiddlewares.httperror.HttpErrorMiddleware': 101
 }
 
@@ -101,7 +101,7 @@ EXTENSIONS = {
 # Configure item pipelines
 # See http://scrapy.readthedocs.org/en/latest/topics/item-pipeline.html
 ITEM_PIPELINES = {
-    'HouseCrawler.Pipelines.PipelinesBJJS.BJJSPipeline': 300,
+    'HouseCrawler.Pipelines.PipelinesDGFC.DGFCPipeline': 300,
 }
 
 
