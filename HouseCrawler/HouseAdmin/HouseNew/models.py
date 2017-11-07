@@ -132,11 +132,11 @@ class HouseInfo(Document):
     HouseAttachState = fields.StringField(default='', max_length=255, null=False)
     HouseAttachStateLatest = fields.StringField(default='', max_length=255, null=False)
     HouseUsage = fields.StringField(default='', max_length=255, null=False)
-    HouseBuildingArea = fields.StringField(default='', max_length=255, null=False)
-    HouseInnerArea = fields.StringField(default='', max_length=255, null=False)
-    HouseShareArea = fields.StringField(default='', max_length=255, null=False)
-    HouseUnitPrice = fields.StringField(default=0.0, null=False)
-    HousePrice = fields.StringField(default=0.0, null=False)
+    HouseBuildingArea = fields.StringField(default='0.0', max_length=255, null=False)
+    HouseInnerArea = fields.StringField(default='0.0', max_length=255, null=False)
+    HouseShareArea = fields.StringField(default='0.0', max_length=255, null=False)
+    HouseUnitPrice = fields.StringField(default='0.0', null=False)
+    HousePrice = fields.StringField(default='0.0', null=False)
     HousePriceFlag = fields.BooleanField(default=False, null=False)
     meta = {
         'indexes': [
