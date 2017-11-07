@@ -91,7 +91,7 @@ DATABASES = {
 
 MONGODB_DATABASES = {
     "default": {
-        "name": 'HouseNew:Dongguan',
+        "name": 'HouseNew_Dongguan',
         "host": '192.168.6.204',
         "tz_aware": True,
     },
