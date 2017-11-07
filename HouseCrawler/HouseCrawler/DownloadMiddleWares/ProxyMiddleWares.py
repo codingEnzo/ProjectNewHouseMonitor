@@ -55,7 +55,7 @@ class ProxyMiddleware(object):
             if 'anjuke' in request.url:
                 proxy = r.srandmember(self._proxy_pool_map[link_env]['high'])
             else:
-                proxy = r.srandmember(self._proxy_pool_map[link_env]['high'])
+                proxy = r.srandmember(self._proxy_pool_map[link_env]['middle'])
             if proxy:
                 proxy = proxy.decode('utf-8')
                 request.meta['proxy'] = "http://%s" % (proxy)
