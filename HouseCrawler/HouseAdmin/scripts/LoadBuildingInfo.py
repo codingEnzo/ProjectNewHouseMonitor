@@ -12,7 +12,6 @@ def run():
                                                  {'_id': "$BuildingUUID",
                                                   'ProjectName': {'$first': '$ProjectName'},
                                                   'ProjectUUID': {'$first': '$ProjectUUID'},
-                                                  'SubProjectUUID': {'$first': '$SubProjectUUID'},
                                                   'BuildingName': {'$first': '$BuildingName'},
                                                   'BuildingUUID': {'$first': '$BuildingUUID'},
                                                   'BuildingURL': {'$first': '$BuildingURL'}
@@ -22,17 +21,15 @@ def run():
     for item in cur:
         try:
             if item['BuildingURL']:
-                if item['BuildingURL'] != '#':
-                    builfing_info = {'source_url': item['BuildingURL'],
-                                        'meta': {'PageType': 'HouseInfo',
-                                                    'ProjectName': item['ProjectName'],
-                                                    'BuildingName': item['BuildingName'],
-                                                    'ProjectUUID': str(item['ProjectUUID']),
-                                                    'SubProjectUUID': str(item['SubProjectUUID']),
-                                                    'BuildingUUID': str(item['BuildingUUID'])}}
-                    builfing_info_json = json.dumps(builfing_info, sort_keys=True)
-                    r.sadd('HouseCrawler:start_urls:Default', builfing_info_json)
-                    num += 1
+                builfing_info = {'source_url': item['BuildingURL'],
+                                    'meta': {'PageType': 'HouseInfo',
+                                                'ProjectName': item['ProjectName'],
+                                                'BuildingName': item['BuildingName'],
+                                                'ProjectUUID': str(item['ProjectUUID']),
+                                                'BuildingUUID': str(item['BuildingUUID'])}}
+                builfing_info_json = json.dumps(builfing_info, sort_keys=True)
+                r.sadd('HouseCrawler:start_urls:Default:Dongguan', builfing_info_json)
+                num += 1
         except Exception:
             import traceback
             traceback.print_exc()

@@ -132,5 +132,5 @@ USER_AGENTS = ["Mozilla/5.0 (X11; Linux x86_64; rv:52.0) Gecko/20100101 Firefox/
 
 REDIS_HOST = '10.30.1.20'
 REDIS_PORT = 6379
-Redis_key = 'HouseCrawler:start_urls:Default'
+Redis_key = 'HouseCrawler:start_urls:Default:Dongguan'
 REDIS_START_URLS_AS_SET = True
