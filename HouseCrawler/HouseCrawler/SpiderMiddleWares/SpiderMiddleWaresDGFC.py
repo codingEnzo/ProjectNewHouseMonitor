@@ -228,7 +228,7 @@ class BuildingListHandleMiddleware(object):
                 b_info['BuildingHouseNum'] = building_info.xpath('./td[4]/a/text()').extract_first() or '0'
                 b_info['BuildingUsage'] = building_info.xpath('./td[5]/a/text()').extract_first() or ''
                 b_info['BuildingSaleArea'] = building_info.xpath('./td[6]/a/text()').extract_first() or '0.0'
-                b_info['BuildingURL'] = urlparse.urljoin(response.url, p.xpath('./td[1]/a/@href').extract_first())
+                b_info['BuildingURL'] = urlparse.urljoin(response.url, building_info.xpath('./td[1]/a/@href').extract_first())
                 result.append(b_info)
         return result
 
