@@ -327,11 +327,11 @@ class HouseInfoHandleMiddleware(object):
             hinfo['HousePledgeState'] = (houseinfodetail_sel.xpath('./tr[4]/td[2]/text()').extract_first() or '').strip()
             hinfo['HouseAttachState'] = (houseinfodetail_sel.xpath('./tr[5]/td[2]/text()').extract_first() or '').strip()
             hinfo['HouseUsage'] = (houseinfodetail_sel.xpath('./tr[2]/td[2]/text()').extract_first() or '').strip()
-            hinfo['HouseBuildingArea'] = (houseinfodetail_sel.xpath('./tr[2]/td[4]/text()').extract_first() or '').replace('平方米', '').strip()
-            hinfo['HouseInnerArea'] = (houseinfodetail_sel.xpath('./tr[3]/td[4]/text()').extract_first() or '').replace('平方米', '').strip()
-            hinfo['HouseShareArea'] = (houseinfodetail_sel.xpath('./tr[4]/td[4]/text()').extract_first() or '').replace('平方米', '').strip()
-            hinfo['HouseUnitPrice'] = (houseinfodetail_sel.xpath('./tr[6]/td[4]/text()').extract_first() or '').replace('元', '').strip()
-            hinfo['HousePrice'] = (houseinfodetail_sel.xpath('./tr[5]/td[4]/text()').extract_first() or '').replace('元', '').strip()
+            hinfo['HouseBuildingArea'] = (houseinfodetail_sel.xpath('./tr[2]/td[4]/text()').extract_first() or '0.0').replace('平方米', '').strip()
+            hinfo['HouseInnerArea'] = (houseinfodetail_sel.xpath('./tr[3]/td[4]/text()').extract_first() or '0.0').replace('平方米', '').strip()
+            hinfo['HouseShareArea'] = (houseinfodetail_sel.xpath('./tr[4]/td[4]/text()').extract_first() or '0.0').replace('平方米', '').strip()
+            hinfo['HouseUnitPrice'] = (houseinfodetail_sel.xpath('./tr[6]/td[4]/text()').extract_first() or '0.0').replace('元', '').strip()
+            hinfo['HousePrice'] = (houseinfodetail_sel.xpath('./tr[5]/td[4]/text()').extract_first() or '0.0').replace('元', '').strip()
             hinfo['HousePriceFlag'] = False
             result.append(hinfo)
 
