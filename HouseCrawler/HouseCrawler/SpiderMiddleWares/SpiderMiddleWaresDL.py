@@ -301,7 +301,7 @@ class HouseInfoHandleMiddleware(object):
                     hinfo['ProjectUUID'] = response.meta.get('ProjectUUID')
                     hinfo['BuildingUUID'] = response.meta.get('BuildingUUID')
                     hinfo['HouseName'] = house.xpath('./font/text()').extract_first() or ''
-                    hinfo['HouseUUID'] = uuid.uuid3(uuid.NAMESPACE_DNS, hinfo['HouseName'] + get_url_id(response.url))
+                    hinfo['HouseUUID'] = uuid.uuid3(uuid.NAMESPACE_DNS, hinfo['HouseName'] + hinfo['BuildingUUID'] + get_url_id(response.url))
                     hinfo['HouseFloor'] = cur_floor
                     hinfo['HouseSaleState'] = get_house_state(house.xpath('./font/@color').extract_first())
                     hinfo['HouseInfoStr'] = house.xpath('./@title').extract_first() or ''
