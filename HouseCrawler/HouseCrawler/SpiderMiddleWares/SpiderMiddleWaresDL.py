@@ -3,7 +3,6 @@ import re
 import sys
 import uuid
 import copy
-import datetime
 from scrapy import Request
 from scrapy import Selector
 from HouseNew.models import *
@@ -37,7 +36,7 @@ def get_url_id(strUrl):
 
 def get_href(strHref):
     res_href = ''
-    match_res = re.search(r"'(.+)','_blank'", str(res_href))
+    match_res = re.search(r"'(.+)','_blank'", str(strHref))
     if match_res:
         res_href = match_res.group(1)
     return res_href
