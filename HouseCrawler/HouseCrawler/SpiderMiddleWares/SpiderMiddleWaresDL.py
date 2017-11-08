@@ -7,7 +7,7 @@ import datetime
 from scrapy import Request
 from scrapy import Selector
 from HouseNew.models import *
-from HouseCrawler.Items.ItemsDGFC import *
+from HouseCrawler.Items.ItemsDL import *
 from requests_toolbelt.multipart.encoder import MultipartEncoder
 if sys.version_info.major >= 3:
     import urllib.parse as urlparse
