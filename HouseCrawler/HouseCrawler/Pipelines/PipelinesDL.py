@@ -108,7 +108,7 @@ class DGFCPipeline(object):
                     diff_flag = True
                     break
             if diff_flag:
-                for key in ('HouseSaleState', 'HouseRecordState', 'HousePledgeState', 'HouseAttachState'):
+                for key in ('HouseSaleState', ):
                     item[key] = getattr(res_object, key + 'Latest')
         return diff_flag, item
 

@@ -63,10 +63,10 @@ DEFAULT_REQUEST_HEADERS = {
 # Enable or disable spider middlewares
 # See http://scrapy.readthedocs.org/en/latest/topics/spider-middleware.html
 SPIDER_MIDDLEWARES = {
-    'HouseCrawler.SpiderMiddleWares.SpiderMiddleWaresDGFC.ProjectBaseHandleMiddleware': 102,
-    'HouseCrawler.SpiderMiddleWares.SpiderMiddleWaresDGFC.ProjectInfoHandleMiddleware': 103,
-    'HouseCrawler.SpiderMiddleWares.SpiderMiddleWaresDGFC.BuildingListHandleMiddleware': 104,
-    'HouseCrawler.SpiderMiddleWares.SpiderMiddleWaresDGFC.HouseInfoHandleMiddleware': 105,
+    'HouseCrawler.SpiderMiddleWares.SpiderMiddleWaresDL.ProjectBaseHandleMiddleware': 102,
+    'HouseCrawler.SpiderMiddleWares.SpiderMiddleWaresDL.ProjectInfoHandleMiddleware': 103,
+    'HouseCrawler.SpiderMiddleWares.SpiderMiddleWaresDL.BuildingListHandleMiddleware': 104,
+    'HouseCrawler.SpiderMiddleWares.SpiderMiddleWaresDL.HouseInfoHandleMiddleware': 105,
     'scrapy.spidermiddlewares.httperror.HttpErrorMiddleware': 101
 }
 
@@ -101,7 +101,7 @@ EXTENSIONS = {
 # Configure item pipelines
 # See http://scrapy.readthedocs.org/en/latest/topics/item-pipeline.html
 ITEM_PIPELINES = {
-    'HouseCrawler.Pipelines.PipelinesDGFC.DGFCPipeline': 300,
+    'HouseCrawler.Pipelines.PipelinesDL.DLPipeline': 300,
 }
 
 
@@ -132,5 +132,5 @@ USER_AGENTS = ["Mozilla/5.0 (X11; Linux x86_64; rv:52.0) Gecko/20100101 Firefox/
 
 REDIS_HOST = '10.30.1.20'
 REDIS_PORT = 6379
-Redis_key = 'HouseCrawler:start_urls:Default:Dongguan'
+Redis_key = 'HouseCrawler:start_urls:Default:Dalian'
 REDIS_START_URLS_AS_SET = True
