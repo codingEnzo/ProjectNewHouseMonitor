@@ -109,7 +109,7 @@ class DLPipeline(object):
                     break
             if diff_flag:
                 for key in ('HouseSaleState', ):
-                    item[key] = getattr(res_object, key + 'Latest')
+                    item[key + 'Latest'] = getattr(res_object)
         return diff_flag, item
 
     def storage_item(self, item):
