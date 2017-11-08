@@ -169,11 +169,7 @@ class BuildingCountInfo(Document):
     RecordID = fields.UUIDField(default=uuid.uuid1(),
                                     binary=True, primary_key=True, null=False)
     CurTimeStamp = fields.StringField(default=str(datetime.datetime.now()), index=True)
-    BuildingPreSalingNum = fields.IntField(default=0, index=True)
-    BuildingPreSaledNum = fields.IntField(default=0, index=True)
     BuildingSalingNum = fields.IntField(default=0, index=True)
-    BuildingCompletedSalingNum = fields.IntField(default=0, index=True)
-    BuildingOpeningNum = fields.IntField(default=0, index=True)
     BuildingSaledNum = fields.IntField(default=0, index=True)
     meta = {
         'indexes': [

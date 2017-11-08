@@ -24,50 +24,45 @@ def just_one_instance(func):
 
 def UpdateProjectAggregateInfo():
     projectCountInfo = ProjectCountInfo()
-    df = pd.DataFrame(list(BuildingInfo.objects.aggregate(*[{"$sort": {"CurTimeStamp": -1}},
+    df = pd.DataFrame(list(ProjectBase.objects.aggregate(*[{"$sort": {"CurTimeStamp": -1}},
                                          {'$group':
-                                             {'_id': "$BuildingUUID",
+                                             {'_id': "$ProjectUUID",
                                                 "ProjectUUID": {'$first': "$ProjectUUID"},
-                                                 "Status": {'$first': "$BuildingSaleStatus"},
+                                                 "SaleNum": {'$first': "$ProjectSaleSum"},
                                              }
                                          }
                                     ])
                             )
                         )
-    df = df[df.Status != '']
+    df['SaleNum'] = df.SaleNum.apply(int)
     amount = df.ProjectUUID.unique().size
-    projectCountInfo.ProjectSaledNum = df[df.Status.isin(['已售完', ' 已售完', '预售截至', ' 预售截至'])].\
-                                        ProjectUUID.unique().size
+    projectCountInfo.ProjectSaledNum = df[df.SaleNum == 0].ProjectUUID.unique().size
     projectCountInfo.ProjectSalingNum = amount - projectCountInfo.ProjectSaledNum
     projectCountInfo.save()
 
 
 def UpdateBuildingAggregateInfo():
-
-    def safe_format(string):
-        if '开盘' in string:
-            return '开盘'
-        return string.strip()
-
     buildingCountInfo = BuildingCountInfo()
-    df = pd.DataFrame(list(BuildingInfo.objects.aggregate(*[{"$sort": {"CurTimeStamp": -1}},
+    df_building = pd.DataFrame(list(BuildingInfo.objects.aggregate(*[{"$sort": {"CurTimeStamp": -1}},
                                          {'$group':
-                                             {'_id': "$BuildingUUID",
-                                                 "Status": {'$first': "$BuildingSaleStatus"},
-                                             }
+                                             {'_id': "$BuildingUUID"}
                                          }
                                     ])
                             )
                         )
-    df = df[df.Status != '']
-    df['Status'] = df.Status.apply(safe_format)
-    gb_dict = df.Status.groupby(df.Status).describe().to_dict().get('count') or {}
-    buildingCountInfo.BuildingPreSalingNum = gb_dict.get('正在预售') or 0
-    buildingCountInfo.BuildingPreSaledNum = gb_dict.get('预售截止') or 0
-    buildingCountInfo.BuildingSalingNum = gb_dict.get('正在销售') or 0
-    buildingCountInfo.BuildingCompletedSalingNum = gb_dict.get('现房销售') or 0
-    buildingCountInfo.BuildingOpeningNum = gb_dict.get('开盘') or 0
-    buildingCountInfo.BuildingSaledNum = gb_dict.get('已售完') or 0
+    df_house = pd.DataFrame(list(HouseInfo.objects.aggregate(*[{"$sort": {"CurTimeStamp": -1}},
+                                         {'$group':
+                                             {'_id': "$HouseUUID",
+                                                'BuildingUUID': {'$first': "$BuildingUUID"},
+                                                'HouseSaleState': {'$first': "$HouseSaleState"}
+                                            }
+                                         }
+                                    ])
+                            )
+                        )
+    amount = df_building.BuildingUUID.unique().size
+    buildingCountInfo.BuildingSalingNum = df_house[df_house.HouseSaleState == '可售'].BuildingUUID.unique().size
+    buildingCountInfo.BuildingSaledNum = amount - buildingCountInfo.BuildingSalingNum
     buildingCountInfo.save()
 
 

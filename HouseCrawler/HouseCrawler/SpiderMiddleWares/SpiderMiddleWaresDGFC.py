@@ -1,4 +1,5 @@
 # coding = utf-8
+import re
 import sys
 import uuid
 import copy
@@ -10,6 +11,14 @@ if sys.version_info.major >= 3:
     import urllib.parse as urlparse
 else:
     import urlparse
+
+
+def get_url_id(strUrl):
+    res_id = '0'
+    match_res = re.search(r'id=(\d+)', str(strUrl))
+    if match_res:
+        res_id = match_res.group(1)
+    return res_id
 
 
 class ProjectBaseHandleMiddleware(object):
@@ -85,7 +94,7 @@ class ProjectBaseHandleMiddleware(object):
                 p_address = p.xpath('./td[2]/a/text()').extract_first() or ''
                 p_salenum = p.xpath('./td[3]/a/text()').extract_first() or '0'
                 pb = copy.deepcopy(response.meta.get('item') or ProjectBaseItem())
-                pb['ProjectUUID'] = uuid.uuid3(uuid.NAMESPACE_DNS, p_name + p_href)
+                pb['ProjectUUID'] = uuid.uuid3(uuid.NAMESPACE_DNS, p_name + get_url_id(p_href))
                 pb['ProjectName'] = p_name
                 pb['ProjectURL'] = p_href
                 pb['ProjectAddress'] = p_address
@@ -165,7 +174,7 @@ class ProjectInfoHandleMiddleware(object):
             pinfo['ProjectSaledNum'] = info_sel.xpath('//span[@id="YiRoom"]/text()').extract_first() or '0'
             pinfo['ProjectUnavailableArea'] = info_sel.xpath('//span[@id="NoArea"]/text()').extract_first() or '0.0'
             pinfo['ProjectUnavailableNum'] = info_sel.xpath('//span[@id="NoRoom"]/text()').extract_first() or '0'
-            pinfo['ProjectUUID'] = uuid.uuid3(uuid.NAMESPACE_DNS, pinfo['ProjectName'] + response.meta.get('CurURL') or '')
+            pinfo['ProjectUUID'] = uuid.uuid3(uuid.NAMESPACE_DNS, pinfo['ProjectName'] + get_url_id(response.meta.get('CurURL') or ''))
             result.append(pinfo)
         return result
 
@@ -220,10 +229,10 @@ class BuildingListHandleMiddleware(object):
             for building_info in building_base_sel.xpath('//table[@id="houseTable_1"]/tr[@class!="tHead"]'):
                 b_info = BuildingInfoItem()
                 b_info['ProjectName'] = p_name
-                b_info['ProjectUUID'] = uuid.uuid3(uuid.NAMESPACE_DNS, p_name + response.url)
+                b_info['ProjectUUID'] = uuid.uuid3(uuid.NAMESPACE_DNS, p_name + get_url_id(response.url))
                 b_info['ProjectRegName'] = building_info.xpath('./td[1]/a/text()').extract_first() or ''
                 b_info['BuildingName'] = building_info.xpath('./td[2]/a/text()').extract_first() or ''
-                b_info['BuildingUUID'] = uuid.uuid3(uuid.NAMESPACE_DNS, p_name + response.url + b_info['ProjectRegName'] + b_info['BuildingName'])
+                b_info['BuildingUUID'] = uuid.uuid3(uuid.NAMESPACE_DNS, p_name + get_url_id(response.url) + b_info['ProjectRegName'] + b_info['BuildingName'])
                 b_info['BuildingFloorNum'] = building_info.xpath('./td[3]/a/text()').extract_first() or '0'
                 b_info['BuildingHouseNum'] = building_info.xpath('./td[4]/a/text()').extract_first() or '0'
                 b_info['BuildingUsage'] = building_info.xpath('./td[5]/a/text()').extract_first() or ''
