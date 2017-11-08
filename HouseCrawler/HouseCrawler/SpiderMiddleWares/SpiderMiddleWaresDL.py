@@ -286,7 +286,7 @@ class HouseInfoHandleMiddleware(object):
             iframe_src = Selector(response).xpath('//iframe/@src').extract_first()
             houseinfodetail_href = urlparse.urljoin(response.url, iframe_src)
             houseinfodetail_req = Request(url=houseinfodetail_href, method='GET',
-                                            headers=self.headers, meta=response.meta.update({'PageType': 'HouseInfoDetail'}))
+                                            headers=headers, meta=response.meta.update({'PageType': 'HouseInfoDetail'}))
             result.append(houseinfodetail_req)
 
         if response.meta.get('PageType') == 'HouseInfoDetail':
