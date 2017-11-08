@@ -3,6 +3,7 @@ import re
 import sys
 import uuid
 import copy
+import datetime
 from scrapy import Request
 from scrapy import Selector
 from HouseNew.models import *
@@ -323,6 +324,8 @@ class HouseInfoHandleMiddleware(object):
                     if not house_item.xpath('./a/@href').extract_first():
                         result.append(hinfo)
                     else:
+                        if hinfo['HouseSaleState'] == "已售" and datetime.datetime.now().hour > 8:
+                            continue
                         houseinfodetail_href = urlparse.urljoin(response.url,
                                                 house_item.xpath('./a/@href').extract_first())
                         houseinfodetail_req = Request(url=houseinfodetail_href, method='GET',
