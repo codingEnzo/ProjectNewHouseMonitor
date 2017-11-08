@@ -1,13 +1,14 @@
 # coding = utf-8
 import json
 import redis
+import datetime
 from HouseNew.models import *
 
 
 def run():
     num = 0
     r = redis.Redis('10.30.1.20')
-    cur = ProjectBase.objects.all()
+    cur = ProjectBase.objects.filter(ProjectURLCurTimeStamp__gte=str(datetime.datetime.now().date())).all()
     for item in cur:
         project_info = {'source_url': item.ProjectURL,
                         'meta': {'PageType': 'ProjectInfo'}}

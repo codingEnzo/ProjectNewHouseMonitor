@@ -36,6 +36,7 @@ class ProjectBase(Document):
     ProjectAddress = fields.StringField(default='', max_length=255, null=False)
     ProjectSaleSum = fields.StringField(default='', max_length=255, null=False)
     ProjectURL = fields.URLField(default=None, null=True, blank=True)
+    ProjectURLCurTimeStamp = fields.StringField(default=str(datetime.datetime.now()), index=True)
     meta = {
         'indexes': [
             'CurTimeStamp',
@@ -97,6 +98,7 @@ class BuildingInfo(Document):
     BuildingUsage = fields.StringField(default='', max_length=255, null=False)
     BuildingSaleArea = fields.StringField(default='', max_length=255, null=False)
     BuildingURL = fields.URLField(default=None, null=True, blank=True)
+    BuildingURLCurTimeStamp = fields.StringField(default=str(datetime.datetime.now()), index=True)
     meta = {
         'indexes': [
             'CurTimeStamp',

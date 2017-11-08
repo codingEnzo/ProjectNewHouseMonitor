@@ -1,6 +1,7 @@
 # coding = utf-8
 import json
 import redis
+import datetime
 from HouseNew.models import *
 
 
@@ -14,22 +15,24 @@ def run():
                                                   'ProjectUUID': {'$first': '$ProjectUUID'},
                                                   'BuildingName': {'$first': '$BuildingName'},
                                                   'BuildingUUID': {'$first': '$BuildingUUID'},
-                                                  'BuildingURL': {'$first': '$BuildingURL'}
+                                                  'BuildingURL': {'$first': '$BuildingURL'},
+                                                  'BuildingURLCurTimeStamp': {'$first': '$BuildingURLCurTimeStamp'}
                                                  }
                                              }])
 
     for item in cur:
         try:
             if item['BuildingURL']:
-                builfing_info = {'source_url': item['BuildingURL'],
-                                    'meta': {'PageType': 'HouseInfo',
-                                                'ProjectName': item['ProjectName'],
-                                                'BuildingName': item['BuildingName'],
-                                                'ProjectUUID': str(item['ProjectUUID']),
-                                                'BuildingUUID': str(item['BuildingUUID'])}}
-                builfing_info_json = json.dumps(builfing_info, sort_keys=True)
-                r.sadd('HouseCrawler:start_urls:Default:Dongguan', builfing_info_json)
-                num += 1
+                if item['BuildingURLCurTimeStamp'] >= str(datetime.datetime.now().date()):
+                    builfing_info = {'source_url': item['BuildingURL'],
+                                        'meta': {'PageType': 'HouseInfo',
+                                                    'ProjectName': item['ProjectName'],
+                                                    'BuildingName': item['BuildingName'],
+                                                    'ProjectUUID': str(item['ProjectUUID']),
+                                                    'BuildingUUID': str(item['BuildingUUID'])}}
+                    builfing_info_json = json.dumps(builfing_info, sort_keys=True)
+                    r.sadd('HouseCrawler:start_urls:Default:Dongguan', builfing_info_json)
+                    num += 1
         except Exception:
             import traceback
             traceback.print_exc()

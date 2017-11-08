@@ -39,7 +39,7 @@ COMMANDS_MODULE = 'HouseCrawler.Commands'
 ROBOTSTXT_OBEY = False
 
 # Configure maximum concurrent requests performed by Scrapy (default: 16)
-CONCURRENT_REQUESTS = 4
+CONCURRENT_REQUESTS = 16
 
 # Configure a delay for requests for the same website (default: 0)
 # See http://scrapy.readthedocs.org/en/latest/topics/settings.html#download-delay
@@ -89,7 +89,7 @@ COOKIES_ENABLED = False
 COOKIES_DEBUG = False
 
 DOWNLOAD_DELAY = 0.1
-DOWNLOAD_TIMEOUT = 60
+DOWNLOAD_TIMEOUT = 25
 RANDOMIZE_DOWNLOAD_DELAY = True
 # Enable or disable extensions
 # See http://scrapy.readthedocs.org/en/latest/topics/extensions.html

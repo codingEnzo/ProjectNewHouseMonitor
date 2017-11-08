@@ -46,12 +46,20 @@ class DGFCPipeline(object):
         q_object = item.django_model.objects
         if isinstance(item, ProjectBaseItem):
             if q_object.filter(ProjectUUID=item['ProjectUUID']).latest(field_name='CurTimeStamp'):
+                last_item = q_object.filter(ProjectUUID=item['ProjectUUID']).latest(field_name='CurTimeStamp')
+                last_item.ProjectURL = item.get('ProjectURL')
+                last_item.ProjectURLCurTimeStamp = str(datetime.datetime.now())
+                last_item.save()
                 exist_flag = True
         elif isinstance(item, ProjectInfoItem):
             if q_object.filter(ProjectUUID=item['ProjectUUID']).latest(field_name='CurTimeStamp'):
                 exist_flag = True
         elif isinstance(item, BuildingInfoItem):
             if q_object.filter(BuildingUUID=item['BuildingUUID']).latest(field_name='CurTimeStamp'):
+                last_item = q_object.filter(BuildingUUID=item['BuildingUUID']).latest(field_name='CurTimeStamp')
+                last_item.BuildingURL = item.get('BuildingURL')
+                last_item.BuildingURLCurTimeStamp = str(datetime.datetime.now())
+                last_item.save()
                 exist_flag = True
         elif isinstance(item, HouseInfoItem):
             if q_object.filter(HouseUUID=item['HouseUUID']).latest(field_name='CurTimeStamp'):
