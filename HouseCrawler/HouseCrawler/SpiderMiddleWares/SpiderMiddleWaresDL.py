@@ -304,7 +304,7 @@ class HouseInfoHandleMiddleware(object):
                     hinfo['HouseUUID'] = uuid.uuid3(uuid.NAMESPACE_DNS, hinfo['HouseName'] + get_url_id(response.url))
                     hinfo['HouseFloor'] = cur_floor
                     hinfo['HouseSaleState'] = get_house_state(house.xpath('./font/@color').extract_first())
-                    hinfo['HouseInfo'] = house.xpath('./@title').extract_first() or ''
+                    hinfo['HouseInfoStr'] = house.xpath('./@title').extract_first() or ''
                     result.append(hinfo)
 
         return result

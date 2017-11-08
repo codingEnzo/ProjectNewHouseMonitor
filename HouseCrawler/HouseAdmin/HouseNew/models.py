@@ -93,10 +93,7 @@ class HouseInfo(Document):
     HouseFloor = fields.StringField(default='', max_length=1024, null=False)
     HouseSaleState = fields.StringField(default='', max_length=1024, null=False)
     HouseSaleStateLatest = fields.StringField(default='', max_length=1024, null=False)
-    HouseUsage = fields.StringField(default='', max_length=1024, null=False)
-    HouseType = fields.StringField(default='', max_length=1024, null=False)
-    HouseBuildingArea = fields.StringField(default='0.0', max_length=1024, null=False)
-    HouseInnerArea = fields.StringField(default='0.0', max_length=1024, null=False)
+    HouseInfoStr = fields.StringField(default='', max_length=1024, null=False)
     meta = {
         'indexes': [
             'CurTimeStamp',
