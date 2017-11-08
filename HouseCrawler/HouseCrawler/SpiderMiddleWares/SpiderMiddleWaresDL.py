@@ -155,9 +155,9 @@ class ProjectInfoHandleMiddleware(object):
             for tr in sale_tr:
                 key_name = tr.xpath('./td[1]/strong/text()').extract_first().replace('套数：', '').strip()
                 sale_sum[key_name] = {'numSum': tr.xpath('./td[2]/span/text()').extract_first().replace('套', '').strip(),
-                        'areaSum': tr.xpath('./td[4]/strong/text()').extract_first().replace('平米', '').strip(),
+                        'areaSum': tr.xpath('./td[4]/span/text()').extract_first().replace('平米', '').strip(),
                         'numSaling': tr.xpath('./td[6]/span/text()').extract_first().replace('套', '').strip(),
-                        'areaSaling': tr.xpath('./td[8]/strong/text()').extract_first().replace('平米', '').strip()}
+                        'areaSaling': tr.xpath('./td[8]/span/text()').extract_first().replace('平米', '').strip()}
             pinfo['ProjectSaleSum'] = sale_sum
             result.append(pinfo)
         return result
