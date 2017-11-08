@@ -15,6 +15,6 @@ def run():
         project_info = {'source_url': item.ProjectURL,
                         'meta': {'PageType': 'ProjectInfo'}}
         project_info_json = json.dumps(project_info, sort_keys=True)
-        r.sadd('HouseCrawler:start_urls:Default:Dongguan', project_info_json)
+        r.sadd('HouseCrawler:start_urls:Default:Dalian', project_info_json)
         num += 1
     print(num)
