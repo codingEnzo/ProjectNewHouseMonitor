@@ -102,10 +102,8 @@ class HouseInfo(Document):
     HoueseRegID = fields.StringField(default='', max_length=1024, null=False)
     HouseFloor = fields.StringField(default='', max_length=1024, null=False)
     HouseRoomNum = fields.StringField(default='', max_length=1024, null=False)
-    "y":13,
-    "x":2,
-    "bArea":116.3,
-    "iArea":85.74,
+    HouseBuildingArea = fields.StringField(default='', max_length=1024, null=False)
+    HouseInnerArea = fields.StringField(default='', max_length=1024, null=False)
     "vArea":0,
     "sArea":30.56,
     "shareRate":0,
