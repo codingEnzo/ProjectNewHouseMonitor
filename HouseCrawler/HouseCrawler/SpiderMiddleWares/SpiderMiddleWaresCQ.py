@@ -259,7 +259,7 @@ class HouseInfoHandleMiddleware(object):
                 hinfo['HouseName'] = house.get('location')
                 hinfo['HoueseRegID'] = house.get('fjh')
                 hinfo['HouseUUID'] = uuid.uuid3(uuid.NAMESPACE_DNS, hinfo['HoueseRegID'] + hinfo['BuildingUUID'])
-                hinfo['HoueseID'] = house.get('id')
+                hinfo['HoueseID'] = str(house.get('id'))
                 hinfo['HouseFloor'] = str(house.get('flr'))
                 hinfo['HouseRoomNum'] = str(house.get('rn'))
                 hinfo['HouseBuildingArea'] = str(house.get('bArea'))
