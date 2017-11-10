@@ -63,9 +63,9 @@ DEFAULT_REQUEST_HEADERS = {
 # Enable or disable spider Middlewares
 # See http://scrapy.readthedocs.org/en/latest/topics/spider-Middleware.html
 SPIDER_MiddleWARES = {
-    'HouseCrawler.SpiderMiddleWares.SpiderMiddleWaresCQ.ProjectBaseHanCQeMiddleware': 102,
-    'HouseCrawler.SpiderMiddleWares.SpiderMiddleWaresCQ.BuildingListHanCQeMiddleware': 104,
-    'HouseCrawler.SpiderMiddleWares.SpiderMiddleWaresCQ.HouseInfoHanCQeMiddleware': 105,
+    'HouseCrawler.SpiderMiddleWares.SpiderMiddleWaresCQ.ProjectBaseHandleMiddleware': 102,
+    'HouseCrawler.SpiderMiddleWares.SpiderMiddleWaresCQ.BuildingListHandleMiddleware': 104,
+    'HouseCrawler.SpiderMiddleWares.SpiderMiddleWaresCQ.HouseInfoHandleMiddleware': 105,
     'scrapy.spiderMiddlewares.httperror.HttpErrorMiddleware': 101
 }
 
@@ -104,7 +104,7 @@ ITEM_PIPELINES = {
 }
 
 
-LOG_LEVEL = 'INFO'
+# LOG_LEVEL = 'INFO'
 # Enable and configure the AutoThrottle extension (disabled by default)
 # See http://doc.scrapy.org/en/latest/topics/autothrottle.html
 #AUTOTHROTTLE_ENABLED = True
