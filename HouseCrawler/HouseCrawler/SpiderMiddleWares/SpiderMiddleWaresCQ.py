@@ -89,7 +89,7 @@ class ProjectBaseHandleMiddleware(object):
                 req_dict['site'] = item[0]
                 req_dict['roomtype'] = item[1]
                 url = base_url + urlparse.urlencode(req_dict)
-                result.append(Request(url=url, method='GET',
+                result.append(Request(url=url, method='GET', dont_filter=True,
                                 headers=headers, meta={'PageType': 'ProjectList'}))
         elif response.meta.get('PageType') == 'ProjectList':
             project_list = get_json(response.body_as_unicode())
@@ -115,7 +115,7 @@ class ProjectBaseHandleMiddleware(object):
                 pb['ProjectURL'] = p_href
                 pb['ProjectAddress'] = p_address
                 pb['ProjectCorporation'] = p_company
-                result.append(Request(url=p_href_detail + urlparse.urlencode(req_dict), method='GET',
+                result.append(Request(url=p_href_detail + urlparse.urlencode(req_dict), method='GET', dont_filter=True,
                                 headers=headers, meta={'PageType': 'ProjectDetailInfo', 'item': pb}))
         elif response.meta.get('PageType') == 'ProjectDetailInfo':
             project_detail_list = get_json(response.body_as_unicode())
