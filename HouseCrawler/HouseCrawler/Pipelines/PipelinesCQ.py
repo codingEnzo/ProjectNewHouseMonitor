@@ -51,9 +51,6 @@ class CQPipeline(object):
                 last_item.ProjectURLCurTimeStamp = str(datetime.datetime.now())
                 last_item.save()
                 exist_flag = True
-        elif isinstance(item, ProjectInfoItem):
-            if q_object.filter(ProjectUUID=item['ProjectUUID']).latest(field_name='CurTimeStamp'):
-                exist_flag = True
         elif isinstance(item, BuildingInfoItem):
             if q_object.filter(BuildingUUID=item['BuildingUUID']).latest(field_name='CurTimeStamp'):
                 last_item = q_object.filter(BuildingUUID=item['BuildingUUID']).latest(field_name='CurTimeStamp')
@@ -72,15 +69,6 @@ class CQPipeline(object):
         diff_flag = False
         q_object = item.django_model.objects
         if isinstance(item, ProjectBaseItem):
-            res_object = q_object.filter(ProjectUUID=item['ProjectUUID']).latest(field_name='CurTimeStamp')
-            for key in item:
-                if not hasattr(res_object, key):
-                    diff_flag = True
-                    break
-                if self.safe_format_value(item.get(key)) != self.safe_format_value(getattr(res_object, key)):
-                    diff_flag = True
-                    break
-        elif isinstance(item, ProjectInfoItem):
             res_object = q_object.filter(ProjectUUID=item['ProjectUUID']).latest(field_name='CurTimeStamp')
             for key in item:
                 if not hasattr(res_object, key):
