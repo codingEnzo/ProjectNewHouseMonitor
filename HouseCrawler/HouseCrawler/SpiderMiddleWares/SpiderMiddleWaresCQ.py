@@ -24,7 +24,7 @@ headers = {'Host': 'www.cq315house.com',
 
 
 def get_json(strRes):
-    strRes = str(strRes).replace("'", '"')
+    strRes = str(strRes).replace("'", '"').replace('\\', ' ')
     return json.loads(strRes)
 
 
