@@ -244,7 +244,12 @@ class HouseInfoHandleMiddleware(object):
                 if result:
                     return result
                 return []
-            house_list = get_json(Selector(response).xpath('//input[@id="DataHF"]/@value').extract_first()).pop().get('rooms')
+            var_info = Selector(response).xpath('//input[@id="DataHF"]/@value').extract_first()
+            if not var_info:
+                if result:
+                    return result
+                return []
+            house_list = get_json(var_info).pop().get('rooms')
             for house in house_list:
                 hinfo = HouseInfoItem()
                 hinfo['ProjectName'] = response.meta.get('ProjectName')
