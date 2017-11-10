@@ -51,10 +51,9 @@ class BuildingInfo(Document):
     meta = {
         'indexes': [
             'CurTimeStamp',
+            'ProjectBaseName',
             'ProjectName',
             'ProjectUUID',
-            'SubProjectUUID',
-            'SubProjectName',
             'BuildingRegName',
             'BuildingUUID',
             'BuildingName',
