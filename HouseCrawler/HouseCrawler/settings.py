@@ -6,8 +6,8 @@
 # commonly used. You can find more settings consulting the documentation:
 #
 #     http://doc.scrapy.org/en/latest/topics/settings.html
-#     http://scrapy.readthedocs.org/en/latest/topics/downloader-middleware.html
-#     http://scrapy.readthedocs.org/en/latest/topics/spider-middleware.html
+#     http://scrapy.readthedocs.org/en/latest/topics/downloader-midCQeware.html
+#     http://scrapy.readthedocs.org/en/latest/topics/spider-midCQeware.html
 import os
 import sys
 import django
@@ -60,23 +60,22 @@ DEFAULT_REQUEST_HEADERS = {
    'Accept-Language': 'en',
 }
 
-# Enable or disable spider middlewares
-# See http://scrapy.readthedocs.org/en/latest/topics/spider-middleware.html
-SPIDER_MIDDLEWARES = {
-    'HouseCrawler.SpiderMiddleWares.SpiderMiddleWaresDL.ProjectBaseHandleMiddleware': 102,
-    'HouseCrawler.SpiderMiddleWares.SpiderMiddleWaresDL.ProjectInfoHandleMiddleware': 103,
-    'HouseCrawler.SpiderMiddleWares.SpiderMiddleWaresDL.BuildingListHandleMiddleware': 104,
-    'HouseCrawler.SpiderMiddleWares.SpiderMiddleWaresDL.HouseInfoHandleMiddleware': 105,
-    'scrapy.spidermiddlewares.httperror.HttpErrorMiddleware': 101
+# Enable or disable spider midCQewares
+# See http://scrapy.readthedocs.org/en/latest/topics/spider-midCQeware.html
+SPIDER_MIDCQEWARES = {
+    'HouseCrawler.SpiderMidCQeWares.SpiderMidCQeWaresCQ.ProjectBaseHanCQeMidCQeware': 102,
+    'HouseCrawler.SpiderMidCQeWares.SpiderMidCQeWaresCQ.BuildingListHanCQeMidCQeware': 104,
+    'HouseCrawler.SpiderMidCQeWares.SpiderMidCQeWaresCQ.HouseInfoHanCQeMidCQeware': 105,
+    'scrapy.spidermidCQewares.httperror.HttpErrorMidCQeware': 101
 }
 
-# Enable or disable downloader middlewares
-# See http://scrapy.readthedocs.org/en/latest/topics/downloader-middleware.html
-DOWNLOADER_MIDDLEWARES = {
-    'scrapy.downloadermiddlewares.httpproxy.HttpProxyMiddleware': 110,
-    'HouseCrawler.DownloadMiddleWares.ProxyMiddleWares.RandomUserAgent': 1,
-    'HouseCrawler.DownloadMiddleWares.ProxyMiddleWares.ProxyMiddleware': 100,
-    'HouseCrawler.DownloadMiddleWares.RetryMiddleWares.RetryMiddleware': 120,
+# Enable or disable downloader midCQewares
+# See http://scrapy.readthedocs.org/en/latest/topics/downloader-midCQeware.html
+DOWNLOADER_MIDCQEWARES = {
+    'scrapy.downloadermidCQewares.httpproxy.HttpProxyMidCQeware': 110,
+    'HouseCrawler.DownloadMidCQeWares.ProxyMidCQeWares.RandomUserAgent': 1,
+    'HouseCrawler.DownloadMidCQeWares.ProxyMidCQeWares.ProxyMidCQeware': 100,
+    'HouseCrawler.DownloadMidCQeWares.RetryMidCQeWares.RetryMidCQeware': 120,
 }
 
 RETRY_ENABLED = True
@@ -101,7 +100,7 @@ EXTENSIONS = {
 # Configure item pipelines
 # See http://scrapy.readthedocs.org/en/latest/topics/item-pipeline.html
 ITEM_PIPELINES = {
-    'HouseCrawler.Pipelines.PipelinesDL.DLPipeline': 300,
+    'HouseCrawler.Pipelines.PipelinesCQ.CQPipeline': 300,
 }
 
 
@@ -120,7 +119,7 @@ LOG_LEVEL = 'INFO'
 #AUTOTHROTTLE_DEBUG = False
 
 # Enable and configure HTTP caching (disabled by default)
-# See http://scrapy.readthedocs.org/en/latest/topics/downloader-middleware.html#httpcache-middleware-settings
+# See http://scrapy.readthedocs.org/en/latest/topics/downloader-midCQeware.html#httpcache-midCQeware-settings
 #HTTPCACHE_ENABLED = True
 #HTTPCACHE_EXPIRATION_SECS = 0
 #HTTPCACHE_DIR = 'httpcache'
@@ -132,5 +131,5 @@ USER_AGENTS = ["Mozilla/5.0 (X11; Linux x86_64; rv:52.0) Gecko/20100101 Firefox/
 
 REDIS_HOST = '10.30.1.20'
 REDIS_PORT = 6379
-Redis_key = 'HouseCrawler:start_urls:Default:Dalian'
+Redis_key = 'HouseCrawler:start_urls:Default:Chongqing'
 REDIS_START_URLS_AS_SET = True

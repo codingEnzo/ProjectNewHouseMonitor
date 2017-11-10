@@ -8,4 +8,4 @@ def run():
     project_base = {'source_url': 'http://www.dlfd.gov.cn/fdc/D01XmxxAction.do?Control=select',
                     'meta': {'PageType': 'ProjectBase'}}
     project_base_json = json.dumps(project_base, sort_keys=True)
-    r.sadd('HouseCrawler:start_urls:Default:Dalian', project_base_json)
+    r.sadd('HouseCrawler:start_urls:Default:Chongqing', project_base_json)
