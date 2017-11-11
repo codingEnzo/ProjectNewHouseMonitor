@@ -215,15 +215,11 @@ class HouseInfoHandleMiddleware(object):
     def process_spider_output(self, response, result, spider):
 
         def get_house_state(string):
-            STATE_TAB = {'525316': '预定',
-                            '524292': '可售',
-                            '2621444': '已售',
-                            '655360': '限制销售',
-                            '2365461': '已登记'}
+            STATE_TAB = [{"val": 524292, "name": "可售", "ab": "售", "bgColor": "#00ff00", "ftColor": "#333333", "priority": 1, "type": 1, "alarmType": 0, "showType": 0, "parentType": 0, "treeLevel": 0}, {"val": 262146, "name": "可售", "ab": "售", "bgColor": "#00ff00", "ftColor": "#333333", "priority": 1, "type": 1, "alarmType": 0, "showType": 0, "parentType": 0, "treeLevel": 0}, {"val": 16777216, "name": "预订", "ab": "认购", "bgColor": "#ff00ff", "ftColor": "#000066", "priority": 2, "type": 1, "alarmType": 1, "showType": 0, "parentType": 0, "treeLevel": 0}, {"val": 263170, "name": "预订", "ab": "认购", "bgColor": "#ff00ff", "ftColor": "#333333", "priority": 2, "type": 1, "alarmType": 0, "showType": 0, "parentType": 0, "treeLevel": 0}, {"val": 525316, "name": "预订", "ab": "认购", "bgColor": "#ff00ff", "ftColor": "#333333", "priority": 2, "type": 1, "alarmType": 0, "showType": 0, "parentType": 0, "treeLevel": 0}, {"val": 4194304, "name": "限制销售", "ab": "封", "bgColor": "#c0c0c0", "ftColor": "#333333", "priority": 3, "type": 1, "alarmType": 0, "showType": 0, "parentType": 0, "treeLevel": 0}, {"val": 1048576, "name": "限制销售", "ab": "封", "bgColor": "#c0c0c0", "ftColor": "#333333", "priority": 3, "type": 1, "alarmType": 0, "showType": 0, "parentType": 0, "treeLevel": 0}, {"val": 131072, "name": "限制销售", "ab": "封", "bgColor": "#c0c0c0", "ftColor": "#333333", "priority": 3, "type": 1, "alarmType": 0, "showType": 0, "parentType": 0, "treeLevel": 0}, {"val": 256, "name": "限制销售", "ab": "封", "bgColor": "#c0c0c0", "ftColor": "#333333", "priority": 3, "type": 1, "alarmType": 0, "showType": 0, "parentType": 0, "treeLevel": 0}, {"val": 8192, "name": "限制销售", "ab": "封", "bgColor": "#c0c0c0", "ftColor": "#333333", "priority": 3, "type": 1, "alarmType": 0, "showType": 0, "parentType": 0, "treeLevel": 0}, {"val": 64, "name": "限制销售", "ab": "封", "bgColor": "#c0c0c0", "ftColor": "#333333", "priority": 3, "type": 1, "alarmType": 0, "showType": 0, "parentType": 0, "treeLevel": 0}, {"val": 8, "name": "已售", "ab": "签", "bgColor": "#ffff00", "ftColor": "#333333", "priority": 4, "type": 1, "alarmType": 0, "showType": 0, "parentType": 0, "treeLevel": 0}, {"val": 2097152, "name": "已售", "ab": "签", "bgColor": "#ffff00", "ftColor": "#333333", "priority": 4, "type": 1, "alarmType": 0, "showType": 0, "parentType": 0, "treeLevel": 0}, {"val": 32768, "name": "已售", "ab": "签", "bgColor": "#ffff00", "ftColor": "#333333", "priority": 4, "type": 1, "alarmType": 0, "showType": 0, "parentType": 0, "treeLevel": 0}, {"val": 2048, "name": "已登记", "ab": "户", "bgColor": "#ff0000", "ftColor": "#000000", "priority": 5, "type": 1, "alarmType": 0, "showType": 0, "parentType": 0, "treeLevel": 0}]
             state = ''
-            for key in STATE_TAB:
-                if key == str(string):
-                    state = STATE_TAB[key]
+            for item in STATE_TAB:
+                if str(string) == str(item.get('val')):
+                    state = item.get('name')
                     break
             return state
 
