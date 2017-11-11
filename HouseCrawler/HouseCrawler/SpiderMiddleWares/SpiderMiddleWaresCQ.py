@@ -233,12 +233,12 @@ class HouseInfoHandleMiddleware(object):
             for stateItem in stateJson:
                 longName = stateItem.get('long_names')
                 if longName == "可售":
-                    if((524288 & v) == 524288):
-                        ispass = ((524292 & v) == 524292) or False if ((7518186 & v) == 0) else False
+                    if((524288 & status) == 524288):
+                        ispass = ((524292 & status) == 524292) or False if ((7518186 & status) == 0) else False
                         if not ispass:
                             longName = ""
-                    elif((262144 & v) == 262144):
-                        ispass = ((262146 & v) == 262146) or False if ((7516136 & v) == 0) else False
+                    elif((262144 & status) == 262144):
+                        ispass = ((262146 & status) == 262146) or False if ((7516136 & status) == 0) else False
                         if not ispass:
                             longName = ""
                 if stan == []:
