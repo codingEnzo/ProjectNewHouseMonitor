@@ -250,6 +250,8 @@ class HouseInfoHandleMiddleware(object):
                 for i in stan:
                     if i == '已售':
                         stan.remove(i)
+            if stan == []:
+                return ''
             return stan.pop()
 
         result = list(result)
