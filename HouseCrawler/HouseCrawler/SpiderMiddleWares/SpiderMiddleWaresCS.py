@@ -76,7 +76,7 @@ class ProjectBaseHandleMiddleware(object):
             if result:
                 return result
             return []
-        if response.meta.get('PageType') not in ('ProjectBase', ):
+        if response.meta.get('PageType') not in ('ProjectBase', 'ProjectList'):
             if result:
                 return result
             return []
