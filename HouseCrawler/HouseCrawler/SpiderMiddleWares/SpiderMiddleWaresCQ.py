@@ -174,6 +174,10 @@ class BuildingListHandleMiddleware(object):
                                                 b_info_base['ProjectName'] + get_url_id(response.url))
                 b_info_base['ProjectAddress'] = subp_info.get('F_ADDR') or ''
                 b_info_base['ProjectCorporation'] = subp_info.get('F_ENTERPRISE_NAME') or ''
+                b_info_base['BuildingZZHouseNum'] = subp_info.get('BUILDZZNUM') or ''
+                b_info_base['BuildingFZZHouseNum'] = subp_info.get('BUILDFZZNUM') or ''
+                b_info_base['BuildingZZHouseNumSaling'] = subp_info.get('KSZZNUM') or ''
+                b_info_base['BuildingFZZHouseNumSaling'] = subp_info.get('KSFZZNUM') or ''
                 b_info_base['BuildingRegName'] = subp_info.get('F_PRESALE_CERT') or ''
                 b_info_base['BuildingRegHouseNum'] = subp_info.get('PRESALECOUNT') or ''
                 b_info_base['BuildingRegArea'] = subp_info.get('PRESALEAREA') or ''

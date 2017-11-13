@@ -44,6 +44,10 @@ class BuildingInfo(Document):
     BuildingUUID = fields.UUIDField(default=uuid.uuid3(uuid.NAMESPACE_DNS, ''),
                                     binary=False, null=False)
     BuildingName = fields.StringField(default='', max_length=1024, null=False)
+    BuildingZZHouseNum = fields.StringField(default='', max_length=1024, null=False)
+    BuildingFZZHouseNum = fields.StringField(default='', max_length=1024, null=False)
+    BuildingZZHouseNumSaling = fields.StringField(default='', max_length=1024, null=False)
+    BuildingFZZHouseNumSaling = fields.StringField(default='', max_length=1024, null=False)
     BuildingRegHouseNum = fields.StringField(default='', max_length=1024, null=False)
     BuildingRegArea = fields.StringField(default='', max_length=1024, null=False)
     BuildingURL = fields.URLField(default=None, null=True, blank=True)
