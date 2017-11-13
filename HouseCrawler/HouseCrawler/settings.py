@@ -64,6 +64,7 @@ DEFAULT_REQUEST_HEADERS = {
 # See http://scrapy.readthedocs.org/en/latest/topics/spider-middleware.html
 SPIDER_MIDDLEWARES = {
     'HouseCrawler.SpiderMiddleWares.SpiderMiddleWaresCS.ProjectBaseHandleMiddleware': 102,
+    'HouseCrawler.SpiderMiddleWares.SpiderMiddleWaresCS.ProjectInfoHandleMiddleware': 103,
     'HouseCrawler.SpiderMiddleWares.SpiderMiddleWaresCS.BuildingListHandleMiddleware': 104,
     'HouseCrawler.SpiderMiddleWares.SpiderMiddleWaresCS.HouseInfoHandleMiddleware': 105,
     'scrapy.spidermiddlewares.httperror.HttpErrorMiddleware': 101
