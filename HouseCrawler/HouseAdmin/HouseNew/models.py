@@ -84,6 +84,7 @@ class HouseInfo(Document):
     HouseStructure = fields.StringField(default='', max_length=1024, null=False)
     HouseRoomType = fields.StringField(default='', max_length=1024, null=False)
     HouseUsage = fields.StringField(default='', max_length=1024, null=False)
+    HouseSaleStateCode = fields.StringField(default='', max_length=1024, null=False)
     HouseSaleState = fields.StringField(default='', max_length=1024, null=False)
     HouseSaleStateLatest = fields.StringField(default='', max_length=1024, null=False)
     HouseInnerUnitPrice = fields.StringField(default='', max_length=1024, null=False)
