@@ -295,7 +295,7 @@ class HouseInfoHandleMiddleware(object):
                 hinfo['HouseStructure'] = house.get('stru')
                 hinfo['HouseRoomType'] = house.get('rType')
                 hinfo['HouseUsage'] = house.get('use')
-                hinfo['HouseSaleStateCode'] = house.get('status')
+                hinfo['HouseSaleStateCode'] = str(house.get('status'))
                 hinfo['HouseSaleState'] = get_house_state(house.get('status'))
                 hinfo['HouseInnerUnitPrice'] = str(house.get('nsjg'))
                 hinfo['HouseBuildingUnitPrice'] = str(house.get('nsjmjg'))
