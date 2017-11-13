@@ -294,7 +294,7 @@ class HouseInfoHandleMiddleware(object):
                     hinfo['ProjectUUID'] = p_uuid
                     hinfo['BuildingUUID'] = b_uuid
                     hinfo['HouseName'] = house.xpath('./td[1]/text()').extract_first() or ''
-                    hinfo['HouseUUID'] = uuid.uuid3(uuid.NAMESPACE_DNS, hinfo['HouseName'] + b_uuid)
+                    hinfo['HouseUUID'] = uuid.uuid3(uuid.NAMESPACE_DNS, hinfo['HouseName'] + str(b_uuid))
                     hinfo['HouseFloor'] = house.xpath('./td[2]/text()').extract_first() or ''
                     hinfo['HouseBuildingArea'] = house.xpath('./td[5]/text()').extract_first() or ''
                     hinfo['HouseInnerArea'] = house.xpath('./td[6]/text()').extract_first() or ''
