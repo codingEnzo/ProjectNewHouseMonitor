@@ -12,7 +12,7 @@ sys.path.append(os.path.abspath('../..'))
 logger = logging.getLogger(__name__)
 
 
-class CSpipeline(object):
+class CSPipeline(object):
 
     def __init__(self, settings):
         self.settings = settings
