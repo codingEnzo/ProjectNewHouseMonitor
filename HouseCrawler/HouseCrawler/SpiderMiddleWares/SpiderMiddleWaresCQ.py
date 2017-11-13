@@ -219,9 +219,10 @@ class HouseInfoHandleMiddleware(object):
             def getStatusName(status, all_status_json):
                     tempStatus = status
                     tempAllStatus = all_status_json
-                    tempAllStatus.sort(key=lambda k: k.get('val'))
+                    tempAllStatus.sort(key=lambda k: k.get('val'), reverse=True)
                     strJson = []
                     for statusItem in tempAllStatus:
+                        print(tempStatus, statusItem['val'], (tempStatus & statusItem['val']))
                         if ((tempStatus & statusItem['val']) == statusItem['val']):
                             tempStatus = tempStatus & (~statusItem['val'])
                             strJson.append({"long_names": statusItem['name'], "short_names": statusItem['ab']})
