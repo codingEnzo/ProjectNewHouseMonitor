@@ -31,7 +31,7 @@ def run():
                                                     'ProjectUUID': str(item['ProjectUUID']),
                                                     'BuildingUUID': str(item['BuildingUUID'])}}
                     builfing_info_json = json.dumps(builfing_info, sort_keys=True)
-                    r.sadd('HouseCrawler:start_urls:Default:Chongqing', builfing_info_json)
+                    r.sadd('HouseCrawler:start_urls:Default:Changsha', builfing_info_json)
                     num += 1
         except Exception:
             import traceback

@@ -8,4 +8,4 @@ def run():
     project_base = {'source_url': 'http://search.csfdc.gov.cn/index.php/home/Index/sfloor',
                     'meta': {'PageType': 'ProjectBase'}}
     project_base_json = json.dumps(project_base, sort_keys=True)
-    r.sadd('HouseCrawler:start_urls:Default:Chongqing', project_base_json)
+    r.sadd('HouseCrawler:start_urls:Default:Changsha', project_base_json)
