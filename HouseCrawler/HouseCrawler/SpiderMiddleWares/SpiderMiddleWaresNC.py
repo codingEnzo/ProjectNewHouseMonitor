@@ -426,7 +426,7 @@ class HouseInfoHandleMiddleware(object):
                         houseinfodetail_href = urlparse.urljoin(response.url,
                                                     house.xpath('./a/@href').extract_first())
                         hinfo['HouseUUID'] = uuid.uuid3(uuid.NAMESPACE_DNS,
-                                                hinfo['HouseName'] + str(hinfo['BuildingUUID'] + houseinfodetail_href))
+                                                hinfo['HouseName'] + str(hinfo['BuildingUUID']) + houseinfodetail_href)
                         houseinfodetail_req = Request(url=houseinfodetail_href, method='GET',
                                             meta={'PageType': 'HouseInfoDetail', 'item': copy.deepcopy(hinfo)})
                         result.append(houseinfodetail_req)
