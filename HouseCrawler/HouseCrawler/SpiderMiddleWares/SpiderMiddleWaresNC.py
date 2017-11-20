@@ -363,7 +363,7 @@ class HouseInfoHandleMiddleware(object):
                 hinfo['HouseUsage'] = sel.xpath('//td[text()="房屋用途："]/following-sibling::td[1]/text()').extract_first() or ''
                 hinfo['HouseFloorAt'] = sel.xpath('//td[text()=" 所 在 层： "]/following-sibling::td[1]/text()').extract_first() or ''
                 hinfo['HouseFloorTotal'] = sel.xpath('//td[text()=" 总 层 数： "]/following-sibling::td[1]/text()').extract_first() or ''
-                hinfo['HousePreUnitPrice'] = sel.xpath('//td[text()="预售申请单价："]/following-sibling::td[1]/text()').extract_first() or ''
+                hinfo['HousePreUnitPrice'] = sel.xpath('//td[text()=" 预售申请单价： "]/following-sibling::td[1]/text()').extract_first() or ''
                 hinfo['HouseStructureType'] = sel.xpath('//td[text()="房屋户型："]/following-sibling::td[1]/text()').extract_first() or ''
                 hinfo['HouseContract'] = sel.xpath('//td[text()="合 同 号："]/following-sibling::td[1]/text()').extract_first() or ''
                 result.append(hinfo)
