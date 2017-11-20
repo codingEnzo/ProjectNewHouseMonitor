@@ -252,7 +252,7 @@ class BuildingListHandleMiddleware(object):
             if result:
                 return result
             return []
-        if response.meta.get('PageType') not in ('ProjectInfo', ):
+        if response.meta.get('PageType') not in ('ProjectInfo', 'HouseInfo'):
             if result:
                 return result
             return []
@@ -272,7 +272,80 @@ class BuildingListHandleMiddleware(object):
                                             b_info['BuildingName'] + p_id)
                 b_info['BuildingURL'] = urlparse.urljoin(response.url,
                                             b.xpath('./@href').extract_first() or '')
-                result.append(b_info)
+                result.append(Request(url=b_info['BuildingURL'], method='GET', dont_filter=True,
+                                meta={'PageType': 'HouseInfo', 'item': copy.deepcopy(b_info)}))
+        elif response.meta.get('PageType') == 'HouseInfo':
+            b_info = response.meta.get('item')
+            if b_info:
+                b_info['BuildingUsage'] = sel.xpath('//td[text()="设计用途："]/following-sibling::td[1]/text()').extract_first() or ''
+                b_info['BuildingStructure'] = sel.xpath('//td[text()="建筑结构："]/following-sibling::td[1]/text()').extract_first() or ''
+                b_info['BuildingTotalFloor'] = sel.xpath('//td[text()="总 层 数："]/following-sibling::td[1]/text()').extract_first() or ''
+                b_info['BuildingTotalArea'] = sel.xpath('//td[text()="总 面 积："]/following-sibling::td[1]/text()').extract_first() or ''
+                sale_sum_t = sel.xpath('//tr[@class="title"]/following-sibling::tr[not(@class) and td[@class="c"]]')
+            if len(sale_sum_t) == 3:
+                b_info['BuildingSaleSum'] = {
+                    '住宅': {
+                        '套数': {
+                            'Sum': sale_sum_t[0].xpath('./td[2]/text()').extract_first() or '',
+                            'Saling': sale_sum_t[1].xpath('./td[2]/text()').extract_first() or '',
+                            'Sold': sale_sum_t[2].xpath('./td[2]/text()').extract_first() or '',
+                        },
+                        '面积': {
+                            'Sum': sale_sum_t[0].xpath('./td[3]/text()').extract_first() or '',
+                            'Saling': sale_sum_t[1].xpath('./td[3]/text()').extract_first() or '',
+                            'Sold': sale_sum_t[2].xpath('./td[3]/text()').extract_first() or '',
+                        }
+                    },
+                    '商业': {
+                        '套数': {
+                            'Sum': sale_sum_t[0].xpath('./td[4]/text()').extract_first() or '',
+                            'Saling': sale_sum_t[1].xpath('./td[4]/text()').extract_first() or '',
+                            'Sold': sale_sum_t[2].xpath('./td[4]/text()').extract_first() or '',
+                        },
+                        '面积': {
+                            'Sum': sale_sum_t[0].xpath('./td[5]/text()').extract_first() or '',
+                            'Saling': sale_sum_t[1].xpath('./td[5]/text()').extract_first() or '',
+                            'Sold': sale_sum_t[2].xpath('./td[5]/text()').extract_first() or '',
+                        }
+                    },
+                    '写字楼': {
+                        '套数': {
+                            'Sum': sale_sum_t[0].xpath('./td[6]/text()').extract_first() or '',
+                            'Saling': sale_sum_t[1].xpath('./td[6]/text()').extract_first() or '',
+                            'Sold': sale_sum_t[2].xpath('./td[6]/text()').extract_first() or '',
+                        },
+                        '面积': {
+                            'Sum': sale_sum_t[0].xpath('./td[7]/text()').extract_first() or '',
+                            'Saling': sale_sum_t[1].xpath('./td[7]/text()').extract_first() or '',
+                            'Sold': sale_sum_t[2].xpath('./td[7]/text()').extract_first() or '',
+                        }
+                    },
+                    '车库车位': {
+                        '套数': {
+                            'Sum': sale_sum_t[0].xpath('./td[8]/text()').extract_first() or '',
+                            'Saling': sale_sum_t[1].xpath('./td[8]/text()').extract_first() or '',
+                            'Sold': sale_sum_t[2].xpath('./td[8]/text()').extract_first() or '',
+                        },
+                        '面积': {
+                            'Sum': sale_sum_t[0].xpath('./td[9]/text()').extract_first() or '',
+                            'Saling': sale_sum_t[1].xpath('./td[9]/text()').extract_first() or '',
+                            'Sold': sale_sum_t[2].xpath('./td[9]/text()').extract_first() or '',
+                        }
+                    },
+                    '其他': {
+                        '套数': {
+                            'Sum': sale_sum_t[0].xpath('./td[10]/text()').extract_first() or '',
+                            'Saling': sale_sum_t[1].xpath('./td[10]/text()').extract_first() or '',
+                            'Sold': sale_sum_t[2].xpath('./td[10]/text()').extract_first() or '',
+                        },
+                        '面积': {
+                            'Sum': sale_sum_t[0].xpath('./td[11]/text()').extract_first() or '',
+                            'Saling': sale_sum_t[1].xpath('./td[11]/text()').extract_first() or '',
+                            'Sold': sale_sum_t[2].xpath('./td[11]/text()').extract_first() or '',
+                        }
+                    }
+                }
+            result.append(b_info)
         return result
 
     def process_spider_exception(self, response, exception, spider):

@@ -72,6 +72,11 @@ class BuildingInfo(Document):
     BuildingUUID = fields.UUIDField(default=uuid.uuid3(uuid.NAMESPACE_DNS, ''),
                                     binary=False, null=False)
     BuildingName = fields.StringField(default='', max_length=1024, null=False)
+    BuildingUsage = fields.StringField(default='', max_length=1024, null=False)
+    BuildingStructure = fields.StringField(default='', max_length=1024, null=False)
+    BuildingTotalFloor = fields.StringField(default='', max_length=1024, null=False)
+    BuildingTotalArea = fields.StringField(default='', max_length=1024, null=False)
+    BuildingSaleSum = fields.DictField(default={'null': ''}, null=False)
     BuildingURL = fields.URLField(default=None, null=True, blank=True)
     BuildingURLCurTimeStamp = fields.StringField(default=str(datetime.datetime.now()), index=True)
     meta = {
