@@ -80,7 +80,7 @@ class ProjectBaseHandleMiddleware(object):
             project_list = sel.xpath('//table[@class="house_table"]/tbody/tr')
             for p in project_list:
                 p_id = get_url_id(p.xpath('./td[2]/a/@href').extract_first() or '')
-                p_name = p.xpath('./td[4]/text()').extract_first() or ''
+                p_name = p.xpath('./td[4]/a/text()').extract_first() or ''
                 p_href = urlparse.urljoin(response.url,
                                             p.xpath('./td[2]/a/@href').extract_first() or '')
                 p_address = p.xpath('./td[5]/text()').extract_first() or ''
