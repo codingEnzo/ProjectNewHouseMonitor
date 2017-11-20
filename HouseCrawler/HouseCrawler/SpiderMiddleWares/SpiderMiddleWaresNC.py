@@ -273,7 +273,12 @@ class BuildingListHandleMiddleware(object):
                 b_info['BuildingURL'] = urlparse.urljoin(response.url,
                                             b.xpath('./@href').extract_first() or '')
                 result.append(Request(url=b_info['BuildingURL'], method='GET', dont_filter=True,
-                                meta={'PageType': 'HouseInfo', 'item': copy.deepcopy(b_info)}))
+                                meta={'PageType': 'HouseInfo',
+                                        'ProjectName': b_info['ProjectName'],
+                                        'BuildingName': b_info['BuildingName'],
+                                        'ProjectUUID': b_info['ProjectUUID'],
+                                        'BuildingUUID': b_info['BuildingUUID'],
+                                        'item': copy.deepcopy(b_info)}))
         elif response.meta.get('PageType') == 'HouseInfo':
             b_info = response.meta.get('item')
             if b_info:
