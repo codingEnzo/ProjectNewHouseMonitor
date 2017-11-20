@@ -331,7 +331,7 @@ class HouseInfoHandleMiddleware(object):
                 if result:
                     return result
                 return []
-            houseinfodetail_tr = sel.xpath('//table[@id="jqLouPanBiao"]/tr')
+            houseinfodetail_tr = sel.xpath('//table[@id="jqLouPanBiao"]/tbody/tr')
             for tr in houseinfodetail_tr:
                 cur_floor = tr.xpath('./td[1]/text()').extract_first() or ''
                 for house in tr.xpath('./td[@class and position()>0]'):
@@ -348,7 +348,6 @@ class HouseInfoHandleMiddleware(object):
                         houseinfodetail_href = urlparse.urljoin(response.url,
                                                     house.xpath('./a/@href').extract_first())
                         houseinfodetail_req = Request(url=houseinfodetail_href, method='GET',
-                                            headers=headers,
                                             meta={'PageType': 'HouseInfoDetail', 'item': copy.deepcopy(hinfo)})
                         result.append(houseinfodetail_req)
                     else:
