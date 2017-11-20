@@ -23,7 +23,7 @@ def run():
     for item in cur:
         try:
             if item['BuildingURL']:
-                if item['BuildingURLCurTimeStamp'] >= str(datetime.datetime.now().date()):
+                if True:
                     builfing_info = {'source_url': item['BuildingURL'],
                                         'meta': {'PageType': 'HouseInfo',
                                                     'ProjectName': item['ProjectName'],
@@ -31,7 +31,7 @@ def run():
                                                     'ProjectUUID': str(item['ProjectUUID']),
                                                     'BuildingUUID': str(item['BuildingUUID'])}}
                     builfing_info_json = json.dumps(builfing_info, sort_keys=True)
-                    r.sadd('HouseCrawler:start_urls:Default:Changsha', builfing_info_json)
+                    r.sadd('HouseCrawler:start_urls:Default:Nanchang', builfing_info_json)
                     num += 1
         except Exception:
             import traceback
