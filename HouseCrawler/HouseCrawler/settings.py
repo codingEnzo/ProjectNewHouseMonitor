@@ -63,10 +63,10 @@ DEFAULT_REQUEST_HEADERS = {
 # Enable or disable spider middlewares
 # See http://scrapy.readthedocs.org/en/latest/topics/spider-middleware.html
 SPIDER_MIDDLEWARES = {
-    'HouseCrawler.SpiderMiddleWares.SpiderMiddleWaresCS.ProjectBaseHandleMiddleware': 102,
-    'HouseCrawler.SpiderMiddleWares.SpiderMiddleWaresCS.ProjectInfoHandleMiddleware': 103,
-    'HouseCrawler.SpiderMiddleWares.SpiderMiddleWaresCS.BuildingListHandleMiddleware': 104,
-    'HouseCrawler.SpiderMiddleWares.SpiderMiddleWaresCS.HouseInfoHandleMiddleware': 105,
+    'HouseCrawler.SpiderMiddleWares.SpiderMiddleWaresNC.ProjectBaseHandleMiddleware': 102,
+    'HouseCrawler.SpiderMiddleWares.SpiderMiddleWaresNC.ProjectInfoHandleMiddleware': 103,
+    'HouseCrawler.SpiderMiddleWares.SpiderMiddleWaresNC.BuildingListHandleMiddleware': 104,
+    'HouseCrawler.SpiderMiddleWares.SpiderMiddleWaresNC.HouseInfoHandleMiddleware': 105,
     'scrapy.spidermiddlewares.httperror.HttpErrorMiddleware': 101
 }
 
@@ -101,7 +101,7 @@ EXTENSIONS = {
 # Configure item pipelines
 # See http://scrapy.readthedocs.org/en/latest/topics/item-pipeline.html
 ITEM_PIPELINES = {
-    'HouseCrawler.Pipelines.PipelinesCS.CSPipeline': 300,
+    'HouseCrawler.Pipelines.PipelinesNC.NCPipeline': 300,
 }
 
 
@@ -122,7 +122,7 @@ LOG_LEVEL = 'INFO'
 # Enable and configure HTTP caching (disabled by default)
 # See http://scrapy.readthedocs.org/en/latest/topics/downloader-middleware.html#httpcache-middleware-settings
 #HTTPCACHE_ENABLED = True
-#HTTPCACHE_EXPIRATION_SECS = 0
+#HTTPCACHE_EXPIRATION_SENC = 0
 #HTTPCACHE_DIR = 'httpcache'
 #HTTPCACHE_IGNORE_HTTP_CODES = []
 #HTTPCACHE_STORAGE = 'scrapy.extensions.httpcache.FilesystemCacheStorage'
@@ -132,5 +132,5 @@ USER_AGENTS = ["Mozilla/5.0 (X11; Linux x86_64; rv:52.0) Gecko/20100101 Firefox/
 
 REDIS_HOST = '10.30.1.20'
 REDIS_PORT = 6379
-Redis_key = 'HouseCrawler:start_urls:Default:Chongqing'
+Redis_key = 'HouseCrawler:start_urls:Default:Nanchang'
 REDIS_START_URLS_AS_SET = True
