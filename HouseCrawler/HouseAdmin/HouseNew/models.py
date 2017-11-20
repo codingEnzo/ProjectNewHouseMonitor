@@ -79,7 +79,6 @@ class BuildingInfo(Document):
             'CurTimeStamp',
             'ProjectName',
             'ProjectUUID',
-            'BuildingRegName',
             'BuildingUUID',
             'BuildingName',
         ]
