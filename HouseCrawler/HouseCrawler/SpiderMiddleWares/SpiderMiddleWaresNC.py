@@ -77,7 +77,7 @@ class ProjectBaseHandleMiddleware(object):
                 result.append(Request(url=url + body, method='GET', dont_filter=True,
                                 meta={'PageType': 'ProjectList'}))
         elif response.meta.get('PageType') == 'ProjectList':
-            project_list = sel.xpath('//table[@class="house_table"]/tr')
+            project_list = sel.xpath('//table[@class="house_table"]/tbody/tr')
             for p in project_list:
                 p_id = get_url_id(p.xpath('./td[2]/a/@href').extract_first() or '')
                 p_name = p.xpath('./td[4]/text()').extract_first() or ''
