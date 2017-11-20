@@ -4,7 +4,7 @@ import os
 import logging
 import uuid
 import datetime
-from HouseCrawler.Items.ItemsCS import *
+from HouseCrawler.Items.ItemsNC import *
 sys.path.append(os.path.abspath('.'))
 sys.path.append(os.path.abspath('..'))
 sys.path.append(os.path.abspath('../..'))
