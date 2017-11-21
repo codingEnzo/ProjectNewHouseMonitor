@@ -322,8 +322,8 @@ class HouseInfoHandleMiddleware(object):
                 if result:
                     return result
                 return []
-            houseinfodetail_tr = sel.xpath('//Result')
-            for tr in houseinfodetail_tr:
+            houseinfodetail_list = sel.xpath('//Result')
+            for house in houseinfodetail_list:
                 hinfo = HouseInfoItem()
                 hinfo['ProjectName'] = response.meta.get('ProjectName')
                 hinfo['BuildingName'] = response.meta.get('BuildingName')
