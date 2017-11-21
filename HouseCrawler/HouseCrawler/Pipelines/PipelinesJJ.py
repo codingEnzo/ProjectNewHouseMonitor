@@ -55,7 +55,7 @@ class JJPipeline(object):
         exist_flag = False
         q_object = item.django_model.objects
         if isinstance(item, ProjectBaseItem):
-            if q_object.filter(ProjectRegUUID=item['ProjectRegUUID']).latest(field_name='CurTimeStamp'):
+            if q_object.filter(ProjectUUID=item['ProjectUUID']).latest(field_name='CurTimeStamp'):
                 exist_flag = True
         elif isinstance(item, ProjectInfoItem):
             if q_object.filter(ProjectUUID=item['ProjectUUID']).latest(field_name='CurTimeStamp'):
@@ -74,7 +74,7 @@ class JJPipeline(object):
         diff_flag = False
         q_object = item.django_model.objects
         if isinstance(item, ProjectBaseItem):
-            res_object = q_object.filter(ProjectRegUUID=item['ProjectRegUUID']).latest(field_name='CurTimeStamp')
+            res_object = q_object.filter(ProjectUUID=item['ProjectUUID']).latest(field_name='CurTimeStamp')
             for key in item:
                 if not hasattr(res_object, key):
                     diff_flag = True
