@@ -15,10 +15,31 @@ else:
 
 def get_url_id(strUrl):
     res_id = '0'
-    match_res = re.search(r'CaseId=(\d+)', str(strUrl))
+    match_res = re.search(r'pid=(\d+)', str(strUrl))
     if match_res:
         res_id = match_res.group(1)
     return res_id
+
+
+def get_url_sid(strUrl):
+    res_id = '0'
+    match_res = re.search(r'sid=(\d+)', str(strUrl))
+    if match_res:
+        res_id = match_res.group(1)
+    return res_id
+
+
+def get_building_href(string1, string2):
+    building_url_base = 'http://www.jjzzfdc.com.cn/WebClient/ClientService/bldg_query.aspx?'
+    req_dict = {'sid': '',
+                'pid': ''}
+    match_sid = re.search(r"javascript:queryBySid\('\" \+ (\d+) \+ \"'", str(string1))
+    match_pid = re.search(r'pid=(\d+)', str(string2))
+    if match_sid and match_pid:
+        req_dict['sid'] = match_sid.group(1)
+        req_dict['pid'] = match_pid.group(1)
+        return building_url_base + urlparse.urlencode(req_dict)
+    return None
 
 
 def get_total_page(string):
@@ -62,40 +83,18 @@ class ProjectBaseHandleMiddleware(object):
 
         sel = Selector(response)
         if response.meta.get('PageType') == 'ProjectBase':
-            base_url = 'http://www.xjqfdc.cn/House/ListPreSell?'
-            req_dict = {'page': '',
-                        'Place': '',
-                        'LicenceId': '',
-                        'Developer': '',
-                        'Project': '',
-                        'Date': ''}
-            total_page = get_total_page(response.body_as_unicode())
-            for page in range(total_page):
-                req_dict['page'] = page
-                url = base_url
-                body = urlparse.urlencode(req_dict)
-                result.append(Request(url=url + body, method='GET', dont_filter=True,
-                                meta={'PageType': 'ProjectList'}))
-        elif response.meta.get('PageType') == 'ProjectList':
-            project_list = sel.xpath('//table[@class="house_table"]/tbody/tr')
+            project_list = sel.xpath('//tr[td[img]]')
             for p in project_list:
-                p_id = get_url_id(p.xpath('./td[2]/a/@href').extract_first() or '')
-                p_name = p.xpath('./td[4]/a/text()').extract_first() or ''
+                p_id = get_url_id(p.xpath('./td[2]/b/a/@href').extract_first() or '')
+                p_name = p.xpath('./td[2]/b/a/text()').extract_first() or ''
                 p_href = urlparse.urljoin(response.url,
-                                            p.xpath('./td[2]/a/@href').extract_first() or '')
-                p_address = p.xpath('./td[5]/text()').extract_first() or ''
-                p_regname = p.xpath('./td[2]/a/text()').extract_first() or ''
-                p_regdate = p.xpath('./td[6]/text()').extract_first() or ''
-                p_company = p.xpath('./td[3]/text()').extract_first() or ''
+                                            p.xpath('./td[2]/b/a/@href').extract_first() or '')
+                p_description = ''.join(p.xpath('./td[2]/text()').extract()).strip()
                 pb = ProjectBaseItem()
                 pb['ProjectUUID'] = uuid.uuid3(uuid.NAMESPACE_DNS, p_name + p_id)
-                pb['ProjectRegUUID'] = uuid.uuid3(uuid.NAMESPACE_DNS, p_regname + p_id)
                 pb['ProjectName'] = p_name
                 pb['ProjectURL'] = p_href
-                pb['ProjectAddress'] = p_address
-                pb['ProjectRegName'] = p_regname
-                pb['ProjectRegDate'] = p_regdate
-                pb['ProjectCompany'] = p_company
+                pb['ProjectDescription'] = p_description
                 result.append(pb)
         return result
 
@@ -137,89 +136,21 @@ class ProjectInfoHandleMiddleware(object):
         sel = Selector(response)
         if response.meta.get('PageType') == 'ProjectInfo':
             pinfo = ProjectInfoItem()
-            pinfo['ProjectName'] = sel.xpath('//td[text()="项目名称："]/following-sibling::td[1]/text()').extract_first() or ''
+            pinfo['ProjectName'] = (sel.xpath('//td[font[text()="项目名称"]]/following-sibling::td[1]/text()').extract_first() or '').strip()
             pinfo['ProjectUUID'] = uuid.uuid3(uuid.NAMESPACE_DNS,
                                     pinfo['ProjectName'] + get_url_id(response.url))
-            pinfo['ProjectCompany'] = sel.xpath('//td[text()="公司名称："]/following-sibling::td[1]/text()').extract_first() or ''
-            pinfo['ProjectRegName'] = sel.xpath('//td[text()="预售许可证："]/following-sibling::td[1]/text()').extract_first() or ''
-            pinfo['ProjectSalePhone'] = sel.xpath('//td[text()="售楼电话："]/following-sibling::td[1]/text()').extract_first() or ''
-            pinfo['ProjectAddress'] = sel.xpath('//td[text()="项目坐落："]/following-sibling::td[1]/text()').extract_first() or ''
-            pinfo['ProjectUsage'] = sel.xpath('//td[text()="规划用途："]/following-sibling::td[1]/text()').extract_first() or ''
-            pinfo['ProjectArea'] = sel.xpath('//td[text()="土地面积："]/following-sibling::td[1]/text()').extract_first() or ''
-            pinfo['ProjectUseArea'] = sel.xpath('//td[text()="占地面积："]/following-sibling::td[1]/text()').extract_first() or ''
-            pinfo['ProjectBuildArea'] = sel.xpath('//td[text()="建筑面积："]/following-sibling::td[1]/text()').extract_first() or ''
-            pinfo['ProjectRongjiRatio'] = sel.xpath('//td[text()="容 积 率："]/following-sibling::td[1]/text()').extract_first() or ''
-            pinfo['ProjectLvdiRatio'] = sel.xpath('//td[text()="绿 地 率："]/following-sibling::td[1]/text()').extract_first() or ''
-            pinfo['ProjectBuildingRatio'] = sel.xpath('//td[text()="建筑密度："]/following-sibling::td[1]/text()').extract_first() or ''
-            pinfo['ProjectInvestment'] = sel.xpath('//td[text()="工程投资："]/following-sibling::td[1]/text()').extract_first() or ''
-            pinfo['ProjectBuildDate'] = sel.xpath('//td[text()="开工日期："]/following-sibling::td[1]/text()').extract_first() or ''
-            pinfo['ProjectCompleteDate'] = sel.xpath('//td[text()="竣工日期："]/following-sibling::td[1]/text()').extract_first() or ''
-            pinfo['ProjectBuildingCompany'] = sel.xpath('//td[text()="施工单位："]/following-sibling::td[1]/text()').extract_first() or ''
-            pinfo['ProjectMeasureCompany'] = sel.xpath('//td[text()="测绘单位："]/following-sibling::td[1]/text()').extract_first() or ''
-            sale_sum_t = sel.xpath('//tr[@class="title"]/following-sibling::tr[not(@class)]')
-            if len(sale_sum_t) == 3:
-                pinfo['ProjectSaleSum'] = {
-                    '住宅': {
-                        '套数': {
-                            'Sum': sale_sum_t[0].xpath('./td[2]/text()').extract_first() or '',
-                            'Saling': sale_sum_t[1].xpath('./td[2]/text()').extract_first() or '',
-                            'Sold': sale_sum_t[2].xpath('./td[2]/text()').extract_first() or '',
-                        },
-                        '面积': {
-                            'Sum': sale_sum_t[0].xpath('./td[3]/text()').extract_first() or '',
-                            'Saling': sale_sum_t[1].xpath('./td[3]/text()').extract_first() or '',
-                            'Sold': sale_sum_t[2].xpath('./td[3]/text()').extract_first() or '',
-                        }
-                    },
-                    '商业': {
-                        '套数': {
-                            'Sum': sale_sum_t[0].xpath('./td[4]/text()').extract_first() or '',
-                            'Saling': sale_sum_t[1].xpath('./td[4]/text()').extract_first() or '',
-                            'Sold': sale_sum_t[2].xpath('./td[4]/text()').extract_first() or '',
-                        },
-                        '面积': {
-                            'Sum': sale_sum_t[0].xpath('./td[5]/text()').extract_first() or '',
-                            'Saling': sale_sum_t[1].xpath('./td[5]/text()').extract_first() or '',
-                            'Sold': sale_sum_t[2].xpath('./td[5]/text()').extract_first() or '',
-                        }
-                    },
-                    '写字楼': {
-                        '套数': {
-                            'Sum': sale_sum_t[0].xpath('./td[6]/text()').extract_first() or '',
-                            'Saling': sale_sum_t[1].xpath('./td[6]/text()').extract_first() or '',
-                            'Sold': sale_sum_t[2].xpath('./td[6]/text()').extract_first() or '',
-                        },
-                        '面积': {
-                            'Sum': sale_sum_t[0].xpath('./td[7]/text()').extract_first() or '',
-                            'Saling': sale_sum_t[1].xpath('./td[7]/text()').extract_first() or '',
-                            'Sold': sale_sum_t[2].xpath('./td[7]/text()').extract_first() or '',
-                        }
-                    },
-                    '车库车位': {
-                        '套数': {
-                            'Sum': sale_sum_t[0].xpath('./td[8]/text()').extract_first() or '',
-                            'Saling': sale_sum_t[1].xpath('./td[8]/text()').extract_first() or '',
-                            'Sold': sale_sum_t[2].xpath('./td[8]/text()').extract_first() or '',
-                        },
-                        '面积': {
-                            'Sum': sale_sum_t[0].xpath('./td[9]/text()').extract_first() or '',
-                            'Saling': sale_sum_t[1].xpath('./td[9]/text()').extract_first() or '',
-                            'Sold': sale_sum_t[2].xpath('./td[9]/text()').extract_first() or '',
-                        }
-                    },
-                    '其他': {
-                        '套数': {
-                            'Sum': sale_sum_t[0].xpath('./td[10]/text()').extract_first() or '',
-                            'Saling': sale_sum_t[1].xpath('./td[10]/text()').extract_first() or '',
-                            'Sold': sale_sum_t[2].xpath('./td[10]/text()').extract_first() or '',
-                        },
-                        '面积': {
-                            'Sum': sale_sum_t[0].xpath('./td[11]/text()').extract_first() or '',
-                            'Saling': sale_sum_t[1].xpath('./td[11]/text()').extract_first() or '',
-                            'Sold': sale_sum_t[2].xpath('./td[11]/text()').extract_first() or '',
-                        }
-                    }
-                }
+            pinfo['ProjectCompany'] = (sel.xpath('//td[font[text()="开 发 商"]]/following-sibling::td[1]/a/font/text()').extract_first() or '').strip()
+            pinfo['ProjectAddress'] = (sel.xpath('//td[font[text()="项目地点"]]/following-sibling::td[1]/text()').extract_first() or '').strip()
+            pinfo['ProjectUsage'] = (sel.xpath('//td[font[text()="项目性质"]]/following-sibling::td[1]/text()').extract_first() or '').strip()
+            pinfo['ProjectArea'] = (sel.xpath('//td[font[text()="用地面积"]]/following-sibling::td[1]/text()').extract_first() or '').strip()
+            pinfo['ProjectBuildArea'] = (sel.xpath('//td[font[text()="总建筑面积"]]/following-sibling::td[1]/text()').extract_first() or '').strip()
+            pinfo['ProjectRongjiRatio'] = (sel.xpath('//td[font[text()="容积率（%）"]]/following-sibling::td[1]/text()').extract_first() or '').strip()
+            pinfo['ProjectLvdiRatio'] = (sel.xpath('//td[font[text()="绿化率（%）"]]/following-sibling::td[1]/text()').extract_first() or '').strip()
+            pinfo['ProjectInvestment'] = (sel.xpath('//td[font[text()="总投资（万元）"]]/following-sibling::td[1]/text()').extract_first() or '').strip()
+            pinfo['ProjectBuildDate'] = (sel.xpath('//td[font[text()="开工日期"]]/following-sibling::td[1]/text()').extract_first() or '').strip()
+            pinfo['ProjectBuildingCompany'] = (sel.xpath('//td[font[text()="施工单位"]]/following-sibling::td[1]/text()').extract_first() or '').strip()
+            pinfo['ProjectManageCompany'] = (sel.xpath('//td[font[text()="物业管理"]]/following-sibling::td[1]/text()').extract_first() or '').strip()
+            pinfo['ProjectDesignCompany'] = (sel.xpath('//td[font[text()="设计单位"]]/following-sibling::td[1]/text()').extract_first() or '').strip()
             result.append(pinfo)
         return result
 
@@ -252,7 +183,7 @@ class BuildingListHandleMiddleware(object):
             if result:
                 return result
             return []
-        if response.meta.get('PageType') not in ('ProjectInfo', 'HouseInfo'):
+        if response.meta.get('PageType') not in ('ProjectInfo', 'BuildingInfo'):
             if result:
                 return result
             return []
@@ -260,97 +191,46 @@ class BuildingListHandleMiddleware(object):
 
         sel = Selector(response)
         if response.meta.get('PageType') == 'ProjectInfo':
-            p_name = sel.xpath('//td[text()="项目名称："]/following-sibling::td[1]/text()').extract_first() or ''
+            p_name = (sel.xpath('//td[font[text()="项目名称"]]/following-sibling::td[1]/text()').extract_first() or '').strip()
             p_id = get_url_id(response.url)
-            building_list = sel.xpath('//table[@class="house_table"]//td[a[span]]/a')
+            building_list = sel.xpath('//table[@id="table588"]/tr[@class]')
             for b in building_list:
                 b_info = BuildingInfoItem()
                 b_info['ProjectUUID'] = uuid.uuid3(uuid.NAMESPACE_DNS, p_name + p_id)
                 b_info['ProjectName'] = p_name
-                b_info['BuildingName'] = b.xpath('./span/strong/text()').extract_first() or ''
+                b_info['BuildingName'] = (b.xpath('./td[1]/text()').extract_first() or '').strip()
                 b_info['BuildingUUID'] = uuid.uuid3(uuid.NAMESPACE_DNS,
                                             b_info['BuildingName'] + p_id)
-                b_info['BuildingURL'] = urlparse.urljoin(response.url,
-                                            b.xpath('./@href').extract_first() or '')
-                result.append(Request(url=b_info['BuildingURL'], method='GET', dont_filter=True,
-                                meta={'PageType': 'HouseInfo',
-                                        'ProjectName': b_info['ProjectName'],
-                                        'BuildingName': b_info['BuildingName'],
-                                        'ProjectUUID': b_info['ProjectUUID'],
-                                        'BuildingUUID': b_info['BuildingUUID'],
-                                        'item': copy.deepcopy(b_info)}))
-        elif response.meta.get('PageType') == 'HouseInfo':
+                b_info['BuildingRegName'] = (b.xpath('./td[2]/text()').extract_first() or '').strip()
+                b_info['BuildingArea'] = (b.xpath('./td[3]/text()').extract_first() or '').strip()
+                b_info['BuildingRegDate'] = (b.xpath('./td[4]/text()').extract_first() or '').strip()
+                b_info['BuildingRegPrice'] = (b.xpath('./td[5]/text()').extract_first() or '').strip()
+                b_info['BuildingSalingNum'] = (b.xpath('./td[6]/text()').extract_first() or '').strip()
+                b_info['BuildingType'] = (b.xpath('./td[7]/text()').extract_first() or '').strip()
+                b_info['BuildingSaleState'] = (b.xpath('./td[8]/text()').extract_first() or '').strip()
+                building_info_url = get_building_href(b.xpath('./td[9]/script').extract_first() or '', response.url)
+                if building_info_url:
+                    result.append(Request(url=building_info_url, method='GET',
+                                meta={'PageType': 'BuildingInfo', 'item': copy.deepcopy(b_info)}))
+                else:
+                    result.append(b_info)
+        elif response.meta.get('PageType') == 'BuildingInfo':
             b_info = response.meta.get('item')
             if b_info:
-                b_info['BuildingUsage'] = sel.xpath('//td[text()="设计用途："]/following-sibling::td[1]/text()').extract_first() or ''
-                b_info['BuildingStructure'] = sel.xpath('//td[text()="建筑结构："]/following-sibling::td[1]/text()').extract_first() or ''
-                b_info['BuildingTotalFloor'] = sel.xpath('//td[text()="总 层 数："]/following-sibling::td[1]/text()').extract_first() or ''
-                b_info['BuildingTotalArea'] = sel.xpath('//td[text()="总 面 积："]/following-sibling::td[1]/text()').extract_first() or ''
-                sale_sum_t = sel.xpath('//tr[@class="title"]/following-sibling::tr[not(@class) and td[@class="c"]]')
-            if len(sale_sum_t) == 3:
-                b_info['BuildingSaleSum'] = {
-                    '住宅': {
-                        '套数': {
-                            'Sum': sale_sum_t[0].xpath('./td[2]/text()').extract_first() or '',
-                            'Saling': sale_sum_t[1].xpath('./td[2]/text()').extract_first() or '',
-                            'Sold': sale_sum_t[2].xpath('./td[2]/text()').extract_first() or '',
-                        },
-                        '面积': {
-                            'Sum': sale_sum_t[0].xpath('./td[3]/text()').extract_first() or '',
-                            'Saling': sale_sum_t[1].xpath('./td[3]/text()').extract_first() or '',
-                            'Sold': sale_sum_t[2].xpath('./td[3]/text()').extract_first() or '',
-                        }
-                    },
-                    '商业': {
-                        '套数': {
-                            'Sum': sale_sum_t[0].xpath('./td[4]/text()').extract_first() or '',
-                            'Saling': sale_sum_t[1].xpath('./td[4]/text()').extract_first() or '',
-                            'Sold': sale_sum_t[2].xpath('./td[4]/text()').extract_first() or '',
-                        },
-                        '面积': {
-                            'Sum': sale_sum_t[0].xpath('./td[5]/text()').extract_first() or '',
-                            'Saling': sale_sum_t[1].xpath('./td[5]/text()').extract_first() or '',
-                            'Sold': sale_sum_t[2].xpath('./td[5]/text()').extract_first() or '',
-                        }
-                    },
-                    '写字楼': {
-                        '套数': {
-                            'Sum': sale_sum_t[0].xpath('./td[6]/text()').extract_first() or '',
-                            'Saling': sale_sum_t[1].xpath('./td[6]/text()').extract_first() or '',
-                            'Sold': sale_sum_t[2].xpath('./td[6]/text()').extract_first() or '',
-                        },
-                        '面积': {
-                            'Sum': sale_sum_t[0].xpath('./td[7]/text()').extract_first() or '',
-                            'Saling': sale_sum_t[1].xpath('./td[7]/text()').extract_first() or '',
-                            'Sold': sale_sum_t[2].xpath('./td[7]/text()').extract_first() or '',
-                        }
-                    },
-                    '车库车位': {
-                        '套数': {
-                            'Sum': sale_sum_t[0].xpath('./td[8]/text()').extract_first() or '',
-                            'Saling': sale_sum_t[1].xpath('./td[8]/text()').extract_first() or '',
-                            'Sold': sale_sum_t[2].xpath('./td[8]/text()').extract_first() or '',
-                        },
-                        '面积': {
-                            'Sum': sale_sum_t[0].xpath('./td[9]/text()').extract_first() or '',
-                            'Saling': sale_sum_t[1].xpath('./td[9]/text()').extract_first() or '',
-                            'Sold': sale_sum_t[2].xpath('./td[9]/text()').extract_first() or '',
-                        }
-                    },
-                    '其他': {
-                        '套数': {
-                            'Sum': sale_sum_t[0].xpath('./td[10]/text()').extract_first() or '',
-                            'Saling': sale_sum_t[1].xpath('./td[10]/text()').extract_first() or '',
-                            'Sold': sale_sum_t[2].xpath('./td[10]/text()').extract_first() or '',
-                        },
-                        '面积': {
-                            'Sum': sale_sum_t[0].xpath('./td[11]/text()').extract_first() or '',
-                            'Saling': sale_sum_t[1].xpath('./td[11]/text()').extract_first() or '',
-                            'Sold': sale_sum_t[2].xpath('./td[11]/text()').extract_first() or '',
-                        }
-                    }
-                }
-            result.append(b_info)
+                b_info['BuildingPlanAreaCode'] = (sel.xpath('//td[b[text()="用地规划"]]/following-sibling::td[1]/text()').extract_first() or '').strip()
+                b_info['BuildingRegName'] = (sel.xpath('//td[b[text()="预售证号"]]/following-sibling::td[1]/text()').extract_first() or '').strip()
+                b_info['BuildingPlanEngCode'] = (sel.xpath('//td[b[text()="工程规划"]]/following-sibling::td[1]/text()').extract_first() or '').strip()
+                b_info['BuildingBuildEngCode'] = (sel.xpath('//td[b[text()="工程施工"]]/following-sibling::td[1]/text()').extract_first() or '').strip()
+                b_info['BuildingAreaCode'] = (sel.xpath('//td[b[text()="国土证号"]]/following-sibling::td[1]/text()').extract_first() or '').strip()
+                b_info['BuildingZZHouseNum'] = (sel.xpath('//td[b[text()="住宅套数"]]/following-sibling::td[1]/text()').extract_first() or '').strip()
+                b_info['BuildingFZZHouseNum'] = (sel.xpath('//td[b[text()="非住宅套数"]]/following-sibling::td[1]/text()').extract_first() or '').strip()
+                b_info['BuildingSalingNum'] = (sel.xpath('//td[b[text()="现可售套数"]]/following-sibling::td[1]/text()').extract_first() or '').strip()
+                b_info['BuildingSoldNum'] = (sel.xpath('//td[b[text()="已售套数"]]/following-sibling::td[1]/text()').extract_first() or '').strip()
+                b_info['BuildingZZUnitPrice'] = (sel.xpath('//td[b[text()="住宅销售均价"]]/following-sibling::td[1]/text()').extract_first() or '').strip()
+                b_info['BuildingFZZUnitPrice'] = (sel.xpath('//td[b[text()="非住宅销售均价"]]/following-sibling::td[1]/text()').extract_first() or '').strip()
+                b_info['BuildingURL'] = urlparse.urljoin('http://www.jjzzfdc.com.cn/WebClient/ClientService/',
+                                            'proxp.aspx?key=WWW_LPB_001&params={sid}'.format(sid=get_url_sid(response.url)))
+                result.append(b_info)
         return result
 
     def process_spider_exception(self, response, exception, spider):
@@ -378,12 +258,16 @@ class HouseInfoHandleMiddleware(object):
     def process_spider_output(self, response, result, spider):
 
         def get_house_state(string):
-            STATE_TAB = {'sty_1': '已限制',
-                            'sty_2': '已抵押',
-                            'sty_3': '已报审',
-                            'sty_4': '已备案',
-                            'sty_5': '可销售',
-                            'sty_6': '不可售'}
+            STATE_TAB = {'#0033FF': '已公示',
+                            '#FFFFFF': '不可售',
+                            '#00FF00': '可售',
+                            '#0099FF': '可现售',
+                            '#C4A93C': '已销售上报',
+                            '#F3F394': '已定',
+                            '#99CC00': '已签,公租已签',
+                            '#CC99FF': '公租备案(完全),备案,公租备案',
+                            '#FFCC99': '在建工程抵押,工程最高额',
+                            '#AAAAAA': '共管房'}
             state = ''
             for key in STATE_TAB:
                 if key == string:
@@ -396,7 +280,7 @@ class HouseInfoHandleMiddleware(object):
             if result:
                 return result
             return []
-        if response.meta.get('PageType') not in ('HouseInfo', 'HouseInfoDetail'):
+        if response.meta.get('PageType') not in ('HouseInfo', ):
             if result:
                 return result
             return []
@@ -409,43 +293,26 @@ class HouseInfoHandleMiddleware(object):
                 if result:
                     return result
                 return []
-            houseinfodetail_tr = sel.xpath('//table[@id="jqLouPanBiao"]/tbody/tr')
+            houseinfodetail_tr = sel.xpath('//Result')
             for tr in houseinfodetail_tr:
-                cur_floor = tr.xpath('./td[1]/text()').extract_first() or ''
-                for house in tr.xpath('./td[@class and position()>0]'):
-                    hinfo = HouseInfoItem()
-                    hinfo['ProjectName'] = response.meta.get('ProjectName')
-                    hinfo['BuildingName'] = response.meta.get('BuildingName')
-                    hinfo['ProjectUUID'] = response.meta.get('ProjectUUID')
-                    hinfo['BuildingUUID'] = response.meta.get('BuildingUUID')
-                    hinfo['HouseName'] = house.xpath('./a/text()').extract_first() or ''
-                    hinfo['HouseUUID'] = uuid.uuid3(uuid.NAMESPACE_DNS, hinfo['HouseName'] + str(hinfo['BuildingUUID']))
-                    hinfo['HouseFloor'] = cur_floor
-                    hinfo['HouseSaleState'] = get_house_state(house.xpath('./@class').extract_first())
-                    if house.xpath('./a/@href').extract_first():
-                        houseinfodetail_href = urlparse.urljoin(response.url,
-                                                    house.xpath('./a/@href').extract_first())
-                        hinfo['HouseUUID'] = uuid.uuid3(uuid.NAMESPACE_DNS,
-                                                hinfo['HouseName'] + str(hinfo['BuildingUUID']) + houseinfodetail_href)
-                        houseinfodetail_req = Request(url=houseinfodetail_href, method='GET',
-                                            meta={'PageType': 'HouseInfoDetail', 'item': copy.deepcopy(hinfo)})
-                        result.append(houseinfodetail_req)
-                    else:
-                        result.append(hinfo)
-
-        elif response.meta.get('PageType') == 'HouseInfoDetail':
-            hinfo = response.meta.get('item')
-            if hinfo:
-                hinfo['HouseStructure'] = sel.xpath('//td[text()="结　　构："]/following-sibling::td[1]/text()').extract_first() or ''
-                hinfo['HouseBuildingArea'] = sel.xpath('//td[text()="建筑面积："]/following-sibling::td[1]/text()').extract_first() or ''
-                hinfo['HouseInnerArea'] = sel.xpath('//td[text()="套内面积："]/following-sibling::td[1]/text()').extract_first() or ''
-                hinfo['HouseShareArea'] = sel.xpath('//td[text()="分摊面积："]/following-sibling::td[1]/text()').extract_first() or ''
-                hinfo['HouseUsage'] = sel.xpath('//td[text()="房屋用途："]/following-sibling::td[1]/text()').extract_first() or ''
-                hinfo['HouseFloorAt'] = sel.xpath('//td[text()=" 所 在 层： "]/following-sibling::td[1]/text()').extract_first() or ''
-                hinfo['HouseFloorTotal'] = sel.xpath('//td[text()=" 总 层 数： "]/following-sibling::td[1]/text()').extract_first() or ''
-                hinfo['HousePreUnitPrice'] = sel.xpath('//td[text()=" 预售申请单价： "]/following-sibling::td[1]/text()').extract_first() or ''
-                hinfo['HouseStructureType'] = sel.xpath('//td[text()="房屋户型："]/following-sibling::td[1]/text()').extract_first() or ''
-                hinfo['HouseContract'] = sel.xpath('//td[text()="合 同 号："]/following-sibling::td[1]/text()').extract_first() or ''
+                hinfo = HouseInfoItem()
+                hinfo['ProjectName'] = response.meta.get('ProjectName')
+                hinfo['BuildingName'] = response.meta.get('BuildingName')
+                hinfo['ProjectUUID'] = response.meta.get('ProjectUUID')
+                hinfo['BuildingUUID'] = response.meta.get('BuildingUUID')
+                hinfo['HouseName'] = house.xpath('./ONAME/text()').extract_first() or ''
+                hinfo['HouseOSEQ'] = house.xpath('./OSEQ/text()').extract_first() or ''
+                hinfo['HouseUUID'] = uuid.uuid3(uuid.NAMESPACE_DNS,
+                                        hinfo['HouseName'] + hinfo['HouseOSEQ'] + str(hinfo['BuildingUUID']))
+                hinfo['HouseFloor'] = house.xpath('./FORC/text()').extract_first() or ''
+                hinfo['HouseKey'] = house.xpath('./KEY/text()').extract_first() or ''
+                hinfo['HouseSTR_2'] = house.xpath('./STR_2/text()').extract_first() or ''
+                hinfo['HouseSTR_3'] = house.xpath('./STR_3/text()').extract_first() or ''
+                hinfo['HouseSTR_5'] = house.xpath('./STR_5/text()').extract_first() or ''
+                hinfo['HouseSattribute'] = house.xpath('./SATTRIBUTE/text()').extract_first() or ''
+                hinfo['HouseBuildingArea'] = house.xpath('./BAREA/text()').extract_first() or ''
+                hinfo['HouseInnerArea'] = house.xpath('./PAREA/text()').extract_first() or ''
+                hinfo['HouseSaleState'] = get_house_state(hinfo['HouseKey'])
                 result.append(hinfo)
         return result
 
