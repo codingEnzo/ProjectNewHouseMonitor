@@ -342,7 +342,7 @@ class HouseInfoHandleMiddleware(object):
                 hinfo['HouseBuildingArea'] = house.xpath('./BAREA/text()').extract_first() or ''
                 hinfo['HouseInnerArea'] = house.xpath('./PAREA/text()').extract_first() or ''
                 hinfo['HouseSaleState'] = get_house_state(hinfo['HouseKey'])
-                hinfo['HouseUnitPrice'] = get_project_unitprice(hinfo['BuildingUUID'])
+                hinfo['HouseUnitPrice'] = str(get_project_unitprice(hinfo['BuildingUUID']))
                 result.append(hinfo)
         return result
 
