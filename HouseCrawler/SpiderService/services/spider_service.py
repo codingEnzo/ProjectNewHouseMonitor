@@ -86,7 +86,7 @@ def spider_call(self, spiderName, settings=None, urlList=None, **kwargs):
 
     # 方式改变不用提异常！
     except SoftTimeLimitExceeded:
-        logger.info("超时完成！")
+        logger.info("任务超时！")
         self.cur.terminate()
         self.cur.join()
         return False

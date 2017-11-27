@@ -45,8 +45,8 @@ CONCURRENT_REQUESTS = 16
 # See http://scrapy.readthedocs.org/en/latest/topics/settings.html#download-delay
 # See also autothrottle settings and docs
 # The download delay setting will honor only one of:
-#CONCURRENT_REQUESTS_PER_DOMAIN = 16
-#CONCURRENT_REQUESTS_PER_IP = 16
+# CONCURRENT_REQUESTS_PER_DOMAIN = 16
+# CONCURRENT_REQUESTS_PER_IP = 16
 
 # Disable cookies (enabled by default)
 COOKIES_ENABLED = False
@@ -56,17 +56,13 @@ TELNETCONSOLE_ENABLED = False
 
 # Override the default request headers:
 DEFAULT_REQUEST_HEADERS = {
-   'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
-   'Accept-Language': 'en',
+    'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+    'Accept-Language': 'en',
 }
 
 # Enable or disable spider middlewares
 # See http://scrapy.readthedocs.org/en/latest/topics/spider-middleware.html
 SPIDER_MIDDLEWARES = {
-    'HouseCrawler.SpiderMiddleWares.SpiderMiddleWaresJJ.ProjectBaseHandleMiddleware': 102,
-    'HouseCrawler.SpiderMiddleWares.SpiderMiddleWaresJJ.ProjectInfoHandleMiddleware': 103,
-    'HouseCrawler.SpiderMiddleWares.SpiderMiddleWaresJJ.BuildingListHandleMiddleware': 104,
-    'HouseCrawler.SpiderMiddleWares.SpiderMiddleWaresJJ.HouseInfoHandleMiddleware': 105,
     'scrapy.spidermiddlewares.httperror.HttpErrorMiddleware': 101
 }
 
@@ -81,7 +77,7 @@ DOWNLOADER_MIDDLEWARES = {
 
 RETRY_ENABLED = True
 RETRY_TIMES = 10
-RETRY_HTTP_CODES = [500,403,404,501,502,503,504,400,408,411,413,301,407,303,304,305,306,307]
+RETRY_HTTP_CODES = [500, 403, 404, 501, 502, 503, 504, 400, 408, 411, 413, 301, 407, 303, 304, 305, 306, 307]
 REDIRECT_ENABLED = False
 
 
@@ -101,36 +97,30 @@ EXTENSIONS = {
 # Configure item pipelines
 # See http://scrapy.readthedocs.org/en/latest/topics/item-pipeline.html
 ITEM_PIPELINES = {
-    'HouseCrawler.Pipelines.PipelinesJJ.JJPipeline': 300,
 }
 
 
 LOG_LEVEL = 'INFO'
 # Enable and configure the AutoThrottle extension (disabled by default)
 # See http://doc.scrapy.org/en/latest/topics/autothrottle.html
-#AUTOTHROTTLE_ENABLED = True
+# AUTOTHROTTLE_ENABLED = True
 # The initial download delay
-#AUTOTHROTTLE_START_DELAY = 5
+# AUTOTHROTTLE_START_DELAY = 5
 # The maximum download delay to be set in case of high latencies
-#AUTOTHROTTLE_MAX_DELAY = 60
+# AUTOTHROTTLE_MAX_DELAY = 60
 # The average number of requests Scrapy should be sending in parallel to
 # each remote server
-#AUTOTHROTTLE_TARGET_CONCURRENCY = 1.0
+# AUTOTHROTTLE_TARGET_CONCURRENCY = 1.0
 # Enable showing throttling stats for every response received:
-#AUTOTHROTTLE_DEBUG = False
+# AUTOTHROTTLE_DEBUG = False
 
 # Enable and configure HTTP caching (disabled by default)
 # See http://scrapy.readthedocs.org/en/latest/topics/downloader-middleware.html#httpcache-middleware-settings
-#HTTPCACHE_ENABLED = True
-#HTTPCACHE_EXPIRATION_SENC = 0
-#HTTPCACHE_DIR = 'httpcache'
-#HTTPCACHE_IGNORE_HTTP_CODES = []
-#HTTPCACHE_STORAGE = 'scrapy.extensions.httpcache.FilesystemCacheStorage'
+# HTTPCACHE_ENABLED = True
+# HTTPCACHE_EXPIRATION_SENC = 0
+# HTTPCACHE_DIR = 'httpcache'
+# HTTPCACHE_IGNORE_HTTP_CODES = []
+# HTTPCACHE_STORAGE = 'scrapy.extensions.httpcache.FilesystemCacheStorage'
 
 
 USER_AGENTS = ["Mozilla/5.0 (X11; Linux x86_64; rv:52.0) Gecko/20100101 Firefox/52.0", ]
-
-REDIS_HOST = '10.30.1.20'
-REDIS_PORT = 6379
-Redis_key = 'HouseCrawler:start_urls:Default:Jiujiang'
-REDIS_START_URLS_AS_SET = True
