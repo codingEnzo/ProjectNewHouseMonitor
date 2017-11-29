@@ -93,3 +93,7 @@ ENV/
 .venv3/
 src/YWebAdmin/bower_components/
 src/YWebAdmin/*.xlsx
+
+
+# Logs
+logs/
