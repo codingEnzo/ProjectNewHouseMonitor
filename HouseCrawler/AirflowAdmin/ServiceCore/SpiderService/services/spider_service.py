@@ -75,7 +75,6 @@ def spider_call(self, spiderName, settings=None, urlList=None, **kwargs):
         except Exception:
             import traceback
             traceback.print_exc()
-    print(urlList)
     self.cur = Crawler_Run(spiderName=spiderName,
                            settings=settings_use,
                            urlList=urlList,

@@ -5,16 +5,18 @@ from django_mongoengine import *
 from django_mongoengine import fields
 
 
-class ProjectBaseJiujiang(Document):
+# Guiyang City Model
+class ProjectBaseGuiyang(Document):
     RecordID = fields.UUIDField(default=uuid.uuid1(),
                                     binary=True, primary_key=True, null=False)
     CurTimeStamp = fields.StringField(default=str(datetime.datetime.now()), index=True)
     ProjectUUID = fields.UUIDField(default=uuid.uuid3(uuid.NAMESPACE_DNS, ''),
                                     binary=False, null=False)
     ProjectName = fields.StringField(default='', max_length=1024, null=False)
-    ProjectDescription = fields.DynamicField(default='', null=False)
+    ProjectRegName = fields.StringField(default='', max_length=1024, null=False)
     ProjectURL = fields.URLField(default=None, null=True, blank=True)
     ProjectURLCurTimeStamp = fields.StringField(default=str(datetime.datetime.now()), index=True)
+
     meta = {
         'indexes': [
             'CurTimeStamp',
@@ -24,7 +26,7 @@ class ProjectBaseJiujiang(Document):
     }
 
 
-class ProjectInfoJiujiang(Document):
+class ProjectInfoGuiyang(Document):
     RecordID = fields.UUIDField(default=uuid.uuid1(),
                                     binary=True, primary_key=True, null=False)
     CurTimeStamp = fields.StringField(default=str(datetime.datetime.now()), index=True)
@@ -36,13 +38,17 @@ class ProjectInfoJiujiang(Document):
     ProjectUsage = fields.StringField(default='', max_length=1024, null=False)
     ProjectArea = fields.StringField(default='', max_length=1024, null=False)
     ProjectBuildArea = fields.StringField(default='', max_length=1024, null=False)
-    ProjectRongjiRatio = fields.StringField(default='', max_length=1024, null=False)
-    ProjectLvdiRatio = fields.StringField(default='', max_length=1024, null=False)
-    ProjectInvestment = fields.StringField(default='', max_length=1024, null=False)
-    ProjectBuildDate = fields.StringField(default='', max_length=1024, null=False)
     ProjectBuildingCompany = fields.StringField(default='', max_length=1024, null=False)
-    ProjectManageCompany = fields.StringField(default='', max_length=1024, null=False)
     ProjectDesignCompany = fields.StringField(default='', max_length=1024, null=False)
+    ProjectRegName = fields.StringField(default='', max_length=1024, null=False)
+    ProjectSalePhone = fields.StringField(default='', max_length=1024, null=False)
+    ProjectDescription = fields.StringField(default='', max_length=1024, null=False)
+    ProjectBuildingNum = fields.StringField(default='', max_length=1024, null=False)
+    ProjectAreaCode = fields.StringField(default='', max_length=1024, null=False)
+    ProjectAreaPlanCode = fields.StringField(default='', max_length=1024, null=False)
+    ProjectEngPlanCode = fields.StringField(default='', max_length=1024, null=False)
+    ProjectBuildingCode = fields.StringField(default='', max_length=1024, null=False)
+
     meta = {
         'indexes': [
             'CurTimeStamp',
@@ -52,7 +58,7 @@ class ProjectInfoJiujiang(Document):
     }
 
 
-class BuildingInfoJiujiang(Document):
+class BuildingInfoGuiyang(Document):
     RecordID = fields.UUIDField(default=uuid.uuid1(),
                                     binary=True, primary_key=True, null=False)
     CurTimeStamp = fields.StringField(default=str(datetime.datetime.now()), index=True)
@@ -62,25 +68,10 @@ class BuildingInfoJiujiang(Document):
     BuildingName = fields.StringField(default='', max_length=1024, null=False)
     BuildingUUID = fields.UUIDField(default=uuid.uuid3(uuid.NAMESPACE_DNS, ''),
                                     binary=False, null=False)
-    BuildingRegName = fields.StringField(default='', max_length=1024, null=False)
-    BuildingArea = fields.StringField(default='', max_length=1024, null=False)
-    BuildingRegDate = fields.StringField(default='', max_length=1024, null=False)
-    BuildingRegPrice = fields.StringField(default='', max_length=1024, null=False)
-    BuildingSalingNum = fields.StringField(default='', max_length=1024, null=False)
-    BuildingType = fields.StringField(default='', max_length=1024, null=False)
-    BuildingSaleState = fields.StringField(default='', max_length=1024, null=False)
-    BuildingSaleStateLatest = fields.StringField(default='', max_length=1024, null=False)
-    BuildingPlanAreaCode = fields.StringField(default='', max_length=1024, null=False)
-    BuildingPlanEngCode = fields.StringField(default='', max_length=1024, null=False)
-    BuildingBuildEngCode = fields.StringField(default='', max_length=1024, null=False)
-    BuildingAreaCode = fields.StringField(default='', max_length=1024, null=False)
-    BuildingZZHouseNum = fields.StringField(default='', max_length=1024, null=False)
-    BuildingFZZHouseNum = fields.StringField(default='', max_length=1024, null=False)
-    BuildingSoldNum = fields.StringField(default='', max_length=1024, null=False)
-    BuildingZZUnitPrice = fields.StringField(default='', max_length=1024, null=False)
-    BuildingFZZUnitPrice = fields.StringField(default='', max_length=1024, null=False)
     BuildingURL = fields.URLField(default=None, null=True, blank=True)
     BuildingURLCurTimeStamp = fields.StringField(default=str(datetime.datetime.now()), index=True)
+    ProjectRegName = fields.StringField(default=str(datetime.datetime.now()), index=True)
+    BuildingCode = fields.StringField(default=str(datetime.datetime.now()), index=True)
     meta = {
         'indexes': [
             'CurTimeStamp',
@@ -92,7 +83,7 @@ class BuildingInfoJiujiang(Document):
     }
 
 
-class HouseInfoJiujiang(Document):
+class HouseInfoGuiyang(Document):
     RecordID = fields.UUIDField(default=uuid.uuid1(),
                                     binary=True, primary_key=True, null=False)
     CurTimeStamp = fields.StringField(default=str(datetime.datetime.now()), index=True)
@@ -105,18 +96,19 @@ class HouseInfoJiujiang(Document):
     HouseName = fields.StringField(default='', max_length=1024, null=False)
     HouseUUID = fields.UUIDField(default=uuid.uuid3(uuid.NAMESPACE_DNS, ''),
                                     binary=False, null=False)
-    HouseOSEQ = fields.StringField(default='', max_length=1024, null=False)
+    HouseInfoText = fields.StringField(default='', max_length=1024, null=False)
+    HouseUnit = fields.StringField(default='', max_length=1024, null=False)
     HouseFloor = fields.StringField(default='', max_length=1024, null=False)
-    HouseKey = fields.StringField(default='', max_length=1024, null=False)
-    HouseSTR_2 = fields.StringField(default='', max_length=1024, null=False)
-    HouseSTR_3 = fields.StringField(default='', max_length=1024, null=False)
-    HouseSTR_5 = fields.StringField(default='', max_length=1024, null=False)
-    HouseSattribute = fields.StringField(default='', max_length=1024, null=False)
-    HouseBuildingArea = fields.StringField(default='', max_length=1024, null=False)
-    HouseInnerArea = fields.StringField(default='', max_length=1024, null=False)
+    HouseNum = fields.StringField(default='', max_length=1024, null=False)
     HouseSaleState = fields.StringField(default='', max_length=1024, null=False)
     HouseSaleStateLatest = fields.StringField(default='', max_length=1024, null=False)
-    HouseUnitPrice = fields.StringField(default='', max_length=1024, null=False)
+    HouseBuildingArea = fields.StringField(default='', max_length=1024, null=False)
+    HouseUsage = fields.StringField(default='', max_length=1024, null=False)
+    HouseStructure = fields.StringField(default='', max_length=1024, null=False)
+    HouseType = fields.StringField(default='', max_length=1024, null=False)
+    HouseReqURL = fields.StringField(default='', max_length=1024, null=False)
+    HouseNumCheck = fields.StringField(default='', max_length=1024, null=False)
+
     meta = {
         'indexes': [
             'CurTimeStamp',

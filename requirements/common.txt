@@ -28,3 +28,5 @@ django_pandas
 fdfs_client
 scrapy-djangoitem
 requests_toolbelt
+airflow
+git+https://github.com/MongoEngine/django-mongoengine.git
