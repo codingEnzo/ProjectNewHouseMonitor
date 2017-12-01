@@ -1,4 +1,5 @@
 -i https://pypi.douban.com/simple/
+virtualenv
 redis
 scrapy
 scrapy_redis
