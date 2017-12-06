@@ -136,7 +136,7 @@ class GYPipeline(object):
                                         {'item': item})
                         self.storage_item(item)
                     else:
-                        logger.info("item: %(item)s dropped 2", {'item': item})
+                        logger.debug("item: %(item)s dropped 2", {'item': item})
                 else:
                     logger.debug("item: %(item)s met first",
                                     {'item': item})
