@@ -240,7 +240,7 @@ class BuildingListHandleMiddleware(object):
         print('BuildingListHandleMiddleware')
 
         sel = Selector(response)
-        p_id = get_pid(response.request.body)
+        p_id = get_pid(str(response.request.body).split('&')[0])
         if response.meta.get('PageType') == 'BuildingList':
             building_list = sel.xpath('//tr[@objid]')
             for building in building_list:
