@@ -38,7 +38,7 @@ class Crawler_Run(billiard.Process):
     def run(self):
         if self.start_urls:
             url_list = list(self.start_urls)
-            spider_count = len(url_list) / 16 + bool(len(url_list) % 16)
+            spider_count = len(url_list) / 12 + bool(len(url_list) % 12)
             if spider_count >= 64:
                 spider_count = 64
             url_index_skip = int(math.ceil(len(url_list) / float(spider_count)))
