@@ -369,8 +369,9 @@ class HouseInfoHandleMiddleware(object):
                 if result:
                     return result
                 return []
+            response.meta.update({'PageType': 'HouseList'})
             result.append(Request(url=response.url, body=urlparse.urlencode({'pageSize': 100000}), method='POST', dont_filter=True, headers=HEADERS,
-                                            meta={'PageType': 'HouseList'}))
+                                            meta=response.meta))
         elif response.meta.get('PageType') == 'HouseList':
             houseinfodetail_list = sel.xpath('//td[@class="underline"]/span[@id]')
             for house in houseinfodetail_list:
