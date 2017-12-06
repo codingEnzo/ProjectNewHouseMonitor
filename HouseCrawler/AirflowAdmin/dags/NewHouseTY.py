@@ -43,9 +43,11 @@ def just_one_instance(func):
     return f
 
 
+STARTDATE = datetime.datetime.now() - datetime.timedelta(hours=6)
+
 default_args = {
     'owner': 'airflow',
-    'start_date': datetime.datetime.now() - datetime.timedelta(hours=1),
+    'start_date': STARTDATE,
     'email': ['1012137875@qq.com'],
     'email_on_failure': False,
     'email_on_retry': False,
@@ -60,24 +62,24 @@ default_args = {
 
 spider_settings = {
             'ITEM_PIPELINES': {
-                'HouseCrawler.Pipelines.PipelinesGY.GYPipeline': 300,
+                'HouseCrawler.Pipelines.PipelinesTY.TYPipeline': 300,
                 },
             'SPIDER_MIDDLEWARES': {
-                'HouseCrawler.SpiderMiddleWares.SpiderMiddleWaresGY.ProjectBaseHandleMiddleware': 102,
-                'HouseCrawler.SpiderMiddleWares.SpiderMiddleWaresGY.ProjectInfoHandleMiddleware': 103,
-                'HouseCrawler.SpiderMiddleWares.SpiderMiddleWaresGY.BuildingListHandleMiddleware': 104,
-                'HouseCrawler.SpiderMiddleWares.SpiderMiddleWaresGY.HouseInfoHandleMiddleware': 105,
+                'HouseCrawler.SpiderMiddleWares.SpiderMiddleWaresTY.ProjectBaseHandleMiddleware': 102,
+                'HouseCrawler.SpiderMiddleWares.SpiderMiddleWaresTY.ProjectInfoHandleMiddleware': 103,
+                'HouseCrawler.SpiderMiddleWares.SpiderMiddleWaresTY.BuildingListHandleMiddleware': 104,
+                'HouseCrawler.SpiderMiddleWares.SpiderMiddleWaresTY.HouseInfoHandleMiddleware': 105,
                 },
             'RETRY_ENABLE': True,
             'CLOSESPIDER_TIMEOUT': 3600 * 3.5
             }
 
 
-dag = DAG('NewHouseGY', default_args=default_args,
-            schedule_interval="0 */4 * * *")
+dag = DAG('NewHouseTY', default_args=default_args,
+            schedule_interval="45 */4 * * *")
 
 t1 = PythonOperator(
-    task_id='LoadProjectBaseGY',
+    task_id='LoadProjectBaseTY',
     python_callable=spider_call,
     op_kwargs={'spiderName': 'DefaultCrawler',
               'settings': spider_settings,
@@ -86,13 +88,13 @@ t1 = PythonOperator(
     dag=dag)
 
 project_info_list = []
-cur = ProjectBaseGuiyang.objects.all()
+cur = ProjectBaseTaiyuan.objects.all()
 for item in cur:
     project_info = {'source_url': item.ProjectURL,
                     'meta': {'PageType': 'ProjectInfo'}}
     project_info_list.append(project_info)
 t2 = PythonOperator(
-    task_id='LoadProjectInfoGY',
+    task_id='LoadProjectInfoTY',
     python_callable=spider_call,
     op_kwargs={'spiderName': 'DefaultCrawler',
                   'settings': spider_settings,
@@ -100,10 +102,9 @@ t2 = PythonOperator(
     dag=dag)
 
 builfing_info_list = []
-cur = BuildingInfoGuiyang.objects.aggregate(*[{"$sort": {"CurTimeStamp": 1}},
+cur = BuildingInfoTaiyuan.objects.aggregate(*[{"$sort": {"CurTimeStamp": 1}},
                                              {'$group':
                                                  {'_id': "$BuildingUUID",
-                                                  'ProjectName': {'$first': '$ProjectName'},
                                                   'ProjectUUID': {'$first': '$ProjectUUID'},
                                                   'BuildingName': {'$first': '$BuildingName'},
                                                   'BuildingUUID': {'$first': '$BuildingUUID'},
@@ -117,7 +118,6 @@ for item in cur:
             if True:
                 builfing_info = {'source_url': item['BuildingURL'],
                                     'meta': {'PageType': 'HouseInfo',
-                                                'ProjectName': item['ProjectName'],
                                                 'BuildingName': item['BuildingName'],
                                                 'ProjectUUID': str(item['ProjectUUID']),
                                                 'BuildingUUID': str(item['BuildingUUID'])}}
@@ -126,7 +126,7 @@ for item in cur:
         import traceback
         traceback.print_exc()
 t3 = PythonOperator(
-    task_id='LoadBuildingInfoGY',
+    task_id='LoadBuildingInfoTY',
     python_callable=spider_call,
     op_kwargs={'spiderName': 'DefaultCrawler',
                   'settings': spider_settings,
