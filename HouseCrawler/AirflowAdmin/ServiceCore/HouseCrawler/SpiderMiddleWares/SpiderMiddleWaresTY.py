@@ -12,6 +12,13 @@ if sys.version_info.major >= 3:
 else:
     import urlparse
 
+HEADERS = {'Connection': 'keep-alive',
+            'Accept': '*/*',
+            'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
+            'Accept-Encoding': 'gzip, deflate',
+            'Accept-Language': 'zh-CN,zh;q=0.9',
+            'Host': 'ys.tyfdc.gov.cn'}
+
 
 def get_pid(string):
     res_pid = '0'
@@ -88,7 +95,7 @@ class ProjectBaseHandleMiddleware(object):
             url_base = 'http://ys.tyfdc.gov.cn/Firsthand/tyfc/publish/ProjListForPassed.do'
             req_dict = {'pageNo': 1,
                         'pageSize': 10000}
-            result.append(Request(url=url_base, body=urlparse.urlencode(req_dict),
+            result.append(Request(url=url_base, body=urlparse.urlencode(req_dict), headers=HEADERS,
                                         method='POST', dont_filter=True,
                                         meta={'PageType': 'ProjectList'}))
         elif response.meta.get('PageType') == 'ProjectList':
@@ -109,7 +116,7 @@ class ProjectBaseHandleMiddleware(object):
                 pb['ProjectDistrict'] = p_district
                 p_company_url = get_company_url((p.xpath('./td[6]/a/@onclick').extract_first() or '').strip())
                 if p_company_url:
-                    result.append(Request(url=p_company_url, dont_filter=True,
+                    result.append(Request(url=p_company_url, dont_filter=True, headers=HEADERS,
                                             meta={'PageType': 'CompanyInfo', 'item': copy.deepcopy(pb)}))
                 else:
                     result.append(pb)
@@ -182,9 +189,9 @@ class ProjectInfoHandleMiddleware(object):
             pinfo['ProjectManageCompany'] = (sel.xpath('//td[text()="监理单位:"]/following-sibling::td[1]/text()').extract_first() or '').strip()
             pinfo['ProjectSaleCompany'] = (sel.xpath('//td[text()="销售单位:"]/following-sibling::td[1]/text()').extract_first() or '').strip()
             pinfo['ProjectUnitPrice'] = (sel.xpath('//td[text()="参考均价:"]/following-sibling::td[1]/text()').extract_first() or '').strip()
-            result.append(Request(url='http://ys.tyfdc.gov.cn/Firsthand/tyfc/publish/p/PermitInfo.do?' + urlparse.urlencode({'propid': p_id}),
+            result.append(Request(url='http://ys.tyfdc.gov.cn/Firsthand/tyfc/publish/p/PermitInfo.do?' + urlparse.urlencode({'propid': p_id}), headers=HEADERS,
                                     dont_filter=True, meta={'PageType': 'ProjectRegInfo', 'item': copy.deepcopy(pinfo)}))
-            result.append(Request(url='http://ys.tyfdc.gov.cn/Firsthand/tyfc/publish/p/ProNBList.do?' + urlparse.urlencode({'pid': p_id}),
+            result.append(Request(url='http://ys.tyfdc.gov.cn/Firsthand/tyfc/publish/p/ProNBList.do?' + urlparse.urlencode({'pid': p_id}), headers=HEADERS,
                                     dont_filter=True, meta={'PageType': 'BuildingList'}))
         elif response.meta.get('PageType') == 'ProjectRegInfo':
             pinfo = response.meta.get('item')
@@ -245,7 +252,7 @@ class BuildingListHandleMiddleware(object):
                 b_info['BuildingURL'] = get_building_url((building.xpath('./td[3]/a/@onclick').extract_first() or '').strip())
                 building_info_url = get_building_info_url((building.xpath('./td[2]/a/@onclick').extract_first() or '').strip())
                 if building_info_url:
-                    result.append(Request(url=building_info_url, dont_filter=True,
+                    result.append(Request(url=building_info_url, dont_filter=True, headers=HEADERS,
                                             meta={'PageType': 'BuildingInfo', 'item': copy.deepcopy(b_info)}))
                 else:
                     result.append(b_info)
@@ -361,7 +368,7 @@ class HouseInfoHandleMiddleware(object):
                 if result:
                     return result
                 return []
-            result.append(Request(url=response.url, method='POST', dont_filter=True,
+            result.append(Request(url=response.url, method='POST', dont_filter=True, headers=HEADERS,
                                             meta={'PageType': 'HouseList'}))
         elif response.meta.get('PageType') == 'HouseList':
             houseinfodetail_list = sel.xpath('//td[@class="underline"]/span[@id]')
@@ -378,7 +385,7 @@ class HouseInfoHandleMiddleware(object):
                 hinfo['HouseUnitPrice'] = get_house_price(house.xpath('./@title').extract_first() or '')
                 house_detail_url = get_house_detail_url(house.xpath('./a/@onclick').extract_first())
                 if house_detail_url:
-                    result.append(Request(url=house_detail_url, dont_filter=True,
+                    result.append(Request(url=house_detail_url, dont_filter=True, headers=HEADERS,
                                             meta={'PageType': 'HouseDetail', 'item': copy.deepcopy(hinfo)}))
                 else:
                     result.append(hinfo)
