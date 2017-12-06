@@ -300,7 +300,7 @@ class HouseInfoHandleMiddleware(object):
 
         def get_house_state_code(string):
             code = ''
-            match = re.search(r"background-color:(.+);", str(string))
+            match = re.search(r"background-color:(.+);border", str(string))
             if match:
                 code = match.group(1)
             return code
@@ -321,13 +321,13 @@ class HouseInfoHandleMiddleware(object):
             return state
 
         def get_house_substate(b_selector):
-            STATE_TAB = {'C': '限制销售',
-                            'Z': '已预告登记',
-                            'P': '已售',
-                            'Q': '预定',
-                            'S': '非卖房或拆迁安置房',
-                            'X': '已登记',
-                            'Y': '可售'}
+            STATE_TAB = {'C': '初始登记产权',
+                            'Z': '在建工程抵押',
+                            'P': '普通抵押',
+                            'Q': '存量房产权',
+                            'S': '司法查封',
+                            'X': '行政限制',
+                            'Y': '预告登记'}
             state = []
             for b in b_selector:
                 s = STATE_TAB.get(str(b.xpath('./text()').extract_first()))
@@ -379,10 +379,10 @@ class HouseInfoHandleMiddleware(object):
                 hinfo['BuildingName'] = response.meta.get('BuildingName')
                 hinfo['ProjectUUID'] = response.meta.get('ProjectUUID')
                 hinfo['BuildingUUID'] = response.meta.get('BuildingUUID')
-                hinfo['HouseName'] = (house.xpath('./a/text()').extract_first() or '').strip()
+                hinfo['HouseName'] = (house.xpath('./@id').extract_first() or '').strip()
                 hinfo['HouseUUID'] = uuid.uuid3(uuid.NAMESPACE_DNS,
                                             hinfo['HouseName'] + str(hinfo['BuildingUUID']) + str(hinfo['ProjectUUID']))
-                hinfo['HouseSaleState'] = get_house_state(get_house_state_code((house.xpath('./@title').extract_first() or '').strip()))
+                hinfo['HouseSaleState'] = get_house_state(get_house_state_code((house.xpath('./@style').extract_first() or '').strip()))
                 hinfo['HouseSaleSubState'] = get_house_substate(house.xpath('./b'))
                 hinfo['HouseUnitPrice'] = get_house_price(house.xpath('./@title').extract_first() or '')
                 house_detail_url = get_house_detail_url(house.xpath('./a/@onclick').extract_first())
