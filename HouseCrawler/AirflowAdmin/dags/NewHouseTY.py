@@ -43,11 +43,9 @@ def just_one_instance(func):
     return f
 
 
-STARTDATE = datetime.datetime.now() - datetime.timedelta(hours=6)
-
 default_args = {
     'owner': 'airflow',
-    'start_date': STARTDATE,
+    'start_date': datetime.datetime.now() - datetime.timedelta(hours=1),
     'email': ['1012137875@qq.com'],
     'email_on_failure': False,
     'email_on_retry': False,
@@ -76,11 +74,7 @@ spider_settings = {
 
 
 dag = DAG('NewHouseGY', default_args=default_args,
-<<<<<<< HEAD
             schedule_interval="0 */4 * * *")
-=======
-            schedule_interval="15 */4 * * *")
->>>>>>> c146e959346ee4419f5abc89a620e29fc9d95d37
 
 t1 = PythonOperator(
     task_id='LoadProjectBaseGY',

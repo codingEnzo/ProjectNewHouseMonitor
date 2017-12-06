@@ -4,7 +4,7 @@ import os
 import logging
 import uuid
 import datetime
-from HouseCrawler.Items.ItemsGY import *
+from HouseCrawler.Items.ItemsTY import *
 sys.path.append(os.path.abspath('.'))
 sys.path.append(os.path.abspath('..'))
 sys.path.append(os.path.abspath('../..'))
@@ -110,7 +110,7 @@ class GYPipeline(object):
                     diff_flag = True
                     break
             if diff_flag:
-                for key in ('HouseSaleState', ):
+                for key in ('HouseSaleState', 'HouseSaleSubState'):
                     item[key + 'Latest'] = getattr(res_object, key)
         return diff_flag, item
 
@@ -136,7 +136,7 @@ class GYPipeline(object):
                                         {'item': item})
                         self.storage_item(item)
                     else:
-                        logger.debug("item: %(item)s dropped 2", {'item': item})
+                        logger.info("item: %(item)s dropped 2", {'item': item})
                 else:
                     logger.debug("item: %(item)s met first",
                                     {'item': item})
