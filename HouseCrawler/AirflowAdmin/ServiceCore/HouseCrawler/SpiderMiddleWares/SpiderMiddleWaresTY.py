@@ -387,6 +387,8 @@ class HouseInfoHandleMiddleware(object):
                 hinfo['HouseUnitPrice'] = get_house_price(house.xpath('./@title').extract_first() or '')
                 house_detail_url = get_house_detail_url(house.xpath('./a/@onclick').extract_first())
                 if house_detail_url:
+                    hinfo['HouseUUID'] = uuid.uuid3(uuid.NAMESPACE_DNS,
+                                            house_detail_url + hinfo['HouseName'] + str(hinfo['BuildingUUID']) + str(hinfo['ProjectUUID']))
                     result.append(Request(url=house_detail_url, dont_filter=True, headers=HEADERS,
                                             meta={'PageType': 'HouseDetail', 'item': copy.deepcopy(hinfo)}))
                 else:
