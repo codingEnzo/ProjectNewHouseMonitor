@@ -22,7 +22,7 @@ HEADERS = {'Connection': 'keep-alive',
 
 def get_pid(string):
     res_pid = '0'
-    match_res = re.search(r"propid=(.+)", str(string))
+    match_res = re.search(r"propid=(.+)", str(string)) or re.search(r"pid=(.+)", str(string))
     if match_res:
         res_pid = match_res.group(1)
     return res_pid
