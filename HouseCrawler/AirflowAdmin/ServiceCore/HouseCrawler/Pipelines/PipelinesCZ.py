@@ -5,7 +5,7 @@ import os
 import sys
 import uuid
 
-from ..Items.ItemsCZ import *
+from HouseCrawler.Items.ItemsCZ import *
 
 sys.path.append(os.path.abspath('.'))
 sys.path.append(os.path.abspath('..'))

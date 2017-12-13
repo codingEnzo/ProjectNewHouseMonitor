@@ -68,7 +68,7 @@ spider_settings = {
     'SPIDER_MIDDLEWARES': {
         'HouseCrawler.SpiderMiddleWares.SpiderMiddleWaresCZ.ProjectBaseHandleMiddleware': 102,
         'HouseCrawler.SpiderMiddleWares.SpiderMiddleWaresCZ.ProjectInfoHandleMiddleware': 103,
-        'HouseCrawler.SpiderMiddleWares.SpiderMiddleWaresCZ.BuildingListHandleMiddleware': 104,
+        'HouseCrawler.SpiderMiddleWares.SpiderMiddleWaresCZ.BuildingInfoHandleMiddleware': 104,
     },
     'RETRY_ENABLE': True,
     'CLOSESPIDER_TIMEOUT': 3600 * 3.5
