@@ -5,7 +5,7 @@ import uuid
 
 from scrapy import Request
 
-from ..Items.ItemsCZ import ProjectBaseItem, ProjectInfoItem, BuildingInfoItem, HouseInfoItem
+from HouseCrawler.Items.ItemsCZ import *
 
 
 # correct_val: b'"buse"', b'"ipage"'
