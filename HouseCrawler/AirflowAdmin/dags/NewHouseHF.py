@@ -89,7 +89,7 @@ t1 = PythonOperator(
 
 
 builfing_info_list = []
-cur = BuildingInfoGuiyang.objects.aggregate(*[{"$sort": {"CurTimeStamp": 1}},
+cur = BuildingInfoHefei.objects.aggregate(*[{"$sort": {"CurTimeStamp": 1}},
                                              {'$group':
                                                  {'_id': "$BuildingUUID",
                                                   'ProjectName': {'$first': '$ProjectName'},
