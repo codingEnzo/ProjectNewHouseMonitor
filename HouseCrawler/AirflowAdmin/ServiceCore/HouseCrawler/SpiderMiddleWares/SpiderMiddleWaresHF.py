@@ -237,23 +237,21 @@ class BuildingListHandleMiddleware(object):
                 result.append(Request(url=building_url, dont_filter=True,
                                         meta={'PageType': 'BuildingInfo', 'item': copy.deepcopy(b_info)}))
         elif response.meta.get('PageType') == 'BuildingInfo':
-            building_list = sel.xpath('//select[@id="ContentPlaceHolder1_floor_list1_ddlDong"]/option')
-            for building in building_list:
-                b_info = copy.deepcopy(response.meta.get('item'))
-                if b_info:
-                    b_info['BuildingAreaCode'] = sel.xpath('//p[text()="土地使用权证："]/span/text()').extract_first() or ''
-                    b_info['BuildingPlanCode'] = sel.xpath('//p[text()="规划许可证："]/span/text()').extract_first() or ''
-                    b_info['BuildingStructure'] = sel.xpath('//p[text()="建筑结构："]/span/text()').extract_first() or ''
-                    b_info['BuildingUsage'] = sel.xpath('//p[text()="用途："]/span/text()').extract_first() or ''
-                    b_info['BuildingDesignCompany'] = sel.xpath('//p[text()="设计单位："]/span/text()').extract_first() or ''
-                    b_info['BuildingPreSellArea'] = sel.xpath('//p[text()="预售许可面积："]/span/text()').extract_first() or ''
-                    b_info['BuildingOnlineSellArea'] = sel.xpath('//p[text()="网上销售总面积："]/span/text()').extract_first() or ''
-                    b_info['BuildingOpenDate'] = sel.xpath('//p[text()="开盘日期："]/span/text()').extract_first() or ''
-                    b_info['BuildingCompleteDate'] = sel.xpath('//p[text()="竣工日期："]/span/text()').extract_first() or ''
-                    b_info['BuildingDeliverDate'] = sel.xpath('//p[text()="交付日期："]/span/text()').extract_first() or ''
-                    b_info['BuildingAgent'] = sel.xpath('//p[text()="代理销售企业："]/span/text()').extract_first() or ''
-                    b_info['BuildingSellPhone'] = sel.xpath('//p[text()="销售电话："]/span/text()').extract_first() or ''
-                    result.append(b_info)
+            b_info = copy.deepcopy(response.meta.get('item'))
+            if b_info:
+                b_info['BuildingAreaCode'] = sel.xpath('//p[text()="土地使用权证："]/span/text()').extract_first() or ''
+                b_info['BuildingPlanCode'] = sel.xpath('//p[text()="规划许可证："]/span/text()').extract_first() or ''
+                b_info['BuildingStructure'] = sel.xpath('//p[text()="建筑结构："]/span/text()').extract_first() or ''
+                b_info['BuildingUsage'] = sel.xpath('//p[text()="用途："]/span/text()').extract_first() or ''
+                b_info['BuildingDesignCompany'] = sel.xpath('//p[text()="设计单位："]/span/text()').extract_first() or ''
+                b_info['BuildingPreSellArea'] = sel.xpath('//p[text()="预售许可面积："]/span/text()').extract_first() or ''
+                b_info['BuildingOnlineSellArea'] = sel.xpath('//p[text()="网上销售总面积："]/span/text()').extract_first() or ''
+                b_info['BuildingOpenDate'] = sel.xpath('//p[text()="开盘日期："]/span/text()').extract_first() or ''
+                b_info['BuildingCompleteDate'] = sel.xpath('//p[text()="竣工日期："]/span/text()').extract_first() or ''
+                b_info['BuildingDeliverDate'] = sel.xpath('//p[text()="交付日期："]/span/text()').extract_first() or ''
+                b_info['BuildingAgent'] = sel.xpath('//p[text()="代理销售企业："]/span/text()').extract_first() or ''
+                b_info['BuildingSellPhone'] = sel.xpath('//p[text()="销售电话："]/span/text()').extract_first() or ''
+                result.append(b_info)
         return result
 
     def process_spider_exception(self, response, exception, spider):
