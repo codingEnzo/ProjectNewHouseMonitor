@@ -62,13 +62,13 @@ default_args = {
 
 spider_settings = {
             'ITEM_PIPELINES': {
-                'HouseCrawler.Pipelines.PipelinesHF.HFPipeline': 300,
+                'HouseCrawler.Pipelines.PipelinesHF.HFPipeline': None,
                 },
             'SPIDER_MIDDLEWARES': {
-                'HouseCrawler.SpiderMiddleWares.SpiderMiddleWaresHF.ProjectBaseHandleMiddleware': 102,
-                'HouseCrawler.SpiderMiddleWares.SpiderMiddleWaresHF.ProjectInfoHandleMiddleware': 103,
-                'HouseCrawler.SpiderMiddleWares.SpiderMiddleWaresHF.BuildingListHandleMiddleware': 104,
-                'HouseCrawler.SpiderMiddleWares.SpiderMiddleWaresHF.HouseInfoHandleMiddleware': 105,
+                'HouseCrawler.SpiderMiddleWares.SpiderMiddleWaresHF.ProjectBaseHandleMiddleware': None,
+                'HouseCrawler.SpiderMiddleWares.SpiderMiddleWaresHF.ProjectInfoHandleMiddleware': None,
+                'HouseCrawler.SpiderMiddleWares.SpiderMiddleWaresHF.BuildingListHandleMiddleware': None,
+                'HouseCrawler.SpiderMiddleWares.SpiderMiddleWaresHF.HouseInfoHandleMiddleware': None,
                 },
             'RETRY_ENABLE': True,
             'CLOSESPIDER_TIMEOUT': 3600 * 3.5
