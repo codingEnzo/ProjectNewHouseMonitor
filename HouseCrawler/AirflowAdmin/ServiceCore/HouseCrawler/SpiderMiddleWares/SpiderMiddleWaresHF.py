@@ -2,8 +2,8 @@
 import sys
 import json
 import uuid
+import random
 import copy
-import execjs
 from scrapy import Request
 from scrapy import Selector
 from HouseNew.models import *
@@ -13,78 +13,75 @@ if sys.version_info.major >= 3:
 else:
     import urlparse
 
-JS_SCRIPT = """
-function nscaler(a) {
-    var b = "";
-    for(var i=0; i<a.length; i++){
-    switch (a[i]) {
-        case "0":
-            b += "0";
-            break;
-        case "1":
-            b += "2";
-            break;
-        case "2":
-            b += "5";
-            break;
-        case "3":
-            b += "8";
-            break;
-        case "4":
-            b += "6";
-            break;
-        case "5":
-            b += "1";
-            break;
-        case "6":
-            b += "3";
-            break;
-        case "7":
-            b += "4";
-            break;
-        case "8":
-            b += "9";
-            break;
-        case "9":
-            b += "7";
-            break
-        }
-    };
+
+def nscaler(a):
+    b = ""
+    for i in a:
+        if i == "0":
+            b += "0"
+            continue
+        if i == "1":
+            b += "2"
+            continue
+        if i == "2":
+            b += "5"
+            continue
+        if i == "3":
+            b += "8"
+            continue
+        if i == "4":
+            b += "6"
+            continue
+        if i == "5":
+            b += "1"
+            continue
+        if i == "6":
+            b += "3"
+            continue
+        if i == "7":
+            b += "4"
+            continue
+        if i == "8":
+            b += "9"
+            continue
+        if i == "9":
+            b += "7"
+            continue
     return b
-}
 
-function recode(a, b) {
-    var n = nscaler(a);
-    var c = SetObjNum(a.length);
-    var d = SetObjNum(a.length);
-    n = parseInt(n) + parseInt(d);
-    b = nscaler(b.toString());
-    return c + "-" + n + "-" + d + "-" + b
-}
 
-function SetObjNum(n) {
-    var a = "";
-    for (var i = 0; i < n; i++) a += Math.floor(Math.random() * 10);
+def recode(a, b):
+    n = nscaler(a)
+    c = SetObjNum(len(a))
+    d = SetObjNum(len(a))
+    n = int(n) + int(d)
+    b = nscaler(str(b))
+    return str(c) + "-" + str(n) + "-" + str(d) + "-" + str(b)
+
+
+def SetObjNum(n):
+    a = ""
+    for i in range(n):
+        a += str(random.randint(0, 10))
     return a
-}
 
-function s(a){var n=nscaler(a);return n};
-"""
 
-ctx = execjs.compile(JS_SCRIPT)
+def s(a):
+    n = nscaler(a)
+    return n
 
 
 def get_project_url(proID, pageKey):
     proID, pageKey = str(proID), str(pageKey)
     pro_href_base = "http://real.hffd.gov.cn/item/"
-    pro_href_code = ctx.call('recode', proID, pageKey)
+    pro_href_code = recode(proID, pageKey)
     return pro_href_base + pro_href_code
 
 
 def get_house_info_url(houseID):
     houseID = str(houseID)
     house_info_base = "http://real.hffd.gov.cn/details/getrsa/"
-    house_info_code = ctx.call('s', houseID)
+    house_info_code = s(houseID)
     return house_info_base + house_info_code
 
 
