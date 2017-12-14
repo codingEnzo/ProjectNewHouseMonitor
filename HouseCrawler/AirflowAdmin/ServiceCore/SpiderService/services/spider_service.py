@@ -57,7 +57,7 @@ class Crawler_Run(billiard.Process):
             c.engine.close_spider(c.spider, 'force stop spider {name}'.format(name=c.spider.name))
 
 
-@shared_task(bind=True, soft_time_limit=3600 * 3.5, default_retry_delay=60, max_retries=1)
+@shared_task(bind=True, default_retry_delay=60, max_retries=1)
 def spider_call(self, spiderName, settings=None, urlList=None, **kwargs):
 
     settings_use = get_project_settings()

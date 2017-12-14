@@ -30,4 +30,5 @@ fdfs_client
 scrapy-djangoitem
 requests_toolbelt
 airflow
-#git+https://github.com/MongoEngine/django-mongoengine.git
+execjs
+git+http://10.30.4.20/ProjectNewHouse/django-mongoengine.git
