@@ -43,7 +43,7 @@ def just_one_instance(func):
     return f
 
 
-STARTDATE = datetime.datetime.now() - datetime.timedelta(hours=6)
+STARTDATE = datetime.datetime.now() - datetime.timedelta(hours=9)
 
 default_args = {
     'owner': 'airflow',
@@ -71,12 +71,13 @@ spider_settings = {
                 'HouseCrawler.SpiderMiddleWares.SpiderMiddleWaresHF.HouseInfoHandleMiddleware': 105,
                 },
             'RETRY_ENABLE': True,
-            'CLOSESPIDER_TIMEOUT': 3600 * 3.5
+            'CLOSESPIDER_TIMEOUT': 3600 * 7.5,
+            'CONCURRENT_REQUESTS': 128 * 4,
             }
 
 
 dag = DAG('NewHouseHF', default_args=default_args,
-            schedule_interval="25 */4 * * *")
+            schedule_interval="25 */8 * * *")
 
 t1 = PythonOperator(
     task_id='LoadProjectBaseHF',
