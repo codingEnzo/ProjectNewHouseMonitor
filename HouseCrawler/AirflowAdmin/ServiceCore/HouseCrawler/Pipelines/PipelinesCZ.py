@@ -36,7 +36,7 @@ class CZPipeline(object):
                 pass
         if isinstance(value, list):
             try:
-                value = value.sort()
+                value.sort()
                 return value
             except Exception:
                 pass
