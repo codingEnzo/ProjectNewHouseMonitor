@@ -125,16 +125,16 @@ class ProjectInfoHandleMiddleware(object):
                     p_info = ProjectInfoItem()
                     p_info['ProjectUUID'] = response.meta['ProjectUUID']
                     p_info['ProjectName'] = response.meta['ProjectName']
-                    p_info['ProjectCompany'] = info_data.get('NAME', '')
-                    p_info['ProjectAddress'] = info_data.get('BSIT', '')
-                    p_info['ProjectRegion'] = info_data.get('CZAREA', '')
-                    p_info['ProjectPresaleArea'] = str(info_data.get('YSROOMBAREA', ''))
-                    p_info['ProjectPresaleHouseNum'] = str(info_data.get('YSCANSALEROOMNUMS', ''))
-                    p_info['ProjectPresaleBuildingRange'] = info_data.get('CONSNUM', '')
-                    p_info['ProjectSalesAgency'] = info_data.get('SalesAgency', '')
-                    p_info['ProjectSupervisorBank'] = info_data.get('jgyh', '')
-                    p_info['ProjectSupervisorAccount'] = info_data.get('jgzh', '')
-                    p_info['ProjectBankGuarantee'] = info_data.get('dbyh', '')
+                    p_info['ProjectCompany'] = info_data.get('NAME', '') or ''
+                    p_info['ProjectAddress'] = info_data.get('BSIT', '') or ''
+                    p_info['ProjectRegion'] = info_data.get('CZAREA', '') or ''
+                    p_info['ProjectPresaleArea'] = str(info_data.get('YSROOMBAREA', '') or '')
+                    p_info['ProjectPresaleHouseNum'] = str(info_data.get('YSCANSALEROOMNUMS', '') or 0.0)
+                    p_info['ProjectPresaleBuildingRange'] = info_data.get('CONSNUM', '') or ''
+                    p_info['ProjectSalesAgency'] = info_data.get('SalesAgency', '') or ''
+                    p_info['ProjectSupervisorBank'] = info_data.get('jgyh', '') or ''
+                    p_info['ProjectSupervisorAccount'] = info_data.get('jgzh', '') or ''
+                    p_info['ProjectBankGuarantee'] = info_data.get('dbyh', '') or ''
                     result.append(
                         Request(response.meta['ProjectRecordURL'], meta={'PageType': 'ProjectRecord', 'Item': p_info}))
 
@@ -228,7 +228,9 @@ class BuildingInfoHandleMiddleware(object):
                     h_info['HouseLabel'] = cell.get('roomlabel', '') or ''
                     h_info['HouseCurCell'] = cell.get('curcell', '') or ''
                     h_info['HouseSaleStatus'] = cell.get('svl', '') or ''
-                    h_info['HouseUUID'] = uuid.uuid3(uuid.NAMESPACE_DNS, str(h_info['BuildingUUID']) + cell.get('roomid', '') or '' + h_info['HouseLabel'])
+                    h_info['HouseUUID'] = uuid.uuid3(uuid.NAMESPACE_DNS,
+                                                     str(h_info['BuildingUUID']) + cell.get('roomid', '') or '' +
+                                                     h_info['HouseLabel'])
                     result.append(h_info)
 
         return result
