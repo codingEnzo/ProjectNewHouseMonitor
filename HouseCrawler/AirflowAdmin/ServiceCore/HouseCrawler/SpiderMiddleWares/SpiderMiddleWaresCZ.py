@@ -18,7 +18,7 @@ def cracker(rows, correct_val):
     recovery = b'[{' + b':'.join(repairing)
     need_repaired[0] = recovery
     fin = b','.join(need_repaired)
-    fin_rows = json.loads(fin)
+    fin_rows = json.loads(fin.decode())
     return fin_rows
 
 
