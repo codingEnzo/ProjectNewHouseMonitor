@@ -23,12 +23,13 @@ logger = logging.getLogger(__name__)
 
 
 class Crawler_Run(billiard.Process):
-    def __init__(self, spiderName, settings, urlList=None, *args, **kwargs):
+    def __init__(self, spiderName, settings, urlList=None, spider_count=64, *args, **kwargs):
         billiard.Process.__init__(self)
         self.crawler_runner = CrawlerRunner(settings)
         self.start_urls = urlList or []
         self.spider_loader = _get_spider_loader(settings)
         self.extra_params = kwargs.copy()
+        self.spider_count = spider_count
         print(settings.get('SPIDER_MODULES'), self.spider_loader.list())
         if spiderName in self.spider_loader.list():
             self.spider = self.spider_loader.load(spiderName)
@@ -39,8 +40,8 @@ class Crawler_Run(billiard.Process):
         if self.start_urls:
             url_list = list(self.start_urls)
             spider_count = len(url_list) / 12 + bool(len(url_list) % 12)
-            if spider_count >= 64:
-                spider_count = 64
+            if spider_count >= self.spider_count:
+                spider_count = self.spider_count
             url_index_skip = int(math.ceil(len(url_list) / float(spider_count)))
             for url_index in range(0, len(url_list), url_index_skip):
                 self.crawler_runner.crawl(self.spider,
@@ -58,7 +59,7 @@ class Crawler_Run(billiard.Process):
 
 
 @shared_task(bind=True, default_retry_delay=60, max_retries=1)
-def spider_call(self, spiderName, settings=None, urlList=None, **kwargs):
+def spider_call(self, spiderName, settings=None, urlList=None, spider_count=64, **kwargs):
 
     settings_use = get_project_settings()
 
@@ -78,6 +79,7 @@ def spider_call(self, spiderName, settings=None, urlList=None, **kwargs):
     self.cur = Crawler_Run(spiderName=spiderName,
                            settings=settings_use,
                            urlList=urlList,
+                           spider_count=spider_count,
                            **kwargs
                            )
     try:

@@ -72,7 +72,7 @@ spider_settings = {
                 },
             'RETRY_ENABLE': True,
             'CLOSESPIDER_TIMEOUT': 3600 * 7.5,
-            'CONCURRENT_REQUESTS': 128 * 4,
+            'CONCURRENT_REQUESTS': 64,
             }
 
 
@@ -120,5 +120,6 @@ t2 = PythonOperator(
     python_callable=spider_call,
     op_kwargs={'spiderName': 'DefaultCrawler',
                   'settings': spider_settings,
-                  'urlList': builfing_info_list},
+                  'urlList': builfing_info_list,
+                  'spider_count': 128},
     dag=dag)

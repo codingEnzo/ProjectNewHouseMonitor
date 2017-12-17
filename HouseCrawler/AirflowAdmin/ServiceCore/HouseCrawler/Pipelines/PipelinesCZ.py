@@ -35,18 +35,11 @@ class CZPipeline(object):
             except Exception:
                 pass
         if isinstance(value, list):
-            if value and isinstance(value[0], dict):
-                try:
-                    value = sorted(value, key=lambda x: (x.get('HouseTotalArea', ''), x.get('HouseTotalNum', '')))
-                    return value
-                except Exception:
-                    pass
-            else:
-                try:
-                    value.sort()
-                    return value
-                except Exception:
-                    pass
+            try:
+                value.sort()
+                return value
+            except Exception:
+                pass
         return str(value)
 
     def check_item_exist(self, item):
