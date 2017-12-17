@@ -22,25 +22,22 @@ class CZPipeline(object):
     def from_crawler(cls, crawler):
         return cls(crawler.settings)
 
-    def safe_format_value(self, value):
+    def sum_value_hash(value):
+        if isinstance(value, dict):
+            return sum([sum_value_hash(value.get(key)) for key in value])
+        elif isinstance(value, list):
+            return sum([sum_value_hash(item) for item in value])
+        else:
+            return sum([safe_format_value(value), ])
+
+    def safe_format_value(value):
+        if not value:
+            value = ''
         try:
             value = '%.05f' % float(value)
-            return str(value)
         except Exception:
             pass
-        if isinstance(value, dict):
-            try:
-                value = dict(value)
-                return value
-            except Exception:
-                pass
-        if isinstance(value, list):
-            try:
-                value.sort()
-                return value
-            except Exception:
-                pass
-        return str(value)
+        return hash(str(value))
 
     def check_item_exist(self, item):
         exist_flag = False
@@ -71,7 +68,7 @@ class CZPipeline(object):
                 if not hasattr(res_object, key):
                     diff_flag = True
                     break
-                if self.safe_format_value(item.get(key)) != self.safe_format_value(getattr(res_object, key)):
+                if self.sum_value_hash(item.get(key)) != self.sum_value_hash(getattr(res_object, key)):
                     diff_flag = True
                     break
         elif isinstance(item, ProjectInfoItem):
@@ -80,7 +77,7 @@ class CZPipeline(object):
                 if not hasattr(res_object, key):
                     diff_flag = True
                     break
-                if self.safe_format_value(item.get(key)) != self.safe_format_value(getattr(res_object, key)):
+                if self.sum_value_hash(item.get(key)) != self.sum_value_hash(getattr(res_object, key)):
                     diff_flag = True
                     break
         elif isinstance(item, BuildingInfoItem):
@@ -89,7 +86,7 @@ class CZPipeline(object):
                 if not hasattr(res_object, key):
                     diff_flag = True
                     break
-                if self.safe_format_value(item.get(key)) != self.safe_format_value(getattr(res_object, key)):
+                if self.sum_value_hash(item.get(key)) != self.sum_value_hash(getattr(res_object, key)):
                     diff_flag = True
                     break
                     # if diff_flag:
@@ -100,7 +97,7 @@ class CZPipeline(object):
                 if not hasattr(res_object, key):
                     diff_flag = True
                     break
-                if self.safe_format_value(item.get(key)) != self.safe_format_value(getattr(res_object, key)):
+                if self.sum_value_hash(item.get(key)) != self.sum_value_hash(getattr(res_object, key)):
                     diff_flag = True
                     break
             if diff_flag:
