@@ -22,22 +22,23 @@ class CZPipeline(object):
     def from_crawler(cls, crawler):
         return cls(crawler.settings)
 
-    def sum_value_hash(value):
+    def sum_value_hash(self, value):
+
+        def safe_format_value(value):
+            if not value:
+                value = ''
+            try:
+                value = '%.05f' % float(value)
+            except Exception:
+                pass
+            return hash(str(value))
+
         if isinstance(value, dict):
             return sum([sum_value_hash(value.get(key)) for key in value])
         elif isinstance(value, list):
             return sum([sum_value_hash(item) for item in value])
         else:
             return sum([safe_format_value(value), ])
-
-    def safe_format_value(value):
-        if not value:
-            value = ''
-        try:
-            value = '%.05f' % float(value)
-        except Exception:
-            pass
-        return hash(str(value))
 
     def check_item_exist(self, item):
         exist_flag = False
