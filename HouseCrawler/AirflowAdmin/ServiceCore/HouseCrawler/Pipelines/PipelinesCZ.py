@@ -34,9 +34,9 @@ class CZPipeline(object):
             return hash(str(value))
 
         if isinstance(value, dict):
-            return sum([sum_value_hash(value.get(key)) for key in value])
+            return sum([self.sum_value_hash(value.get(key)) for key in value])
         elif isinstance(value, list):
-            return sum([sum_value_hash(item) for item in value])
+            return sum([self.sum_value_hash(item) for item in value])
         else:
             return sum([safe_format_value(value), ])
 
