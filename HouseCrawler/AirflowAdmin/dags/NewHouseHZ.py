@@ -1,9 +1,10 @@
 # -*-coding=utf-8-*-
-import os
-import sys
-import django
 import datetime
 import functools
+import os
+import sys
+
+import django
 from airflow import DAG
 from airflow.operators.python_operator import PythonOperator
 
@@ -128,7 +129,7 @@ for item in cur:
     project_info_list.append(project_info)
 
 t2 = PythonOperator(
-    task_id='MonitProjectInfo',
+    task_id='MonitProjectInfoHZ',
     python_callable=spider_call,
     op_kwargs={'spiderName': 'DefaultCrawler',
                'settings': spider_settings,
@@ -141,7 +142,7 @@ index_base = {
     'meta': {'PageType': 'IndexInfo'}}
 
 t3 = PythonOperator(
-    task_id='LoadIndexInfo',
+    task_id='LoadIndexInfoHZ',
     python_callable=spider_call,
     op_kwargs={'spiderName': 'DefaultCrawler',
                'settings': spider_settings,

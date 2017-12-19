@@ -51,7 +51,7 @@ class HZPipeline(object):
                 pass
         return str(value)
 
-    def pushBuildingListQueue(self, item):
+    def pushBuildingListQueue(self, item, spider):
         building_req_url = 'http://www.tmsf.com/newhouse/property_{sid}_{propertyID}_price.htm?' \
                            'isopen=&presellid={presellID}&buildingid=&area=&allprice=&housestate=&housetype=&page='
         buildingList_base = {
@@ -66,10 +66,9 @@ class HZPipeline(object):
                      }
 
         }
-        # buildingList_base_json = json.dumps(buildingList_base, sort_keys=True)
-        yield Request(url=buildingList_base.get('source_url'), meta=buildingList_base.get('meta'))
+        spider.engine.crawl(Request(url=buildingList_base.get('source_url'), meta=buildingList_base.get('meta')))
 
-    def check_item_exist(self, item):
+    def check_item_exist(self, item, spider):
         exist_flag = False
         q_object = item.django_model.objects
         if isinstance(item, ProjectBaseItem):
@@ -79,7 +78,7 @@ class HZPipeline(object):
             if q_object.filter(PresellUUID=item['PresellUUID']).latest(field_name='CurTimeStamp'):
                 exist_flag = True
             else:
-                pass
+                self.pushBuildingListQueue(item, spider)
         elif isinstance(item, BuildingInfoItem):
             if q_object.filter(BuildingUUID=item['BuildingUUID']).latest(field_name='CurTimeStamp'):
                 exist_flag = True
@@ -96,7 +95,7 @@ class HZPipeline(object):
             pass
         return exist_flag
 
-    def check_item_change(self, item):
+    def check_item_change(self, item, spider):
         diff_flag = False
         q_object = item.django_model.objects
         if isinstance(item, ProjectBaseItem):
@@ -119,7 +118,7 @@ class HZPipeline(object):
                     break
             if diff_flag:
                 # 预售证变了才爬楼栋
-                self.pushBuildingListQueue(item)
+                self.pushBuildingListQueue(item, spider)
         elif isinstance(item, BuildingInfoItem):
             res_object = q_object.filter(BuildingUUID=item['BuildingUUID']).latest(field_name='CurTimeStamp')
             for key in item:
@@ -199,7 +198,7 @@ class HZPipeline(object):
             self.replace_str(item)
             if self.check_item_exist(item):
                 logger.debug("item: %(item)s UUID existed", {'item': item})
-                diff_result, diff_item = self.check_item_change(item)
+                diff_result, diff_item = self.check_item_change(item, spider)
                 if diff_result:
                     logger.debug("item: %(item)s changed", {'item': item})
                     self.storage_item(item)

@@ -4,24 +4,24 @@ from HouseNew.models import *
 
 
 class ProjectBaseItem(DjangoItem):
-    django_model = ProjectBaseHZ
+    django_model = ProjectBaseHangzhou
 
 
 class PresellInfoItem(DjangoItem):
-    django_model = PresellInfoHZ
+    django_model = PresellInfoHangzhou
 
 
 class BuildingInfoItem(DjangoItem):
-    django_model = BuildingInfoHZ
+    django_model = BuildingInfoHangzhou
 
 
 class HouseInfoItem(DjangoItem):
-    django_model = HouseInfoHZ
+    django_model = HouseInfoHangzhou
 
 
 class IndexHouseInfoItem(DjangoItem):
-    django_model = IndexHouseInfoHZ
+    django_model = IndexHouseInfoHangzhou
 
 
 class IndexInfoItem(DjangoItem):
-    django_model = IndexInfoHZ
+    django_model = IndexInfoHangzhou
