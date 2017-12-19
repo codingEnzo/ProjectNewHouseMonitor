@@ -146,4 +146,5 @@ t3 = PythonOperator(
     op_kwargs={'spiderName': 'DefaultCrawler',
                'settings': spider_settings,
                'urlList': [index_base, ]},
+    dag=dag
 )
