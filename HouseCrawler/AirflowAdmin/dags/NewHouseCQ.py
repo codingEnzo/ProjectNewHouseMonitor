@@ -66,7 +66,6 @@ spider_settings = {
                 },
             'SPIDER_MIDDLEWARES': {
                 'HouseCrawler.SpiderMiddleWares.SpiderMiddleWaresCQ.ProjectBaseHandleMiddleware': 102,
-                'HouseCrawler.SpiderMiddleWares.SpiderMiddleWaresCQ.ProjectInfoHandleMiddleware': 103,
                 'HouseCrawler.SpiderMiddleWares.SpiderMiddleWaresCQ.BuildingListHandleMiddleware': 104,
                 'HouseCrawler.SpiderMiddleWares.SpiderMiddleWaresCQ.HouseInfoHandleMiddleware': 105,
                 },
