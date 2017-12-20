@@ -303,7 +303,7 @@ class HouseInfoHandleMiddleware(object):
             if result:
                 return result
             return []
-        if response.meta.get('PageType') not in ('ProjectInfo',):
+        if response.meta.get('PageType') not in ('ProjectInfo', 'HouseInfo'):
             if result:
                 return result
             return []
