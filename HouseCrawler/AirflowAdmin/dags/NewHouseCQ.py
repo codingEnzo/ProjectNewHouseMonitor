@@ -71,12 +71,12 @@ spider_settings = {
                 },
             'RETRY_ENABLE': True,
             'PROXY_LEVEL': 'high',
-            'CLOSESPIDER_TIMEOUT': 3600 * 3.5
+            'CLOSESPIDER_TIMEOUT': 3600 * 5.5
             }
 
 
 dag = DAG('NewHouseCQ', default_args=default_args,
-            schedule_interval="30 */4 * * *")
+            schedule_interval="10 */6 * * *")
 
 t1 = PythonOperator(
     task_id='LoadProjectBaseCQ',
