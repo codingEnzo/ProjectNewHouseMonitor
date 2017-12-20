@@ -57,7 +57,7 @@ def get_house_req(strHref, ProjectName, ProjectUUID, BuildingName, BuildingUUID)
                     'Referer': 'http://search.csfdc.gov.cn/index.php/home/index/floorinfo_n/xmbh/201409301985',
                     'X-Requested-With': 'XMLHttpRequest'}
     req_url = 'http://search.csfdc.gov.cn/index.php/home/Index/geths/'
-    match_id = re.search(r"javascript:hsjajx('(.+)',.+)", str(strHref))
+    match_id = re.search(r"javascript:hsjajx\('(.+)',.+\)", str(strHref))
     if match_id:
         req_dict = {'ywzh': str(match_id.group(1))}
         house_req = Request(url=req_url, body=urlparse.urlencode(req_dict), method='POST',

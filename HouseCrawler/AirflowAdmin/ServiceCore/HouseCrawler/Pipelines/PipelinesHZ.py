@@ -196,7 +196,7 @@ class HZPipeline(object):
     def process_item(self, item, spider):
         if item:
             self.replace_str(item)
-            if self.check_item_exist(item):
+            if self.check_item_exist(item, spider):
                 logger.debug("item: %(item)s UUID existed", {'item': item})
                 diff_result, diff_item = self.check_item_change(item, spider)
                 if diff_result:
