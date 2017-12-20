@@ -1135,7 +1135,7 @@ class HouseInfoChongqing(Document):
     }
 
 
-
+# Nanchang Model
 class ProjectBaseNanchang(Document):
     RecordID = fields.UUIDField(default=uuid.uuid1(),
                                     binary=True, primary_key=True, null=False)
