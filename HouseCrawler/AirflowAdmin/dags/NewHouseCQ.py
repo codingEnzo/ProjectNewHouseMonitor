@@ -64,7 +64,7 @@ spider_settings = {
             'ITEM_PIPELINES': {
                 'HouseCrawler.Pipelines.PipelinesCQ.CQPipeline': 300,
                 },
-            'SPIDER_MIDCQEWARES': {
+            'SPIDER_MIDDLEWARES': {
                 'HouseCrawler.SpiderMiddleWares.SpiderMiddleWaresCQ.ProjectBaseHandleMiddleware': 102,
                 'HouseCrawler.SpiderMiddleWares.SpiderMiddleWaresCQ.ProjectInfoHandleMiddleware': 103,
                 'HouseCrawler.SpiderMiddleWares.SpiderMiddleWaresCQ.BuildingListHandleMiddleware': 104,
