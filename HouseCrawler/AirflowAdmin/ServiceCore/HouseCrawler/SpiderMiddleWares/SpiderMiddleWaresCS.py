@@ -316,14 +316,14 @@ class HouseInfoHandleMiddleware(object):
                 if result:
                     return result
                 return []
-            p_name = sel.xpath('//body/div/div/div[1]/table/tr[1]/th/text()').extract_first() or ''
-            b_name = building_info.xpath('./td[2]/text()').extract_first() or ''
-            breg_name = building_info.xpath('./td[1]/text()').extract_first() or ''
-            p_uuid = uuid.uuid3(uuid.NAMESPACE_DNS,
-                                p_name + get_url_id(response.url))
-            b_uuid = uuid.uuid3(uuid.NAMESPACE_DNS,
-                                breg_name + b_name + get_url_id(response.url))
             for building_info in building_list:
+                p_name = sel.xpath('//body/div/div/div[1]/table/tr[1]/th/text()').extract_first() or ''
+                b_name = building_info.xpath('./td[2]/text()').extract_first() or ''
+                breg_name = building_info.xpath('./td[1]/text()').extract_first() or ''
+                p_uuid = uuid.uuid3(uuid.NAMESPACE_DNS,
+                                    p_name + get_url_id(response.url))
+                b_uuid = uuid.uuid3(uuid.NAMESPACE_DNS,
+                                    breg_name + b_name + get_url_id(response.url))
                 req = get_house_req(building_info.xpath('./td[@onclick]/@onclick').extract_first(),
                                     p_name, p_uuid, b_name, b_uuid)
                 result.append(req)
