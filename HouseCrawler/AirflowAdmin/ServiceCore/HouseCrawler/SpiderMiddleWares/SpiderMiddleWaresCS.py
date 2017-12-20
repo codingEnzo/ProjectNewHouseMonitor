@@ -46,6 +46,30 @@ def get_href(strHref):
     return res_href
 
 
+def get_house_req(strHref, ProjectName, ProjectUUID, BuildingName, BuildingUUID):
+    house_req = None
+    house_header = {'Accept': 'application/json, text/javascript, */*; q=0.01',
+                    'Accept-Encoding': 'gzip, deflate',
+                    'Accept-Language': 'en-US,en;q=0.5',
+                    'Connection': 'keep-alive',
+                    'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
+                    'Host': 'search.csfdc.gov.cn',
+                    'Referer': 'http://search.csfdc.gov.cn/index.php/home/index/floorinfo_n/xmbh/201409301985',
+                    'X-Requested-With': 'XMLHttpRequest'}
+    req_url = 'http://search.csfdc.gov.cn/index.php/home/Index/geths/'
+    match_id = re.search(r"javascript:hsjajx('(.+)',.+)", str(strHref))
+    if match_id:
+        req_dict = {'ywzh': str(match_id.group(1))}
+        house_req = Request(url=req_url, body=urlparse.urlencode(req_dict), method='POST',
+                                headers=house_header,
+                                meta={'PageType': 'HouseInfo',
+                                        'ProjectName': ProjectName,
+                                        'ProjectUUID': ProjectUUID,
+                                        'BuildingName': BuildingName,
+                                        'BuildingUUID': BuildingUUID})
+    return house_req
+
+
 def get_total_page(string):
     total_page = 0
     try:
@@ -285,40 +309,44 @@ class HouseInfoHandleMiddleware(object):
             return []
         print('HouseInfoHandleMiddleware')
 
-        sel = Selector(response)
         if response.meta.get('PageType') == 'ProjectInfo':
+            sel = Selector(response)
             building_list = sel.xpath('//div[@class="hs_table"]/table/tr[not(@class) and td]')
-            house_table_list = sel.xpath('//div[@class="hs_table"]/table/tr[@class="hs_table1"]/td/div/table')
-            if (building_list == []) or (house_table_list == []):
+            if building_list == []:
                 if result:
                     return result
                 return []
-            for building_info, house_table in zip(building_list, house_table_list):
-                p_name = sel.xpath('//body/div/div/div[1]/table/tr[1]/th/text()').extract_first() or ''
-                b_name = building_info.xpath('./td[2]/text()').extract_first() or ''
-                breg_name = building_info.xpath('./td[1]/text()').extract_first() or ''
-                p_uuid = uuid.uuid3(uuid.NAMESPACE_DNS,
-                                    p_name + get_url_id(response.url))
-                b_uuid = uuid.uuid3(uuid.NAMESPACE_DNS,
-                                    breg_name + b_name + get_url_id(response.url))
-                house_list = house_table.xpath('./tr[not(th)]')
-                for house in house_list:
-                    hinfo = HouseInfoItem()
-                    hinfo['ProjectName'] = p_name
-                    hinfo['BuildingName'] = b_name
-                    hinfo['ProjectUUID'] = p_uuid
-                    hinfo['BuildingUUID'] = b_uuid
-                    hinfo['HouseName'] = house.xpath('./td[1]/text()').extract_first() or ''
-                    hinfo['HouseUUID'] = uuid.uuid3(uuid.NAMESPACE_DNS, hinfo['HouseName'] + str(b_uuid))
-                    hinfo['HouseFloor'] = house.xpath('./td[2]/text()').extract_first() or ''
-                    hinfo['HouseBuildingArea'] = house.xpath('./td[5]/text()').extract_first() or ''
-                    hinfo['HouseInnerArea'] = house.xpath('./td[6]/text()').extract_first() or ''
-                    hinfo['HouseShareArea'] = house.xpath('./td[7]/text()').extract_first() or ''
-                    hinfo['HouseType'] = house.xpath('./td[4]/text()').extract_first() or ''
-                    hinfo['HouseUsage'] = house.xpath('./td[3]/text()').extract_first() or ''
-                    hinfo['HouseSaleState'] = house.xpath('./td[9]/text()').extract_first() or ''
-                    hinfo['HouseDType'] = house.xpath('./td[5]/text()').extract_first() or ''
-                    result.append(hinfo)
+            p_name = sel.xpath('//body/div/div/div[1]/table/tr[1]/th/text()').extract_first() or ''
+            b_name = building_info.xpath('./td[2]/text()').extract_first() or ''
+            breg_name = building_info.xpath('./td[1]/text()').extract_first() or ''
+            p_uuid = uuid.uuid3(uuid.NAMESPACE_DNS,
+                                p_name + get_url_id(response.url))
+            b_uuid = uuid.uuid3(uuid.NAMESPACE_DNS,
+                                breg_name + b_name + get_url_id(response.url))
+            for building_info in building_list:
+                req = get_house_req(building_info.xpath('./td[@onclick]/@onclick').extract_first(),
+                                    p_name, p_uuid, b_name, b_uuid)
+                result.append(req)
+        elif response.meta.get('PageType') == 'HouseInfo':
+            sel = Selector(text=response.body_as_unicode()[1:-1])
+            house_list = sel.xpath('//tr[not(th)]')
+            for house in house_list:
+                hinfo = HouseInfoItem()
+                hinfo['ProjectName'] = response.meta.get('ProjectName') or ''
+                hinfo['BuildingName'] = response.meta.get('BuildingName') or ''
+                hinfo['ProjectUUID'] = response.meta.get('ProjectUUID') or ''
+                hinfo['BuildingUUID'] = response.meta.get('BuildingUUID') or ''
+                hinfo['HouseName'] = json.loads('{"foo":"%s"}' % house.xpath('./td[1]/text()').extract_first() or '').get('foo')
+                hinfo['HouseUUID'] = uuid.uuid3(uuid.NAMESPACE_DNS, hinfo['HouseName'] + str(hinfo['BuildingUUID']))
+                hinfo['HouseFloor'] = json.loads('{"foo":"%s"}' % house.xpath('./td[2]/text()').extract_first() or '').get('foo')
+                hinfo['HouseBuildingArea'] = json.loads('{"foo":"%s"}' % house.xpath('./td[5]/text()').extract_first() or '').get('foo')
+                hinfo['HouseInnerArea'] = json.loads('{"foo":"%s"}' % house.xpath('./td[6]/text()').extract_first() or '').get('foo')
+                hinfo['HouseShareArea'] = json.loads('{"foo":"%s"}' % house.xpath('./td[7]/text()').extract_first() or '').get('foo')
+                hinfo['HouseType'] = json.loads('{"foo":"%s"}' % house.xpath('./td[4]/text()').extract_first() or '').get('foo')
+                hinfo['HouseUsage'] = json.loads('{"foo":"%s"}' % house.xpath('./td[3]/text()').extract_first() or '').get('foo')
+                hinfo['HouseSaleState'] = json.loads('{"foo":"%s"}' % house.xpath('./td[9]/text()').extract_first() or '').get('foo')
+                hinfo['HouseDType'] = json.loads('{"foo":"%s"}' % house.xpath('./td[5]/text()').extract_first() or '').get('foo')
+                result.append(hinfo)
         return result
 
     def process_spider_exception(self, response, exception, spider):
