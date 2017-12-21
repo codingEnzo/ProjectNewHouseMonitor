@@ -66,7 +66,7 @@ class HZPipeline(object):
                      }
 
         }
-        spider.crawler.engine.crawl(spider, Request(url=buildingList_base.get('source_url'), meta=buildingList_base.get('meta')))
+        spider.crawler.engine.crawl(Request(url=buildingList_base.get('source_url'), meta=buildingList_base.get('meta')), spider)
 
     def check_item_exist(self, item, spider):
         exist_flag = False
