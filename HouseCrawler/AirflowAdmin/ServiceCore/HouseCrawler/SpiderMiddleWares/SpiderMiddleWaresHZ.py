@@ -662,7 +662,7 @@ class HouseListHandleMiddleware(object):
                 return None
 
         def get_houseList_total_page(response):
-            total_page = 1;
+            total_page = 1
             try:
                 t = regex.search(r'页数 1/(\d+)\t', response.body_as_unicode())
                 total_page = int(t.group(1))
@@ -720,7 +720,7 @@ class HouseListHandleMiddleware(object):
                 }
                 # houseList_base_json = json.dumps(houseList_base, sort_keys=True)
                 # r.sadd(self.settings.get('REDIS_KEY'), houseList_base_json)
-                yield Request(houseList_base.get('source_url'), meta=houseList_base.get('meta'))
+                result.append(Request(houseList_base.get('source_url'), meta=houseList_base.get('meta')))
 
         tr_arr = response.xpath('//*[@id="search"]/following-sibling::div/table/tbody/tr')
         for tr in tr_arr:
