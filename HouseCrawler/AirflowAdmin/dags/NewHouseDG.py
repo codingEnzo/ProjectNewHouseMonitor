@@ -2,7 +2,7 @@
 import datetime
 import os
 import sys
-
+import math
 import django
 from airflow import DAG
 from airflow.operators.python_operator import PythonOperator
@@ -115,11 +115,12 @@ for item in cur:
                                       'BuildingUUID': str(item['BuildingUUID'])}}
             building_info_list.append(building_info)
 
-
-t3 = PythonOperator(
-    task_id='LoadBuildingInfoDG',
-    python_callable=spider_call,
-    op_kwargs={'spiderName': 'DefaultCrawler',
-               'settings': spider_settings,
-               'urlList': building_info_list},
-    dag=dag)
+index_skip = int(math.ceil(len(building_info_list) / float(4)))
+for cur, index in enumerate(list(range(0, len(building_info_list), index_skip))):
+    t3 = PythonOperator(
+        task_id='LoadBuildingInfoDG_%s' % cur,
+        python_callable=spider_call,
+        op_kwargs={'spiderName': 'DefaultCrawler',
+                   'settings': spider_settings,
+                   'urlList': building_info_list[index:index + index_skip]},
+        dag=dag)
