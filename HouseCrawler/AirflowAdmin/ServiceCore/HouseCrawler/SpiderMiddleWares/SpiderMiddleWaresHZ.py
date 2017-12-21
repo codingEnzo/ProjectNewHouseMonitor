@@ -582,7 +582,7 @@ class TemplateHouseListHandleMiddleware(object):
                 # r.sadd(self.settings.get('REDIS_KEY'), houseList_page_json)
                 req_list.append(Request(url, body=urlparse.urlencode(houseList_page.get('body')),
                                         method=houseList_page.get('method'), meta=houseList_page.get('meta')))
-            result.append(req_list)
+            result.extend(req_list)
         else:
             tr_arr = response.xpath('//td[contains(text(),"幢号")]/../following-sibling::tr')
             for tr in tr_arr:
