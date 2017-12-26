@@ -43,9 +43,9 @@ def install_env():
     run('pip3 install ipython -i https://pypi.douban.com/simple/')
     run('pip3 install virtualenv -i https://pypi.douban.com/simple/')
     run('pip install supervisor')
-    run('useradd sandbox')
+    run('useradd chiufung')
     # 修改密码好方法
-    run('echo -e "12345678\\n12345678" | passwd sandbox')
+    run('echo -e "12345678\\n12345678" | passwd chiufung')
 
 
 def install_zsh():
@@ -55,19 +55,19 @@ def install_zsh():
 def install_project():
     run('mkdir -p ~/.config/pip/')
     put('conf/pip.conf', '~/.config/pip/')
-    run('mkdir /home/sandbox/work')
+    run('mkdir /home/chiufung/work')
 
-    with cd('/home/sandbox/work'):
+    with cd('/home/chiufung/work'):
         run('rm -rf ProjectNewHouseMonitor')
         run('git clone http://10.30.4.20/ProjectNewHouse/ProjectNewHouseMonitor.git')
 
-    with cd('/home/sandbox/work/ProjectNewHouseMonitor'):
+    with cd('/home/chiufung/work/ProjectNewHouseMonitor'):
         run('virtualenv .venv3 -p python3')
 
 
 @parallel
 def update():
-    with cd('/home/sandbox/work/ProjectNewHouseMonitor'):
+    with cd('/home/chiufung/work/ProjectNewHouseMonitor'):
         run('git fetch')
         run('git reset --hard origin/dev_airflow')
         run('git checkout dev_airflow')
@@ -104,13 +104,13 @@ def reload():
 
 
 def stop_wsgi():
-    with cd('/home/sandbox/work/ProjectNewHouseMonitor/'):
+    with cd('/home/chiufung/work/ProjectNewHouseMonitor/'):
         run('supervisorctl -c conf/supervisord.conf stop wsgi')
         run('supervisorctl -c conf/supervisord.conf stop APIlogWeb')
 
 
 def start_wsgi():
-    with cd('/home/sandbox/work/ProjectNewHouseMonitor/'):
+    with cd('/home/chiufung/work/ProjectNewHouseMonitor/'):
         run('supervisorctl -c conf/supervisord.conf  start wsgi')
 
 
