@@ -31,6 +31,7 @@ def install_env():
     run('mv /etc/localtime /etc/localtime.bak')
     run('ln -s /usr/share/zoneinfo/Asia/Shanghai /etc/localtime')
     run('yum makecache')
+    run('yum install -y git zsh')
     run('yum -y install epel-release')
     run('yum install -y python34')
     run('yum install -y python34-devel')
