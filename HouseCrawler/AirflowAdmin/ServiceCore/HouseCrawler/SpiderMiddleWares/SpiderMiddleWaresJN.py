@@ -332,11 +332,11 @@ class HouseInfoHandleMiddleware(object):
             hinfo = response.meta.get('item')
             if hinfo:
                 dict_data = json.loads(response.body_as_unicode())
-                hinfo['HouseArea'] = dict_data.get('housearea') or ''
-                hinfo['HouseUnitArea'] = dict_data.get('unitarea') or ''
-                hinfo['HouseApportioArea'] = dict_data.get(
-                    'apportioarea') or ''
-                hinfo['HouseUsage'] = dict_data.get('usedtypeno') or ''
+                hinfo['HouseArea'] = str(dict_data.get('housearea') or '')
+                hinfo['HouseUnitArea'] = str(dict_data.get('unitarea') or '')
+                hinfo['HouseApportioArea'] = str(dict_data.get(
+                    'apportioarea') or '')
+                hinfo['HouseUsage'] = str(dict_data.get('usedtypeno') or '')
                 result.append(hinfo)
 
         return result
