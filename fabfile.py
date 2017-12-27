@@ -52,6 +52,10 @@ def install_zsh():
     run('sh -c "$(curl -fsSL https://raw.githubusercontent.com/robbyrussell/oh-my-zsh/master/tools/install.sh)"')
 
 
+def test_ls():
+    run('ls -al')
+
+
 def install_project():
     run('mkdir -p ~/.config/pip/')
     put('conf/pip.conf', '~/.config/pip/')

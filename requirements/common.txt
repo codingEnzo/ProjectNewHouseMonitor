@@ -1,4 +1,5 @@
 -i https://pypi.douban.com/simple/
+requests_toolbelt==0.8.0
 airflow==1.8.0
 alembic==0.8.10
 amqp==2.2.2
