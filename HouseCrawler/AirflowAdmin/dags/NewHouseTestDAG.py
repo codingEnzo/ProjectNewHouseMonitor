@@ -75,7 +75,7 @@ spider_settings = {
             }
 
 
-dag = DAG('NewHouseCQ', default_args=default_args,
+dag = DAG('NewHouseTestDAG', default_args=default_args,
             schedule_interval="10 */6 * * *")
 
 t1 = PythonOperator(
