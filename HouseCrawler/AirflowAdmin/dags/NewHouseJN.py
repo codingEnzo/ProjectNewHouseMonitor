@@ -77,7 +77,8 @@ spider_settings = {
         'HouseCrawler.SpiderMiddleWares.SpiderMiddleWaresJN.SignInfoHandleMiddleware': 106,
     },
     'RETRY_ENABLE': True,
-    'CLOSESPIDER_TIMEOUT': 3600 * 3.5
+    'CLOSESPIDER_TIMEOUT': 3600 * 3.5,
+    'PROXY_LEVEL': 'high'
 }
 
 dag = DAG('NewHouseJN', default_args=default_args,
