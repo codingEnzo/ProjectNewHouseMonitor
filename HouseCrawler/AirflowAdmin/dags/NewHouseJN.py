@@ -72,8 +72,9 @@ spider_settings = {
     'SPIDER_MIDDLEWARES': {
         'HouseCrawler.SpiderMiddleWares.SpiderMiddleWaresJN.ProjectBaseHandleMiddleware': 102,
         'HouseCrawler.SpiderMiddleWares.SpiderMiddleWaresJN.ProjectInfoHandleMiddleware': 103,
-        'HouseCrawler.SpiderMiddleWares.SpiderMiddleWaresJN.BuildingInfoHandleMiddleware': 104,
-        'HouseCrawler.SpiderMiddleWares.SpiderMiddleWaresJN.SignInfoHandleMiddleware': 105,
+        'HouseCrawler.SpiderMiddleWares.SpiderMiddleWaresJN.BuildingListHandleMiddleware': 104,
+        'HouseCrawler.SpiderMiddleWares.SpiderMiddleWaresJN.HouseInfoHandleMiddleware': 105,
+        'HouseCrawler.SpiderMiddleWares.SpiderMiddleWaresJN.SignInfoHandleMiddleware': 106,
     },
     'RETRY_ENABLE': True,
     'CLOSESPIDER_TIMEOUT': 3600 * 3.5
