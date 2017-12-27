@@ -49,7 +49,6 @@ class JNPipeline(object):
         elif isinstance(item, ProjectInfoItem):
             if q_object.filter(ProjectUUID=item['ProjectUUID']).latest(field_name='CurTimeStamp'):
                 exist_flag = True
-            print(q_object.filter(ProjectUUID=item['ProjectUUID']).latest(field_name='CurTimeStamp'))
         elif isinstance(item, BuildingInfoItem):
             if q_object.filter(BuildingUUID=item['BuildingUUID']).latest(field_name='CurTimeStamp'):
                 exist_flag = True

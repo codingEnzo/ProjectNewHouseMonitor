@@ -105,24 +105,24 @@ class ProjectInfoHandleMiddleware(object):
         print('ProjectInfoHandleMiddleware')
 
         pinfo = ProjectInfoItem()
-        pinfo['ProjectName'] = response.xpath(
-            '//td[text()="项目名称"]/following-sibling::td[1]/text()').extract_first() or ''
-        pinfo['ProjectAddress'] = response.xpath(
-            '//td[text()="项目地址"]/following-sibling::td[1]/text()').extract_first() or ''
-        pinfo['ProjectCompany'] = response.xpath(
-            '//td[text()="企业名称"]/following-sibling::td[1]/text()').extract_first() or ''
-        pinfo['ProjectDistrict'] = response.xpath(
-            '//td[text()="所在区县"]/following-sibling::td[1]/text()').extract_first() or ''
-        pinfo['ProjectScale'] = response.xpath(
-            '//td[text()="项目规模"]/following-sibling::td[1]/text()').extract_first() or ''
-        pinfo['ProjectBuildingNum'] = response.xpath(
-            '//td[text()="总 栋 数"]/following-sibling::td[1]/text()').extract_first() or ''
-        pinfo['ProjectSaleAddress'] = response.xpath(
-            '//td[text()="售楼地址"]/following-sibling::td[1]/text()').extract_first() or ''
-        pinfo['ProjectSalePhone'] = response.xpath(
-            '//td[text()="售楼电话"]/following-sibling::td[1]/text()').extract_first() or ''
-        pinfo['ProjectManageCompany'] = response.xpath(
-            '//td[text()="物业公司"]/following-sibling::td[1]/text()').extract_first() or ''
+        pinfo['ProjectName'] = (response.xpath(
+            '//td[text()="项目名称"]/following-sibling::td[1]/text()').extract_first() or '').strip()
+        pinfo['ProjectAddress'] = (response.xpath(
+            '//td[text()="项目地址"]/following-sibling::td[1]/text()').extract_first() or '').strip()
+        pinfo['ProjectCompany'] = (response.xpath(
+            '//td[text()="企业名称"]/following-sibling::td[1]/text()').extract_first() or '').strip()
+        pinfo['ProjectDistrict'] = (response.xpath(
+            '//td[text()="所在区县"]/following-sibling::td[1]/text()').extract_first() or '').strip()
+        pinfo['ProjectScale'] = (response.xpath(
+            '//td[text()="项目规模"]/following-sibling::td[1]/text()').extract_first() or '').strip()
+        pinfo['ProjectBuildingNum'] = (response.xpath(
+            '//td[text()="总 栋 数"]/following-sibling::td[1]/text()').extract_first() or '').strip()
+        pinfo['ProjectSaleAddress'] = (response.xpath(
+            '//td[text()="售楼地址"]/following-sibling::td[1]/text()').extract_first() or '').strip()
+        pinfo['ProjectSalePhone'] = (response.xpath(
+            '//td[text()="售楼电话"]/following-sibling::td[1]/text()').extract_first() or '').strip()
+        pinfo['ProjectManageCompany'] = (response.xpath(
+            '//td[text()="物业公司"]/following-sibling::td[1]/text()').extract_first() or '').strip()
         pinfo['ProjectUUID'] = str(uuid.uuid3(
             uuid.NAMESPACE_DNS, pinfo['ProjectName'] + response.url.split('?')[1]))
         result.append(pinfo)
@@ -175,28 +175,28 @@ class BuildingListHandleMiddleware(object):
                 '//table[@class="project_table"]/tr[td[a]]')
             for b in b_list:
                 binfo = BuildingInfoItem()
-                binfo['ProjectName'] = response.xpath(
-                    '//td[text()="项目名称"]/following-sibling::td[1]/text()').extract_first() or ''
+                binfo['ProjectName'] = (response.xpath(
+                    '//td[text()="项目名称"]/following-sibling::td[1]/text()').extract_first() or '').strip()
                 binfo['ProjectUUID'] = str(uuid.uuid3(
                     uuid.NAMESPACE_DNS, binfo['ProjectName'] + response.url.split('?')[1]))
-                binfo['BuildingName'] = b.xpath(
-                    './td[2]/@title').extract_first() or ''
-                binfo['BuildingRegName'] = b.xpath(
-                    './td[3]/@title').extract_first() or ''
+                binfo['BuildingName'] = (b.xpath(
+                    './td[2]/@title').extract_first() or '').strip()
+                binfo['BuildingRegName'] = (b.xpath(
+                    './td[3]/@title').extract_first() or '').strip()
                 binfo['BuildingUUID'] = str(uuid.uuid3(
                     uuid.NAMESPACE_DNS, binfo['ProjectName'] + binfo['BuildingName'] + binfo['BuildingRegName']))
-                binfo['BuildingSaleNum'] = b.xpath(
-                    './td[4]/text()').extract_first() or ''
-                binfo['BuildingSaleArea'] = b.xpath(
-                    './td[5]/text()').extract_first() or ''
-                binfo['BuildingAvailabeNum'] = b.xpath(
-                    './td[6]/text()').extract_first() or ''
-                binfo['BuildingAvailabeArea'] = b.xpath(
-                    './td[7]/text()').extract_first() or ''
-                binfo['BuildingSoldNum'] = b.xpath(
-                    './td[8]/text()').extract_first() or ''
-                binfo['BuildingSoldArea'] = b.xpath(
-                    './td[9]/text()').extract_first() or ''
+                binfo['BuildingSaleNum'] = (b.xpath(
+                    './td[4]/text()').extract_first() or '').strip()
+                binfo['BuildingSaleArea'] = (b.xpath(
+                    './td[5]/text()').extract_first() or '').strip()
+                binfo['BuildingAvailabeNum'] = (b.xpath(
+                    './td[6]/text()').extract_first() or '').strip()
+                binfo['BuildingAvailabeArea'] = (b.xpath(
+                    './td[7]/text()').extract_first() or '').strip()
+                binfo['BuildingSoldNum'] = (b.xpath(
+                    './td[8]/text()').extract_first() or '').strip()
+                binfo['BuildingSoldArea'] = (b.xpath(
+                    './td[9]/text()').extract_first() or '').strip()
                 binfo_url = urlparse.urljoin(
                     response.url, b.xpath('./td[2]/a/@href').extract_first() or '')
                 result.append(Request(url=binfo_url, method='GET', headers=self.headers,
@@ -204,28 +204,28 @@ class BuildingListHandleMiddleware(object):
         elif response.meta.get('PageType') == 'BuildingInfo':
             binfo = response.meta.get('item')
             if binfo:
-                binfo['BuildingNameAlias'] = response.xpath(
-                    '//td[text()="楼盘名称"]/following-sibling::td[1]/text()').extract_first() or ''
-                binfo['BuildingDevCompany'] = response.xpath(
-                    '//td[text()="开发单位"]/following-sibling::td[1]/text()').extract_first() or ''
-                binfo['BuildingDevCredential'] = response.xpath(
-                    '//td[text()="开发企业资质"]/following-sibling::td[1]/text()').extract_first() or ''
-                binfo['BuildingArea'] = response.xpath(
-                    '//td[text()="建筑面积(万m²)"]/following-sibling::td[1]/text()').extract_first() or ''
-                binfo['BuildingDistrict'] = response.xpath(
-                    '//td[text()="所在区县"]/following-sibling::td[1]/text()').extract_first() or ''
-                binfo['BuildingDecoration'] = response.xpath(
-                    '//td[text()="装修标准"]/following-sibling::td[1]/text()').extract_first() or ''
-                binfo['BuildingUsage'] = response.xpath(
-                    '//td[text()="规划用途"]/following-sibling::td[1]/text()').extract_first() or ''
-                binfo['BuildingIsMortgage'] = response.xpath(
-                    '//td[text()="有无抵押"]/following-sibling::td[1]/text()').extract_first() or ''
-                binfo['BuildingAreaCode'] = response.xpath(
-                    '//td[text()="国有土地使用证"]/following-sibling::td[1]/text()').extract_first() or ''
-                binfo['BuildingEngPlanCode'] = response.xpath(
-                    '//td[text()="建设工程规划许可证"]/following-sibling::td[1]/text()').extract_first() or ''
-                binfo['BuildingEngCode'] = response.xpath(
-                    '//td[text()="建设工程施工许可证"]/following-sibling::td[1]/text()').extract_first() or ''
+                binfo['BuildingNameAlias'] = (response.xpath(
+                    '//td[text()="楼盘名称"]/following-sibling::td[1]/text()').extract_first() or '').strip()
+                binfo['BuildingDevCompany'] = (response.xpath(
+                    '//td[text()="开发单位"]/following-sibling::td[1]/text()').extract_first() or '').strip()
+                binfo['BuildingDevCredential'] = (response.xpath(
+                    '//td[text()="开发企业资质"]/following-sibling::td[1]/text()').extract_first() or '').strip()
+                binfo['BuildingArea'] = (response.xpath(
+                    '//td[text()="建筑面积(万m²)"]/following-sibling::td[1]/text()').extract_first() or '').strip()
+                binfo['BuildingDistrict'] = (response.xpath(
+                    '//td[text()="所在区县"]/following-sibling::td[1]/text()').extract_first() or '').strip()
+                binfo['BuildingDecoration'] = (response.xpath(
+                    '//td[text()="装修标准"]/following-sibling::td[1]/text()').extract_first() or '').strip()
+                binfo['BuildingUsage'] = (response.xpath(
+                    '//td[text()="规划用途"]/following-sibling::td[1]/text()').extract_first() or '').strip()
+                binfo['BuildingIsMortgage'] = (response.xpath(
+                    '//td[text()="有无抵押"]/following-sibling::td[1]/text()').extract_first() or '').strip()
+                binfo['BuildingAreaCode'] = (response.xpath(
+                    '//td[text()="国有土地使用证"]/following-sibling::td[1]/text()').extract_first() or '').strip()
+                binfo['BuildingEngPlanCode'] = (response.xpath(
+                    '//td[text()="建设工程规划许可证"]/following-sibling::td[1]/text()').extract_first() or '').strip()
+                binfo['BuildingEngCode'] = (response.xpath(
+                    '//td[text()="建设工程施工许可证"]/following-sibling::td[1]/text()').extract_first() or '').strip()
                 binfo['BuildingURL'] = 'http://www.jnfdc.gov.cn/onsaling/viewhouse.shtml?fmid=' + \
                     response.url.split('=')[1]
                 building_sale_list = response.xpath(
