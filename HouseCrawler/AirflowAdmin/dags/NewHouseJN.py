@@ -136,7 +136,7 @@ for item in cur:
                                           'BuildingName': item['BuildingName'],
                                           'ProjectUUID': str(item['ProjectUUID']),
                                           'BuildingUUID': str(item['BuildingUUID'])}}
-                builfing_info_list.append(builfing_info)
+                building_info_list.append(builfing_info)
     except Exception:
         import traceback
         traceback.print_exc()
