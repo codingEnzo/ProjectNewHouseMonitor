@@ -115,7 +115,7 @@ t2 = PythonOperator(
 
 building_info_list = []
 
-cur = ProjectBaseJinan.objects.aggregate(*[{"$sort": {"CurTimeStamp": 1}},
+cur = BuildingInfoJinan.objects.aggregate(*[{"$sort": {"CurTimeStamp": 1}},
                                            {'$group':
                                             {'_id': "$BuildingUUID",
                                              'ProjectName': {'$first': '$ProjectName'},
