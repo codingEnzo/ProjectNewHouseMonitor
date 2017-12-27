@@ -2067,16 +2067,16 @@ class ProjectBaseJinan(Document):
         datetime.datetime.now()), max_length=255, index=True)
     ProjectUUID = fields.UUIDField(default=uuid.uuid3(uuid.NAMESPACE_DNS, ''),
                                    binary=False, null=False)
-    PeojectName = fields.StringField(default='', max_length=255, null=False)
-    PeojectURL = fields.URLField(default=None, null=True, blank=True)
-    PeojectAddress = fields.StringField(default='', max_length=255, null=False)
-    PeojectCompany = fields.StringField(default='', max_length=255, null=False)
-    PeojectSaleNum = fields.StringField(default='', max_length=255, null=False)
+    ProjectName = fields.StringField(default='', max_length=255, null=False)
+    ProjectURL = fields.URLField(default=None, null=True, blank=True)
+    ProjectAddress = fields.StringField(default='', max_length=255, null=False)
+    ProjectCompany = fields.StringField(default='', max_length=255, null=False)
+    ProjectSaleNum = fields.StringField(default='', max_length=255, null=False)
     meta = {
         'indexes': [
             'CurTimeStamp',
             'ProjectUUID',
-            'PeojectURL',
+            'ProjectURL',
             'ProjectName'
         ]
     }

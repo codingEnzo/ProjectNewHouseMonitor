@@ -57,17 +57,17 @@ class ProjectBaseHandleMiddleware(object):
             pro_list = sel.xpath('//table[@class="project_table"]/tr[td[a]]')
             for p in pro_list:
                 pb = ProjectBaseItem()
-                pb['PeojectName'] = p.xpath(
+                pb['ProjectName'] = p.xpath(
                     './td[2]/a/text()').extract_first() or ''
-                pb['PeojectURL'] = urlparse.urljoin(
+                pb['ProjectURL'] = urlparse.urljoin(
                     response.url, p.xpath('./td[2]/a/@href').extract_first() or '')
-                pb['PeojectUUID'] = str(uuid.uuid3(uuid.NAMESPACE_DNS,
-                                                   pb['PeojectName'] + pb['PeojectURL'].split('?')[1]))
-                pb['PeojectAddress'] = p.xpath(
+                pb['ProjectUUID'] = str(uuid.uuid3(uuid.NAMESPACE_DNS,
+                                                   pb['ProjectName'] + pb['ProjectURL'].split('?')[1]))
+                pb['ProjectAddress'] = p.xpath(
                     './td[3]/text()').extract_first() or ''
-                pb['PeojectCompany'] = p.xpath(
+                pb['ProjectCompany'] = p.xpath(
                     './td[4]/text()').extract_first() or ''
-                pb['PeojectSaleNum'] = p.xpath(
+                pb['ProjectSaleNum'] = p.xpath(
                     './td[5]/text()').extract_first() or ''
                 result.append(pb)
         return result
