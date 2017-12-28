@@ -5,6 +5,8 @@ from fabric.decorators import hosts
 
 env.roledefs = {
     'worker': [
+        '10.30.1.64',
+        '10.30.1.51',
         '10.30.1.65',
         '10.30.1.66',
         ]

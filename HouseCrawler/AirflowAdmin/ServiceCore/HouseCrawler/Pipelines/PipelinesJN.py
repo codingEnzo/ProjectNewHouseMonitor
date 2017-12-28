@@ -123,7 +123,7 @@ class JNPipeline(object):
                                  {'item': item})
                     self.storage_item(item)
                 else:
-                    logger.info("item: %(item)s changed",
+                    logger.debug("item: %(item)s drop",
                                  {'item': item})
             else:
                 logger.debug("item: %(item)s met first",
