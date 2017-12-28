@@ -13,7 +13,10 @@ def get_ip_address(ifname):
         struct.pack('256s', ifname[:15])
     )[20:24])
 
+
+LOCALIP = '192.168.6.208'
 try:
     LOCALIP = get_ip_address(b'eth0')
 except:
     LOCALIP = '192.168.6.208'
+

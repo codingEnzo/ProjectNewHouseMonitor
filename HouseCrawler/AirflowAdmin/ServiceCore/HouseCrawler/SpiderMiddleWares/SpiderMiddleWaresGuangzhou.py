@@ -74,7 +74,7 @@ class ProjectBaseHandleMiddleware(object):
                     url = 'http://housing.gzcc.gov.cn/fyxx/fdcxmxx/index.shtml'
                 project_base_req = Request(
                         url = url,
-                        headers = self.settings.get('DEFAULT_REQUEST_HEADERS'),
+                        headers = self.settings.getdict('DEFAULT_REQUEST_HEADERS'),
                         dont_filter = True,
                         meta = {'PageType': 'ProjectBase'})
                 result.append(project_base_req)
@@ -84,7 +84,7 @@ class ProjectBaseHandleMiddleware(object):
                 href = tr.xpath('td[2]/a/@href').extract_first()
                 req = Request(
                         url = 'http://housing.gzcc.gov.cn' + href,
-                        headers = self.settings.get('DEFAULT_REQUEST_HEADERS'),
+                        headers = self.settings.getdict('DEFAULT_REQUEST_HEADERS'),
                         meta = {'PageType': 'IframePage'})
                 result.append(req)
         return result
@@ -142,7 +142,7 @@ class IframePageHandleMiddleware(object):
                     req = Request(url = url,
                                   method = 'POST',
                                   body = urlparse.urlencode(req_dict),
-                                  headers = self.settings.get('POST_DEFAULT_REQUEST_HEADERS'),
+                                  headers = self.settings.getdict('POST_DEFAULT_REQUEST_HEADERS'),
                                   dont_filter = True,
                                   meta = {
                                       'PageType': 'Permit_CertificateOfUseOfStateOwnedLand',
@@ -155,7 +155,7 @@ class IframePageHandleMiddleware(object):
             else:
                 countryId = CertificateOfUseOfStateOwnedLand_dict['country_id'][:-1]
                 req = Request(url = 'http://housing.gzcc.gov.cn/search/project/' + url_list[3],
-                              headers = self.settings.get('DEFAULT_REQUEST_HEADERS'),
+                              headers = self.settings.getdict('DEFAULT_REQUEST_HEADERS'),
                               dont_filter = True,
                               meta = {
                                   'PageType': 'Permit_CertificateOfUseOfStateOwnedLand',
@@ -179,7 +179,7 @@ class IframePageHandleMiddleware(object):
                     req = Request(url = 'http://housing.gzcc.gov.cn/search/project/workAgree.jsp',
                                   method = 'POST',
                                   body = urlparse.urlencode(req_dict),
-                                  headers = self.settings.get('POST_DEFAULT_REQUEST_HEADERS'),
+                                  headers = self.settings.getdict('POST_DEFAULT_REQUEST_HEADERS'),
                                   dont_filter = True,
                                   meta = {
                                       'PageType': 'Permit_ConstructionPermitNumber',
@@ -192,7 +192,7 @@ class IframePageHandleMiddleware(object):
             else:
                 agreeId = ConstructionPermitNumber_dict['agreeId'][:-1]
                 req = Request(url = 'http://housing.gzcc.gov.cn/search/project/' + url_list[4],
-                              headers = self.settings.get('DEFAULT_REQUEST_HEADERS'),
+                              headers = self.settings.getdict('DEFAULT_REQUEST_HEADERS'),
                               dont_filter = True,
                               meta = {
                                   'PageType': 'Permit_ConstructionPermitNumber',
@@ -219,7 +219,7 @@ class IframePageHandleMiddleware(object):
                     req = Request(url = 'http://housing.gzcc.gov.cn/search/project/layoutAgree.jsp',
                                   method = 'POST',
                                   body = body,
-                                  headers = self.settings.get('POST_DEFAULT_REQUEST_HEADERS'),
+                                  headers = self.settings.getdict('POST_DEFAULT_REQUEST_HEADERS'),
                                   dont_filter = True,
                                   meta = {
                                       'PageType': 'Permit_BuildingPermit',
@@ -232,7 +232,7 @@ class IframePageHandleMiddleware(object):
             else:
                 layoutId = BuildingPermit_dict['layoutId'][:-1]
                 req = Request(url = 'http://housing.gzcc.gov.cn/search/project/' + url_list[5],
-                              headers = self.settings.get('DEFAULT_REQUEST_HEADERS'),
+                              headers = self.settings.getdict('DEFAULT_REQUEST_HEADERS'),
                               dont_filter = True,
                               meta = {
                                   'PageType': 'Permit_BuildingPermit',
@@ -245,7 +245,7 @@ class IframePageHandleMiddleware(object):
 
         # 获取项目详情
         projectInfo_req = Request(url = project_info_url,
-                                  headers = self.settings.get('DEFAULT_REQUEST_HEADERS'),
+                                  headers = self.settings.getdict('DEFAULT_REQUEST_HEADERS'),
                                   dont_filter = True,
                                   meta = {
                                       'PageType': 'ProjectInfo',
@@ -728,7 +728,7 @@ class ProjectInfoHandleMiddleware(object):
             street_req = Request(
                     url = 'http://housing.gzcc.gov.cn/search/project/surroundPro.jsp?pjID={ProjectID}&sectionID=11'.format(
                             ProjectID = projectInfoItem['ProjectID']),
-                    headers = self.settings.get('DEFAULT_REQUEST_HEADERS'),
+                    headers = self.settings.getdict('DEFAULT_REQUEST_HEADERS'),
                     meta = {'PageType': 'StreetInfo', 'projectInfoItem': projectInfoItem})
             result.append(street_req)
 
@@ -744,7 +744,7 @@ class ProjectInfoHandleMiddleware(object):
                                     'groundPrice': '',
                                     'preSellId': ysz}
                         presell_req = Request(url = 'http://housing.gzcc.gov.cn/search/project/preSell.jsp',
-                                              headers = self.settings.get('POST_DEFAULT_REQUEST_HEADERS'),
+                                              headers = self.settings.getdict('POST_DEFAULT_REQUEST_HEADERS'),
                                               method = 'POST',
                                               body = urlparse.urlencode(req_dict),
                                               meta = {'PageType': 'PresellInfo',
@@ -757,7 +757,7 @@ class ProjectInfoHandleMiddleware(object):
                             url = 'http://housing.gzcc.gov.cn/search/project/preSell.jsp?pjID={ProjectID}&presell={presell}&maxPrice=&groundPrice='.format(
                                     ProjectID = projectInfoItem['ProjectID'],
                                     presell = projectInfoItem['PresalePermitNumber']),
-                            headers = self.settings.get('DEFAULT_REQUEST_HEADERS'),
+                            headers = self.settings.getdict('DEFAULT_REQUEST_HEADERS'),
                             method = 'GET',
                             meta = {'PageType': 'PresellInfo',
                                     'ProjectID': projectInfoItem['ProjectID'],
@@ -888,7 +888,7 @@ class BuildingListHandleMiddleware(object):
                     'inAreaID': '0', 'buildingID': str(buildingID)
                 }
                 building_req = Request(url = 'http://housing.gzcc.gov.cn/search/project/sellForm_pic.jsp',
-                                       headers = self.settings.get('POST_DEFAULT_REQUEST_HEADERS'),
+                                       headers = self.settings.getdict('POST_DEFAULT_REQUEST_HEADERS'),
                                        dont_filter = True,
                                        meta = {
                                            'PageType': 'SellFormInfo',
@@ -957,7 +957,7 @@ class SellFormInfoHandleMiddleware(object):
             except:
                 pass
             house_info_req = Request(url = href,
-                                     headers = self.settings.get('DEFAULT_REQUEST_HEADERS'),
+                                     headers = self.settings.getdict('DEFAULT_REQUEST_HEADERS'),
                                      dont_filter = True,
                                      meta = {'PageType': 'HouseInfo',
                                              'HouseID': HouseID,
