@@ -74,7 +74,7 @@ def install_project():
 def install_s3_client():
     put('conf/.s3cfg', '~/')
     with cd('/home/chiufung/work/ProjectNewHouseMonitor'):
-        run('.venv3/bin/pip3 install s3cmd -i https://pypi.douban.com/simple/')
+        run('.venv3/bin/pip3 install s3cmd airflow[3] -i https://pypi.douban.com/simple/')
 
 
 @parallel
