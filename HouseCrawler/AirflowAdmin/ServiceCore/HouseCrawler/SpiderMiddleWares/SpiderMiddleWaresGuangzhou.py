@@ -793,7 +793,7 @@ class PresellInfoHandleMiddleware(object):
         presellInfoItem['ProjectName'] = response.meta.get('ProjectName')
         presellInfoItem['ProjectUUID'] = response.meta.get('ProjectUUID')
         presellInfoItem['PresalePermitNumber'] = response.xpath(
-                '//td/p[starts-with(text(),"预字第")]/../following-sibling::td[1]/p/text()')
+                '//td/p[starts-with(text(),"预字第")]/../following-sibling::td[1]/p/text()').extract_first()
         presellInfoItem['PresellID'] = presellInfoItem['PresalePermitNumber']
         presellInfoItem['PresellUUID'] = uuid.uuid3(uuid.NAMESPACE_DNS, presellInfoItem['PresalePermitNumber'])
         presellInfoItem['PresaleBuildingAmount'] = response.xpath(
