@@ -78,6 +78,17 @@ def install_s3_client():
 
 
 @parallel
+def setup_minio():
+    put('conf/minfs-0.0.20170226202056-1.x86_64.rpm', '~/')
+    run('yum install minfs-0.0.20170226202056-1.x86_64.rpm -y ')
+    run('mkdir -p /etc/minfs')
+    put('conf/config.json', '/etc/minfs/')
+    run('mkdir -p /Airflowlogs')
+    run('chown -R chiufung /Airflowlogs')
+    run('echo http://10.30.1.68:9000/airflowlogsbucket /Airflowlogs minfs defaults,cache=/tmp/Airflowlogs 0 0 >> /etc/fstab')
+
+
+@parallel
 def update():
     with cd('/home/chiufung/work/ProjectNewHouseMonitor'):
         run('git fetch')
