@@ -71,6 +71,11 @@ def install_project():
         run('virtualenv .venv3 -p python3')
 
 
+def install_s3_client():
+     put('conf/.s3cfg', '~/')
+     run('.venv3/bin/pip3 install s3cmd -i https://pypi.douban.com/simple/')
+
+
 @parallel
 def update():
     with cd('/home/chiufung/work/ProjectNewHouseMonitor'):

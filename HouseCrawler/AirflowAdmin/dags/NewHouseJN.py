@@ -143,12 +143,13 @@ for item in cur:
         import traceback
         traceback.print_exc()
 
-index_skip = int(math.ceil(len(building_info_list) / float(3))) + 1
+index_skip = int(math.ceil(len(building_info_list) / float(4))) + 1
 for cur, index in enumerate(list(range(0, len(building_info_list), index_skip))):
     t3 = PythonOperator(
         task_id='LoadBuildingInfoJN_%s' % cur,
         python_callable=spider_call,
         op_kwargs={'spiderName': 'DefaultCrawler',
                    'settings': spider_settings,
-                   'urlList': building_info_list[index:index + index_skip]},
+                   'urlList': building_info_list[index:index + index_skip],
+                   'spider_count': 128},
         dag=dag)
