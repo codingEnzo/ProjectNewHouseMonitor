@@ -78,7 +78,9 @@ spider_settings = {
     },
     'RETRY_ENABLE': True,
     'CLOSESPIDER_TIMEOUT': 3600 * 3.5,
-    'PROXY_LEVEL': 'high'
+    'PROXY_LEVEL': 'high',
+    'PROXY_ENABLE': False,
+    'RETRY_TIMES': 15
 }
 
 dag = DAG('NewHouseJN', default_args=default_args,
@@ -141,7 +143,7 @@ for item in cur:
         import traceback
         traceback.print_exc()
 
-index_skip = int(math.ceil(len(building_info_list) / float(2))) + 1
+index_skip = int(math.ceil(len(building_info_list) / float(3))) + 1
 for cur, index in enumerate(list(range(0, len(building_info_list), index_skip))):
     t3 = PythonOperator(
         task_id='LoadBuildingInfoJN_%s' % cur,

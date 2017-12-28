@@ -36,8 +36,9 @@ class RandomUserAgent(object):
 
 class ProxyMiddleware(object):
 
-    def __init__(self, proxy_leve):
-        self.proxy_leve = proxy_leve
+    def __init__(self, settings):
+        self.proxy_enable = settings.get('PROXY_ENABLE', True)
+        self.proxy_leve = settings.get('PROXY_LEVEL', 'middle')
         self._proxy_pool_map = {'master': {'low': 'GZYF_Test:Proxy_Pool',
                                             'middle': 'GZYF_Test:Proxy_Pool:M',
                                             'high': 'GZYF_Test:Proxy_Pool:H'},
@@ -47,11 +48,10 @@ class ProxyMiddleware(object):
 
     @classmethod
     def from_crawler(cls, crawler):
-        return cls(crawler.settings.get('PROXY_LEVEL', 'middle'))
+        return cls(crawler.settings)
 
     def process_request(self, request, spider):
-        proxy_status = b'True'
-        if proxy_status == b'True':
+        if self.proxy_enable:
             if 'anjuke' in request.url:
                 proxy = r.srandmember(self._proxy_pool_map[link_env][self.proxy_leve])
             else:
