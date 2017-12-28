@@ -71,23 +71,6 @@ def install_project():
         run('virtualenv .venv3 -p python3')
 
 
-def install_s3_client():
-    put('conf/.s3cfg', '~/')
-    with cd('/home/chiufung/work/ProjectNewHouseMonitor'):
-        run('.venv3/bin/pip3 install s3cmd airflow[s3] -i https://pypi.douban.com/simple/')
-
-
-@parallel
-def setup_minio():
-    put('conf/minfs-0.0.20170226202056-1.x86_64.rpm', '~/')
-    run('yum install minfs-0.0.20170226202056-1.x86_64.rpm -y ')
-    run('mkdir -p /etc/minfs')
-    put('conf/config.json', '/etc/minfs/')
-    run('mkdir -p /Airflowlogs')
-    run('chown -R chiufung /Airflowlogs')
-    run('echo http://10.30.1.68:9000/airflowlogsbucket /Airflowlogs minfs defaults,cache=/tmp/Airflowlogs 0 0 >> /etc/fstab')
-
-
 @parallel
 def update():
     with cd('/home/chiufung/work/ProjectNewHouseMonitor'):
