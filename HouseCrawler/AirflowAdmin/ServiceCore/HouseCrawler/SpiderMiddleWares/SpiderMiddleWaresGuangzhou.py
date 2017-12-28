@@ -917,6 +917,19 @@ class SellFormInfoHandleMiddleware(object):
         return
 
     def process_spider_output(self, response, result, spider):
+        def getHouseLabel(response, font_list):
+            if font_list:
+                label_arr = []
+                for font in font_list:
+                    try:
+                        text = response.xpath('//td[contains(text(),"' + font + '")]/text()').extract_first()
+                        text = text.replace(font, '')
+                        label_arr.append(text)
+                    except:
+                        return ''
+                return ','.join(label_arr)
+            else:
+                return ''
         result = list(result)
         if not (200 <= response.status < 300):  # common case
             return result if result else []
@@ -948,7 +961,7 @@ class SellFormInfoHandleMiddleware(object):
             HouseID = href[href.rindex('=') + 1:]
             HouseUUID = uuid.uuid3(uuid.NAMESPACE_DNS, href)
             font_list = a.xpath('font/text()').extract()
-            HouseLabel = HousePageInfo.get_F65(response, font_list)
+            HouseLabel = getHouseLabel(response, font_list)
             HouseState = ''
             try:
                 title = a.xpath('@title').extract_first()
