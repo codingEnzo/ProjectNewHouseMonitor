@@ -17,7 +17,7 @@ else:
     import urlparse
 logger = logging.getLogger(__name__)
 
-debug = True
+debug = False
 
 
 # 从redis读取对应的key,将图片转数字
