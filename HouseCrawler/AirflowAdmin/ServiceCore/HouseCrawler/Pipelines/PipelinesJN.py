@@ -101,7 +101,7 @@ class JNPipeline(object):
                     diff_flag = True
                     break
             if diff_flag:
-                item['HouseSaleStateLatest'] = getattr(res_object, 'HouseSaleStatus')
+                item['HouseSaleStateLatest'] = getattr(res_object, 'HouseSaleState')
         return diff_flag, item
 
     def storage_item(self, item):
