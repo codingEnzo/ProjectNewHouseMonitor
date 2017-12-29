@@ -110,21 +110,21 @@ class PipelineQingdao(object):
                     break
             if diff_flag:
                 # 从可售到已售的户会失去户详情链接,将可售时的数据保存下来
-                if item.get('HouseURL') is None and getattr(res_object, 'HouseURL'):
+                if item.get('SourceUrl') is None and getattr(res_object, 'SourceUrl'):
                     try:
-                        item['HouseURL'] = res_object.HouseURL
-                        item['HouseNominalFloor'] = res_object.HouseNominalFloor
+                        item['SourceUrl'] = res_object.SourceUrl
+                        item['FloorName'] = res_object.FloorName
                         item['HouseUseType'] = res_object.HouseUseType
-                        item['HouseMeasuredBuildingArea'] = res_object.HouseMeasuredBuildingArea
-                        item['HouseMeasuredInsideOfBuildingArea'] = res_object.HouseMeasuredInsideOfBuildingArea
-                        item['HouseMeasuredPublicArea'] = res_object.HouseMeasuredPublicArea
-                        item['HouseMeasuredUndergroundArea'] = res_object.HouseMeasuredUndergroundArea
-                        item['HouseReferencePrice'] = res_object.HouseReferencePrice
                         item['HouseUnitShape'] = res_object.HouseUnitShape
-                        item['HouseForecastBuildingArea'] = res_object.HouseForecastBuildingArea
-                        item['HouseForecastInsideOfBuildingArea'] = res_object.HouseForecastInsideOfBuildingArea
-                        item['HouseForecastPublicArea'] = res_object.HouseForecastPublicArea
-                        item['HouseForecastUndergroundArea'] = res_object.HouseForecastUndergroundArea
+                        item['ForecastBuildingArea'] = res_object.ForecastBuildingArea
+                        item['MeasuredBuildingArea'] = res_object.MeasuredBuildingArea
+                        item['ForecastInsideOfBuildingArea'] = res_object.ForecastInsideOfBuildingArea
+                        item['MeasuredInsideOfBuildingArea'] = res_object.MeasuredInsideOfBuildingArea
+                        item['ForecastPublicArea'] = res_object.ForecastPublicArea
+                        item['MeasuredSharedPublicArea'] = res_object.MeasuredSharedPublicArea
+                        item['ForecastUndergroundArea'] = res_object.ForecastUndergroundArea
+                        item['MeasuredUndergroundArea'] = res_object.MeasuredUndergroundArea
+                        item['HouseReferencePrice'] = res_object.HouseReferencePrice
                     except:
                         pass
                 item['HouseStateLatest'] = res_object.HouseState
