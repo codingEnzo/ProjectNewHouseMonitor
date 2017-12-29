@@ -14,8 +14,6 @@ class BuildingInfoItem(DjangoItem):
 class HouseInfoItem(DjangoItem):
     django_model = HouseInfoQingdao
 
-class IndexInfoItem(DjangoItem):
-    django_model = IndexInfoQingdao
 
 
 
