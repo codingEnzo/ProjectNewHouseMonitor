@@ -111,15 +111,17 @@ for item in cur:
                                                 'BuildingName': item['BuildingName'],
                                                 'ProjectUUID': str(item['ProjectUUID']),
                                                 'BuildingUUID': str(item['BuildingUUID'])}}
-                builfing_info_list.append(builfing_info)
+                building_info_list.append(builfing_info)
     except Exception:
         import traceback
         traceback.print_exc()
-t2 = PythonOperator(
-    task_id='LoadBuildingInfoHF',
-    python_callable=spider_call,
-    op_kwargs={'spiderName': 'DefaultCrawler',
-                  'settings': spider_settings,
-                  'urlList': builfing_info_list,
-                  'spider_count': 128},
-    dag=dag)
+index_skip = int(math.ceil(len(building_info_list) / float(4))) + 1
+for cur, index in enumerate(list(range(0, len(building_info_list), index_skip))):
+    t2 = PythonOperator(
+        task_id='LoadBuildingInfoHF_%s' % cur,
+        python_callable=spider_call,
+        op_kwargs={'spiderName': 'DefaultCrawler',
+                      'settings': spider_settings,
+                      'urlList': building_info_list[index:index + index_skip],
+                      'spider_count': 128},
+        dag=dag)
