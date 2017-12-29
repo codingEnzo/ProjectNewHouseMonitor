@@ -90,7 +90,7 @@ t1 = PythonOperator(
     dag=dag)
 
 
-builfing_info_list = []
+building_info_list = []
 cur = BuildingInfoHefei.objects.aggregate(*[{"$sort": {"CurTimeStamp": 1}},
                                              {'$group':
                                                  {'_id': "$BuildingUUID",
