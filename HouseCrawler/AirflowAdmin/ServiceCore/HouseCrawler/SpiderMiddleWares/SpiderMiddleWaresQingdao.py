@@ -70,7 +70,7 @@ class ProjectBaseHandleMiddleware(object):
         else:
             tr_arr = response.xpath('//a[contains(@href,"javascript:detailProjectInfo")]/../..')
             for tr in tr_arr:
-                projectState = tr.xpath('td[1]/text()').extract_first()
+                OnSaleState = tr.xpath('td[1]/text()').extract_first()
                 href = tr.xpath(
                         'td[2]/a[contains(@href,"javascript:detailProjectInfo")]/../../td[2]/a/@href').extract_first()
                 ProjectID = get_projectID(href)
@@ -84,7 +84,7 @@ class ProjectBaseHandleMiddleware(object):
                                               meta = {
                                                   'PageType': 'ProjectInfo',
                                                   'ProjectID': ProjectID,
-                                                  'ProjectState': projectState
+                                                  'OnSaleState': OnSaleState
                                               })
                     result.append(projectInfo_req)
         return result
@@ -111,7 +111,7 @@ class ProjectInfoHandleMiddleware(object):
         if response.request.method == 'POST':
             projectInfo = ProjectBaseItem()
             ProjectID = response.meta.get('ProjectID')
-            projectInfo['ProjectState'] = response.meta.get('ProjectState')
+            projectInfo['OnSaleState'] = response.meta.get('OnSaleState')
             projectInfo['ProjectID'] = ProjectID
             projectInfo['ProjectName'] = response.xpath('//td[@class = "bszn_title"]/text()').extract_first()
             ProjectUUID = uuid.uuid3(uuid.NAMESPACE_DNS, ProjectID + projectInfo['ProjectName'])
