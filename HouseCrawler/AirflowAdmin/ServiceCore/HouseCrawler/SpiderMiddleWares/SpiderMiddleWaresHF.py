@@ -293,17 +293,21 @@ class HouseInfoHandleMiddleware(object):
                 if result:
                     return result
                 return []
-            houseinfodetail_list = sel.xpath('//td[@class="cursor"]')
-            for house in houseinfodetail_list:
-                hinfo = HouseInfoItem()
-                hinfo['ProjectName'] = response.meta.get('ProjectName')
-                hinfo['BuildingName'] = response.meta.get('BuildingName')
-                hinfo['ProjectUUID'] = response.meta.get('ProjectUUID')
-                hinfo['BuildingUUID'] = response.meta.get('BuildingUUID')
-                hinfo['HouseID'] = (house.xpath('./@onclick').extract_first() or '').replace("s('", '').replace("')", '')
-                houseinfo_tmp_url = get_house_info_url(hinfo['HouseID'])
-                result.append(Request(url=houseinfo_tmp_url, dont_filter=True,
-                                        meta={'PageType': 'HouseInfoTmp', 'item': copy.deepcopy(hinfo)}))
+            house_floor_list = sel.xpath('//tr[td[@class="cursor"]]')
+            for floor_tr in house_floor_list:
+                floor_num = (floor_tr.xpath('.//td[contains(text(), "层")]/text()').extract_first() or '').strip().replace('层：', '')
+                houseinfodetail_list = sel.xpath('./td[@class="cursor"]')
+                for house in houseinfodetail_list:
+                    hinfo = HouseInfoItem()
+                    hinfo['ProjectName'] = response.meta.get('ProjectName')
+                    hinfo['BuildingName'] = response.meta.get('BuildingName')
+                    hinfo['ProjectUUID'] = response.meta.get('ProjectUUID')
+                    hinfo['BuildingUUID'] = response.meta.get('BuildingUUID')
+                    hinfo['HouseID'] = (house.xpath('./@onclick').extract_first() or '').replace("s('", '').replace("')", '')
+                    hinfo['HouseFloor'] = floor_num
+                    houseinfo_tmp_url = get_house_info_url(hinfo['HouseID'])
+                    result.append(Request(url=houseinfo_tmp_url, dont_filter=True,
+                                            meta={'PageType': 'HouseInfoTmp', 'item': copy.deepcopy(hinfo)}))
 
         elif response.meta.get('PageType') == 'HouseInfoTmp':
             houseinfodetail_url = 'http://real.hffd.gov.cn/details/house/' + json.loads(response.body_as_unicode())['id']

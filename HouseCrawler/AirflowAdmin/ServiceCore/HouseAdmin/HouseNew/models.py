@@ -614,6 +614,8 @@ class HouseInfoHefei(Document):
     HouseID = fields.StringField(default='', max_length=1024, null=False)
     HouseUUID = fields.UUIDField(default=uuid.uuid3(uuid.NAMESPACE_DNS, ''),
                                  binary=False, null=False)
+    HouseFloor = fields.StringField(
+        default='', max_length=1024, null=False)
     HouseSaleState = fields.StringField(
         default='', max_length=1024, null=False)
     HouseSaleStateLatest = fields.StringField(
