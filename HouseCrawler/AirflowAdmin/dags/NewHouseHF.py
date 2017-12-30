@@ -73,7 +73,7 @@ spider_settings = {
                 },
             'RETRY_ENABLE': True,
             'CLOSESPIDER_TIMEOUT': 3600 * 7.5,
-            'CONCURRENT_REQUESTS': 96,
+            'CONCURRENT_REQUESTS': 56,
             }
 
 
