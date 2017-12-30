@@ -116,7 +116,7 @@ for item in cur:
     except Exception:
         import traceback
         traceback.print_exc()
-index_skip = int(math.ceil(len(building_info_list) / float(4))) + 1
+index_skip = int(math.ceil(len(building_info_list) / float(6))) + 1
 for cur, index in enumerate(list(range(0, len(building_info_list), index_skip))):
     t2 = PythonOperator(
         task_id='LoadBuildingInfoHF_%s' % cur,
