@@ -301,8 +301,6 @@ class HouseInfoHandleMiddleware(object):
                 hinfo['ProjectUUID'] = response.meta.get('ProjectUUID')
                 hinfo['BuildingUUID'] = response.meta.get('BuildingUUID')
                 hinfo['HouseID'] = (house.xpath('./@onclick').extract_first() or '').replace("s('", '').replace("')", '')
-                hinfo['HouseUUID'] = uuid.uuid3(uuid.NAMESPACE_DNS,
-                                        str(hinfo['ProjectUUID']) + str(hinfo['BuildingUUID']) + hinfo['HouseID'])
                 houseinfo_tmp_url = get_house_info_url(hinfo['HouseID'])
                 result.append(Request(url=houseinfo_tmp_url, dont_filter=True,
                                         meta={'PageType': 'HouseInfoTmp', 'item': copy.deepcopy(hinfo)}))
@@ -326,6 +324,8 @@ class HouseInfoHandleMiddleware(object):
                 hinfo['HousePreSellPrice'] = house_info_dict.get('data').get('iPrice')
                 hinfo['HouseUsage'] = house_info_dict.get('data').get('lbHouseUsefulness')
                 hinfo['HouseInnerArea'] = house_info_dict.get('data').get('lbInsideArea')
+                hinfo['HouseUUID'] = uuid.uuid3(uuid.NAMESPACE_DNS,
+                                        str(hinfo['ProjectUUID']) + str(hinfo['BuildingUUID']) + hinfo['HouseName'])
                 result.append(hinfo)
         return result
 
