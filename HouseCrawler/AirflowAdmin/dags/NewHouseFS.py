@@ -79,7 +79,7 @@ spider_settings = {
     'CONCURRENT_REQUESTS': 64,
 }
 
-dag = DAG('NewHouseFS', default_args=default_args, schedule_interval='10 */7.5 * * *')
+dag = DAG('NewHouseFS', default_args=default_args, schedule_interval='10 */8 * * *')
 
 t1 = PythonOperator(
     task_id='LoadProjectInfoFS',
