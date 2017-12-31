@@ -296,7 +296,7 @@ class HouseInfoHandleMiddleware(object):
             house_floor_list = sel.xpath('//tr[td[@class="cursor"]]')
             for floor_tr in house_floor_list:
                 floor_num = (floor_tr.xpath('.//td[contains(text(), "层")]/text()').extract_first() or '').strip().replace('层：', '')
-                houseinfodetail_list = sel.xpath('./td[@class="cursor"]')
+                houseinfodetail_list = floor_tr.xpath('./td[@class="cursor"]')
                 for house in houseinfodetail_list:
                     hinfo = HouseInfoItem()
                     hinfo['ProjectName'] = response.meta.get('ProjectName')
