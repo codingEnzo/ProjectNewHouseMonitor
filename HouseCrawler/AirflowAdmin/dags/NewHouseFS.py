@@ -169,5 +169,6 @@ t4 = PythonOperator(
                                               'pages_num': 1}
                               }
                      }, ]
-    }
+    },
+    dag=dag
 )
