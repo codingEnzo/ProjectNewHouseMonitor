@@ -1,6 +1,7 @@
 # encoding = utf-8
 import datetime
 import uuid
+import time
 
 from django_mongoengine import *
 from django_mongoengine import fields
@@ -1554,10 +1555,10 @@ class ProjectInfoJiujiang(Document):
 
 class BuildingInfoJiujiang(Document):
     RecordID = fields.UUIDField(default=uuid.uuid1(),
-                                    binary=True, primary_key=True, null=False)
+                                binary=True, primary_key=True, null=False)
     CurTimeStamp = fields.StringField(default=str(datetime.datetime.now()), index=True)
     ProjectUUID = fields.UUIDField(default=uuid.uuid3(uuid.NAMESPACE_DNS, ''),
-                                    binary=False, null=False)
+                                   binary=False, null=False)
     ProjectName = fields.StringField(default='', max_length=1024, null=False)
     BuildingName = fields.StringField(default='', max_length=1024, null=False)
     BuildingUUID = fields.UUIDField(default=uuid.uuid3(uuid.NAMESPACE_DNS, ''),
@@ -1594,17 +1595,17 @@ class BuildingInfoJiujiang(Document):
 
 class HouseInfoJiujiang(Document):
     RecordID = fields.UUIDField(default=uuid.uuid1(),
-                                    binary=True, primary_key=True, null=False)
+                                binary=True, primary_key=True, null=False)
     CurTimeStamp = fields.StringField(default=str(datetime.datetime.now()), index=True)
     ProjectName = fields.StringField(default='', max_length=1024, null=False)
     BuildingName = fields.StringField(default='', max_length=1024, null=False)
     ProjectUUID = fields.UUIDField(default=uuid.uuid3(uuid.NAMESPACE_DNS, ''),
-                                    binary=False, null=False)
+                                   binary=False, null=False)
     BuildingUUID = fields.UUIDField(default=uuid.uuid3(uuid.NAMESPACE_DNS, ''),
                                     binary=False, null=False)
     HouseName = fields.StringField(default='', max_length=1024, null=False)
     HouseUUID = fields.UUIDField(default=uuid.uuid3(uuid.NAMESPACE_DNS, ''),
-                                    binary=False, null=False)
+                                 binary=False, null=False)
     HouseOSEQ = fields.StringField(default='', max_length=1024, null=False)
     HouseFloor = fields.StringField(default='', max_length=1024, null=False)
     HouseKey = fields.StringField(default='', max_length=1024, null=False)
@@ -2060,3 +2061,252 @@ class HouseInfoQingdao(Document):
             'HouseUnitShape',
         ]
     }
+
+
+def set_field(kind, empty=False, key=False, choice=False):
+    '''
+    primary_key#zhujian;   choices#kexuanshuxing; binary#erjinzhi;  null#feikong; index#suoyin
+    '''
+    if kind == "string":
+
+        return fields.StringField(default='', null=empty, primary_key=key, choices=choice)
+
+    elif kind == "int":
+
+        return fields.IntField(default=0, null=True, primary_key=key, choices=choice)
+
+    elif kind == 'url':
+
+        return fields.URLField(default=None, null=True, blank=True, primary_key=key, choices=choice)
+
+    elif kind == 'uuid1':
+
+        return fields.UUIDField(default=uuid.uuid1(), binary=True, primary_key=key, null=empty, choices=choice)
+
+    elif kind == 'uuid3':
+
+        return fields.UUIDField(default=uuid.uuid3(uuid.NAMESPACE_DNS, ''), binary=False, null=empty, primary_key=key,
+                                choices=choice)
+
+    elif kind == 'time':
+
+        return fields.StringField(default=str(datetime.datetime.now()), index=True)
+
+    elif kind == 'day':
+
+        return fields.StringField(default=time.strftime("%Y-%m-%d", time.localtime()), index=True)
+
+    elif kind == 'string':
+
+        return fields.TextField(default='', null=empty, primary_key=key, choices=choice)
+
+
+class ProjectDetailFoshan(Document):
+    RecordID = set_field(kind='uuid1', key=True)
+    RecordTime = set_field(kind='time')
+    CheackTimeLatest = set_field(kind='time')
+    ProjectUUID = set_field(kind='uuid3')
+    RealEstateProjectID = set_field(kind='string')
+    ProjectUrl = set_field(kind='url')
+    SourceUrl = set_field(kind='url')
+
+    AveragePrice = set_field(kind='string')  # 均价
+    ProjectName = set_field(kind='string')
+    ProjectAddress = set_field(kind='string')  # 惠州市惠城区金山大道与三环南路交汇处
+    Developer = set_field(kind='string')  # 发展商
+
+    FloorAreaRatio = set_field(kind='string')  # 容积率
+    DistrictName = set_field(kind='string')  # 行政区
+    ManagementFees = set_field(kind='string')  # 物业费
+    ManagementCompany = set_field(kind='string')  # 物业公司
+    TotalBuidlingArea = set_field(kind='string')  # 总建筑面积
+
+    HouseSoldAmount = set_field(kind='string')  # 已售套数
+    HouseUnsoldAmount = set_field(kind='string')  # 未售套数
+    DeveloperLevel = set_field(kind='string')  # 资质等级
+    DeveloperPermitNumber = set_field(kind='string')  # 开发商资质证书
+
+    SaleTelphoneNumber = set_field(kind='string')  # 销售电话
+
+    meta = {
+        'indexes': [
+            'RecordTime',
+            'ProjectUUID',
+            'ProjectName',
+
+        ]
+    }
+
+
+class BuildingDetailFoshan(Document):
+    RecordID = set_field(kind='uuid1', key=True)
+    RecordTime = set_field(kind='time')
+    CheackTimeLatest = set_field(kind='time')
+    RecordDay = set_field(kind='day')
+    BuildingUrl = set_field(kind='string')
+    SourceUrl = set_field(kind='string')
+
+    ProjectName = set_field(kind='string')
+    RealEstateProjectID = set_field(kind='string')
+    ProjectUUID = set_field(kind='uuid3')
+
+    RegionName = set_field(kind='string')
+
+    BuildingID = set_field(kind='string')
+    BuildingUUID = set_field(kind='uuid3')
+    BuildingName = set_field(kind='string')
+
+    meta = {
+        'indexes': [
+            'RecordTime',
+            'ProjectUUID',
+            'BuildingUUID',
+            'RecordTime'
+        ]
+    }
+
+
+class HouseDetailFoshan(Document):
+    RecordID = set_field(kind='uuid1', key=True)
+    RecordTime = set_field(kind='time')
+    RecordDay = set_field(kind='day')
+    CheackTimeLatest = set_field(kind='time')
+
+    ProjectUUID = set_field(kind='uuid3')
+    BuildingUUID = set_field(kind='uuid3')
+    HouseUUID = set_field(kind='uuid3')
+
+    ProjectName = set_field(kind='string')
+    BuildingName = set_field(kind='string')
+    UnitName = set_field(kind='string')
+
+    HouseUseType = set_field(kind='string')  # 用途
+    HouseID = set_field(kind='string')
+    HouseUrl = set_field(kind='string')
+    SourceUrl = set_field(kind='string')
+
+    RegionName = set_field(kind='string')  # 区域
+    FloorName = set_field(kind='string')  # 层名
+    HouseName = set_field(kind='string')
+    HouseSaleState = set_field(kind='string')  # 销售状态
+    HouseNature = set_field(kind='string')  # 房屋性质
+    HouseType = set_field(kind='string')  # 房屋类型
+
+    BalconyType = set_field(kind='string')  #
+    MeasuredBuildingArea = set_field(kind='string')  # 实测建筑面积
+    MeasuredInsideOfBuildingArea = set_field(kind='string')  # 实测套内面积
+    MeasuredSharedPublicArea = set_field(kind='string')  # 实测公摊面积
+    ForecastBuildingArea = set_field(kind='string')  # 预测建筑面积
+    ForecastInsideOfBuildingArea = set_field(kind='string')  # 预测套内面积
+    ForecastPublicArea = set_field(kind='string')  # 预测公摊面积
+    IsMortgage = set_field(kind='string')  # 是否抵押
+    IsAttachment = set_field(kind='string')  # 是否查封
+    Adress = set_field(kind='string')  # 地址
+    TotalPrice = set_field(kind='string')  # 总价
+    HouseSaleStateLatest = set_field(kind='string')
+    ComplateTag = set_field(kind='int')
+
+    meta = {
+        'indexes': [
+            "ProjectUUID",
+            'ComplateTag',
+            'RecordTime',
+            'HouseSaleStateLatest',
+            'CheackTimeLatest',
+            # "BuildingUUID",
+            'RecordTime',
+            'HouseUUID',
+            'HouseSaleState'
+        ]
+    }
+
+
+class CertificateDetailFoshan(Document):
+    RecordID = set_field(kind='uuid1', key=True)
+    RecordTime = set_field(kind='time')
+    PresalePermitUrl = set_field(kind='string')
+    SourceUrl = set_field(kind='string')
+    CheackTimeLatest = set_field(kind='time')
+    ProjectUUID = set_field(kind='uuid3')
+    ProjectName = set_field(kind='string')
+    RealEstateProjectID = set_field(kind='string')
+
+    PresalePermitNumber = set_field(kind='string')  # 预售证编号
+    PresalePermitNumberID = set_field(kind='string')  # 预售证编号
+    PresalePermitNumberUUID = set_field(kind='uuid3')
+
+    LssuingAuthority = set_field(kind='string')  # 发证机关
+    PresaleTotalBuidlingArea = set_field(kind='string')  # 预售总建筑面积
+    ValidityDateStartDate = set_field(kind='string')  # 有效期起始日期
+    ValidityDateClosingDate = set_field(kind='string')  # 有效期截止日期
+    LssueDate = set_field(kind='string')  # 发证日期
+    Bank_Account = set_field(kind='string')  # 预售款专用帐户
+    Bank = set_field(kind='string')  # 开户银行
+    LivingArea = set_field(kind='string')  # 住宅面积
+    BusinessArea = set_field(kind='string')  # 商业用房面积
+    OtherArea = set_field(kind='string')  # 其它面积
+    LivingCount = set_field(kind='string')  # 住宅套数
+    BusinessCount = set_field(kind='string')  # 商业套数
+    OtherCount = set_field(kind='string')  # 其它套数
+
+    PresaleHouseCount = set_field(kind='string')  # 本期总单元套数
+    PresaleBuildingNo = set_field(kind='string')  # 预售房屋栋号及层数
+
+    meta = {
+        'indexes': [
+            'RecordTime',
+            'PresalePermitNumberUUID',
+            'ProjectUUID',
+            'PresalePermitNumber',
+
+        ]
+    }
+
+
+class WebCountFoshan(Document):
+    RecordID = set_field(kind='uuid1', key=True)  # 记录id
+    RecordTime = set_field(kind='time')  # 记录时间
+    CheackTimeLatest = set_field(kind='time')  # 时间
+
+    riqi = set_field(kind='string')
+    quanshi_zhuzhai_taoshu = set_field(kind='string')
+    quanshi_zhuzhai_mianji = set_field(kind='string')
+    quanshi_shangye_taoshu = set_field(kind='string')
+    quanshi_shangye_mianji = set_field(kind='string')
+    quanshi_qita_taoshu = set_field(kind='string')
+    quanshi_qita_mianji = set_field(kind='string')
+
+    chancheng_zhuzhai_taoshu = set_field(kind='string')
+    chancheng_zhuzhai_mianji = set_field(kind='string')
+    chancheng_shangye_taoshu = set_field(kind='string')
+    chancheng_shangye_mianji = set_field(kind='string')
+    chancheng_qita_taoshu = set_field(kind='string')
+    chancheng_qita_mianji = set_field(kind='string')
+
+    nanhan_zhuzhai_taoshu = set_field(kind='string')
+    nanhan_zhuzhai_mianji = set_field(kind='string')
+    nanhan_shangye_taoshu = set_field(kind='string')
+    nanhan_shangye_mianji = set_field(kind='string')
+    nanhan_qita_taoshu = set_field(kind='string')
+    nanhan_qita_mianji = set_field(kind='string')
+
+    shunde_zhuzhai_taoshu = set_field(kind='string')
+    shunde_zhuzhai_mianji = set_field(kind='string')
+    shunde_shangye_taoshu = set_field(kind='string')
+    shunde_shangye_mianji = set_field(kind='string')
+    shunde_qita_taoshu = set_field(kind='string')
+    shunde_qita_mianji = set_field(kind='string')
+
+    gaoming_zhuzhai_taoshu = set_field(kind='string')
+    gaoming_zhuzhai_mianji = set_field(kind='string')
+    gaoming_shangye_taoshu = set_field(kind='string')
+    gaoming_shangye_mianji = set_field(kind='string')
+    gaoming_qita_taoshu = set_field(kind='string')
+    gaoming_qita_mianji = set_field(kind='string')
+
+    sanshui_zhuzhai_taoshu = set_field(kind='string')
+    sanshui_zhuzhai_mianji = set_field(kind='string')
+    sanshui_shangye_taoshu = set_field(kind='string')
+    sanshui_shangye_mianji = set_field(kind='string')
+    sanshui_qita_taoshu = set_field(kind='string')
+    sanshui_qita_mianji = set_field(kind='string')
