@@ -99,7 +99,6 @@ cur = MonitorProjectBaseWuxi.objects.aggregate(*[{"$sort": {"CurTimeStamp": 1}},
                                              }
                                          }],allowDiskUse=True)
 
-num = 0
 for item in cur:
     change_data = item['change_data']
     projectDetailUrl = item['projectDetailUrl']
