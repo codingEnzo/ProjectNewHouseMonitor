@@ -94,7 +94,7 @@ headers = {
             'Accept-Language': 'zh-CN,zh;q=0.9',
 }
 
-cur = ProjectinfoBase.objects.aggregate(*[{"$sort": {"CurTimeStamp": 1}},
+cur = ProjectinfoBaseFuzhou.objects.aggregate(*[{"$sort": {"CurTimeStamp": 1}},
                                       {'$group':
                                            {'_id': "$projectuuid",
                                             'CurTimeStamp': {'$last': '$CurTimeStamp'},

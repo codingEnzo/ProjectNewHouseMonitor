@@ -79,7 +79,6 @@ t1 = PythonOperator(
 
 project_info_list = []
 headers = {
-            'User-Agent':random.choice(setting.USER_AGENTS),
             'Accept':'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8',
             'Accept-Encoding':'gzip, deflate',
             'Accept-Language':'zh-CN,zh;q=0.9',
@@ -99,7 +98,6 @@ cur = MonitorProjectBaseWuxi.objects.aggregate(*[{"$sort": {"CurTimeStamp": 1}},
                                              }
                                          }],allowDiskUse=True)
 
-num = 0
 for item in cur:
     change_data = item['change_data']
     projectDetailUrl = item['projectDetailUrl']
