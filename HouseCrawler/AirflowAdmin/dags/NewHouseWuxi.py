@@ -58,7 +58,7 @@ spider_settings = {
     'CONCURRENT_REQUESTS': 64,
 }
 
-dag = DAG('NewHouseWuxi', default_args=default_args, schedule_interval="40 */8 * * *")
+dag = DAG('NewHouseWuxi', default_args=default_args, schedule_interval="20 */8 * * *")
 
 t1 = PythonOperator(
     task_id='LoadProjectBaseWuxi',
