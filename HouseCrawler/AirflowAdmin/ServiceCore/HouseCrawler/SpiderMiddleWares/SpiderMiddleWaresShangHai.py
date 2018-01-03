@@ -10,8 +10,6 @@ from HouseCrawler.Items.ItemsShangHai import *
 from HouseNew.models import *
 from scrapy import Request
 from scrapy import Selector
-
-
 if sys.version_info.major >= 3:
     import urllib.parse as urlparse
 else:
