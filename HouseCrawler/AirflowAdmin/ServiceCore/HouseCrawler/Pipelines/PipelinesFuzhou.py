@@ -51,7 +51,6 @@ class Pipeline(object):
         copymainmonitorkeys = {'house_class', 'house_use_type', 'house_layout',
                                'house_area_pr_yc', 'house_area_pr_tn', 'house_area_pr_ft',
                                'house_area_pr_dx'}
-        copymainmonitorkeys = {}
         nowtime = str(datetime.datetime.now())
         changedata = ''
         if q_object:
