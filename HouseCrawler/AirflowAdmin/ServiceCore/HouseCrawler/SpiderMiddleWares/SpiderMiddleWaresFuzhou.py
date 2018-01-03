@@ -9,36 +9,29 @@ from scrapy import Request
 from scrapy import Selector
 from HouseNew.models import *
 from HouseCrawler.Items.ItemsFuzhou import *
-from collections import OrderedDict
 
 if sys.version_info.major >= 3:
     import urllib.parse as urlparse
 else:
     import urlparse
-'''
-获取所有项目链接信息
-'''
-# contextflag = False
-contextflag = True
-'''
-获取项目列表页面
-'''
+
 class GetProjectPageBaseHandleMiddleware(object):
     # Not all methods need to be defined. If a method is not defined,
     # scrapy acts as if the spider middleware does not modify the
     # passed objects.
 
     headers = {'Host': '222.77.178.63:7002',
-                'Connection': 'keep-alive',
-                'Content-Type': 'application/x-www-form-urlencoded',
-                'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8',
-                'Accept-Encoding': 'gzip, deflate',
-                'Accept-Language': 'zh-CN,zh;q=0.9',
-                }
+               'Connection': 'keep-alive',
+               'Content-Type': 'application/x-www-form-urlencoded',
+               'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8',
+               'Accept-Encoding': 'gzip, deflate',
+               'Accept-Language': 'zh-CN,zh;q=0.9',
+               }
 
     def __init__(self, settings):
         self.settings = settings
         self.shprojectmain_url = 'http://222.77.178.63:7002/'
+
     @classmethod
     def from_crawler(cls, crawler):
         # This method is used by Scrapy to create your spiders.
@@ -47,7 +40,7 @@ class GetProjectPageBaseHandleMiddleware(object):
     def process_spider_output(self, response, result, spider):
 
         result = list(result)
-        if not(200 <= response.status < 300):  # common case
+        if not (200 <= response.status < 300):  # common case
             if result:
                 return result
             return []
@@ -68,12 +61,12 @@ class GetProjectPageBaseHandleMiddleware(object):
                                   'page2=%d&xm_search=&zl_search=&gs_search=&' \
                                   'pzs_search=&pzx_search=&xzq_search=&bk_search=' % i
                         req = Request(
-                            url = nexturl,
-                            meta = {
-                            'PageType': 'ProjectBase',
+                            url=nexturl,
+                            meta={
+                                'PageType': 'ProjectBase',
                             }
-                            )
-                        result.append(req)    
+                        )
+                        result.append(req)
 
         return result
 
@@ -84,23 +77,26 @@ class GetProjectPageBaseHandleMiddleware(object):
         # Should return either None or an iterable of Response, dict
         # or Item objects.
         return
+
+
 #
 '''
 获取项目页面信息
 '''
+
+
 class GetProjectBaseHandleMiddleware(object):
     # Not all methods need to be defined. If a method is not defined,
     # scrapy acts as if the spider middleware does not modify the
     # passed objects.
 
     headers = {'Host': '222.77.178.63:7002',
-                'Connection': 'keep-alive',
-                'Content-Type': 'application/x-www-form-urlencoded',
-                'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8',
-                'Accept-Encoding': 'gzip, deflate',
-                'Accept-Language': 'zh-CN,zh;q=0.9',
-                }
-
+               'Connection': 'keep-alive',
+               'Content-Type': 'application/x-www-form-urlencoded',
+               'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8',
+               'Accept-Encoding': 'gzip, deflate',
+               'Accept-Language': 'zh-CN,zh;q=0.9',
+               }
 
     def __init__(self, settings):
         self.settings = settings
@@ -114,11 +110,11 @@ class GetProjectBaseHandleMiddleware(object):
     def process_spider_output(self, response, result, spider):
 
         result = list(result)
-        if not(200 <= response.status < 300):  # common case
+        if not (200 <= response.status < 300):  # common case
             if result:
                 return result
             return []
-        if response.meta.get('PageType') not in ('ProjectBase','SubProject'):
+        if response.meta.get('PageType') not in ('ProjectBase', 'SubProject'):
             if result:
                 return result
             return []
@@ -230,8 +226,7 @@ class GetProjectBaseHandleMiddleware(object):
                 Approvalcardturl = self.shprojectmain_url + 'Presell.asp' + Approvalcardturl
                 projectinfobaseitem['ApprovalUrl'] = Approvalcardturl
                 # 处理列表数据
-                result.append(projectinfobaseitem)              
-       
+                result.append(projectinfobaseitem)
 
         return result
 
@@ -242,26 +237,28 @@ class GetProjectBaseHandleMiddleware(object):
         # Should return either None or an iterable of Response, dict
         # or Item objects.
         return
+
+
 #
 
 '''
 处理预售证信息页面
 '''
-class OpenningunitBaseHandleMiddleware(object):
 
+
+class OpenningunitBaseHandleMiddleware(object):
     # Not all methods need to be defined. If a method is not defined,
     # scrapy acts as if the spider middleware does not modify the
     # passed objects.
 
     headers = {'Host': '222.77.178.63:7002',
-                'Connection': 'keep-alive',
-                'Content-Type': 'application/x-www-form-urlencoded',
-                'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8',
-                'Accept-Encoding': 'gzip, deflate',
-                'Accept-Language': 'zh-CN,zh;q=0.9',
+               'Connection': 'keep-alive',
+               'Content-Type': 'application/x-www-form-urlencoded',
+               'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8',
+               'Accept-Encoding': 'gzip, deflate',
+               'Accept-Language': 'zh-CN,zh;q=0.9',
+               'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Ubuntu Chromium/62.0.3202.75 Chrome/62.0.3202.75 Safari/537.36'
                }
-
-
 
     def __init__(self, settings):
         self.settings = settings
@@ -275,7 +272,7 @@ class OpenningunitBaseHandleMiddleware(object):
     def process_spider_output(self, response, result, spider):
 
         result = list(result)
-        if not(200 <= response.status < 300):  # common case
+        if not (200 <= response.status < 300):  # common case
             if result:
                 return result
             return []
@@ -329,21 +326,22 @@ class OpenningunitBaseHandleMiddleware(object):
 '''
 处理楼栋页面
 '''
-class BuildingBaseHandleMiddleware(object):
 
+
+class BuildingBaseHandleMiddleware(object):
     # Not all methods need to be defined. If a method is not defined,
     # scrapy acts as if the spider middleware does not modify the
     # passed objects.
 
     headers = {'Host': '222.77.178.63:7002',
-                'Connection': 'keep-alive',
-                'Content-Type': 'application/x-www-form-urlencoded',
-                'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8',
-                'Accept-Encoding': 'gzip, deflate',
-                'Accept-Language': 'zh-CN,zh;q=0.9',
+               'Connection': 'keep-alive',
+               'Content-Type': 'application/x-www-form-urlencoded',
+               'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8',
+               'Accept-Encoding': 'gzip, deflate',
+               'Accept-Language': 'zh-CN,zh;q=0.9',
+               'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Ubuntu Chromium/62.0.3202.75 Chrome/62.0.3202.75 Safari/537.36'
+
                }
-
-
 
     def __init__(self, settings):
         self.settings = settings
@@ -357,7 +355,7 @@ class BuildingBaseHandleMiddleware(object):
     def process_spider_output(self, response, result, spider):
 
         result = list(result)
-        if not(200 <= response.status < 300):  # common case
+        if not (200 <= response.status < 300):  # common case
             if result:
                 return result
             return []
@@ -410,8 +408,8 @@ class BuildingBaseHandleMiddleware(object):
                     buildingrecod.append(building_name)
                 buildingitem['buildingno'] = str(building_no)
                 result.append(buildingitem)
-                req = Request(url = building_detail_page_url,
-                              meta = {
+                req = Request(url=building_detail_page_url,
+                              meta={
                                   'PageType': 'HouseBase',
                                   'projectuuid': str(projectuuid),
                                   'projectname': projectname,
@@ -421,8 +419,8 @@ class BuildingBaseHandleMiddleware(object):
                               })
                 result.append(req)
 
-
         return result
+
     def process_spider_exception(self, response, exception, spider):
         # Called when a spider or process_spider_input() method
         # (from other spider middleware) raises an exception.
@@ -435,20 +433,19 @@ class BuildingBaseHandleMiddleware(object):
 '''
 处理每栋楼中房屋页面
 '''
-class HouseBaseHandleMiddleware(object):
 
+
+class HouseBaseHandleMiddleware(object):
     # Not all methods need to be defined. If a method is not defined,
     # scrapy acts as if the spider middleware does not modify the
     # passed objects.
 
     headers = {'Host': '222.77.178.63:7002',
-                'Connection': 'keep-alive',
-                'Content-Type': 'application/x-www-form-urlencoded',
-                'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8',
-                'Accept-Encoding': 'gzip, deflate',
-                'Accept-Language': 'zh-CN,zh;q=0.9'}
-
-
+               'Connection': 'keep-alive',
+               'Content-Type': 'application/x-www-form-urlencoded',
+               'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8',
+               'Accept-Encoding': 'gzip, deflate',
+               'Accept-Language': 'zh-CN,zh;q=0.9'}
 
     def __init__(self, settings):
         self.settings = settings
@@ -462,11 +459,11 @@ class HouseBaseHandleMiddleware(object):
     def process_spider_output(self, response, result, spider):
 
         result = list(result)
-        if not(200 <= response.status < 300):  # common case
+        if not (200 <= response.status < 300):  # common case
             if result:
                 return result
             return []
-        if response.meta.get('PageType') not in ('HouseBase','HouseInfo'):
+        if response.meta.get('PageType') not in ('HouseBase', 'HouseInfo'):
             if result:
                 return result
             return []
@@ -537,17 +534,17 @@ class HouseBaseHandleMiddleware(object):
                         house_no = house_no + '1'
                     recordhouse.append(house_no)
                     houseitem['house_no'] = house_no
-                    if house_sts == '可售':                     
+                    if house_sts == '可售':
                         house_detail_detail = re.search(r'housedetail.asp(.*?)"', house_detail, re.S)
                         if house_detail_detail:
                             house_detail_page_url = self.shprojectmain_url + 'housedetail.asp' + house_detail_detail.group(
-                                    1).replace("amp;", "")
+                                1).replace("amp;", "")
                             result.append(Request(
                                 url=house_detail_page_url,
                                 meta={
                                     'PageType': 'HouseInfo',
                                     'item': houseitem
-                                    },
+                                },
                                 dont_filter=False))
                     else:
                         result.append(houseitem)
@@ -585,6 +582,7 @@ class HouseBaseHandleMiddleware(object):
                 houseitem['house_area_real_dx'] = house_area_real_dx
             result.append(houseitem)
         return result
+
     def process_spider_exception(self, response, exception, spider):
         # Called when a spider or process_spider_input() method
         # (from other spider middleware) raises an exception.
