@@ -7,7 +7,6 @@ import random
 import uuid
 import json
 import redis
-from HouseCrawler import settings as setting
 from HouseCrawler.Items.ItemsWuxi import *
 
 sys.path.append(os.path.abspath('.'))
@@ -20,14 +19,12 @@ logger = logging.getLogger(__name__)
 class Pipeline(object):
     def __init__(self, settings):
         self.settings = settings
-        self.r = redis.Redis(host=setting.REDIS_HOST, port=setting.REDIS_PORT)
         self.headers = {
             'Accept': "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8",
             'Accept-Encoding': "gzip, deflate",
             'Accept-Language': "zh-CN,zh;q=0.9",
             'Connection': "keep-alive",
             'Host': "www.njhouse.com.cn",
-            'User-Agent': random.choice(setting.USER_AGENTS),
             'Cache-Control': "max-age=0",
         }
 
