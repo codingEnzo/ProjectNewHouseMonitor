@@ -16,4 +16,4 @@ class BuildingBaseItem(DjangoItem):
     django_model = BuildingBaseFuzhou
 
 class HouseBaseItem(DjangoItem):
-    django_model = HouseBaseFuzhous
+    django_model = HouseBaseFuzhou
