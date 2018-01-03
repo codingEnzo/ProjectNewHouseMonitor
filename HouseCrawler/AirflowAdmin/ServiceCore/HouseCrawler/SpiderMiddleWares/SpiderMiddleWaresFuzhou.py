@@ -8,7 +8,6 @@ import redis
 import json
 from scrapy import Request
 from scrapy import Selector
-from HouseCrawler import settings as setting
 from HouseNew.models import *
 from HouseCrawler.Items.ItemsFuzhou import *
 from collections import OrderedDict
@@ -41,8 +40,6 @@ class GetProjectPageBaseHandleMiddleware(object):
     def __init__(self, settings):
         self.settings = settings
         self.shprojectmain_url = 'http://222.77.178.63:7002/'
-        self.r = redis.Redis(host=setting.REDIS_HOST, port=setting.REDIS_PORT)
-
     @classmethod
     def from_crawler(cls, crawler):
         # This method is used by Scrapy to create your spiders.
@@ -71,10 +68,6 @@ class GetProjectPageBaseHandleMiddleware(object):
                         nexturl = 'http://222.77.178.63:7002/result_new.asp?' \
                                   'page2=%d&xm_search=&zl_search=&gs_search=&' \
                                   'pzs_search=&pzx_search=&xzq_search=&bk_search=' % i
-                        project_base = {
-                            'source_url': nexturl,
-                            'meta': {'PageType': 'ProjectBase',
-                                     }}                      
                         req = Request(
                             url = nexturl,
                             meta = {
@@ -113,7 +106,6 @@ class GetProjectBaseHandleMiddleware(object):
     def __init__(self, settings):
         self.settings = settings
         self.shprojectmain_url = 'http://222.77.178.63:7002/'
-        self.r = redis.Redis(host=setting.REDIS_HOST, port=setting.REDIS_PORT)
 
     @classmethod
     def from_crawler(cls, crawler):
@@ -276,7 +268,6 @@ class OpenningunitBaseHandleMiddleware(object):
     def __init__(self, settings):
         self.settings = settings
         self.shprojectmain_url = 'http://222.77.178.63:7002/'
-        self.r = redis.Redis(host=setting.REDIS_HOST, port=setting.REDIS_PORT)
 
     @classmethod
     def from_crawler(cls, crawler):
@@ -326,17 +317,6 @@ class OpenningunitBaseHandleMiddleware(object):
                     approvalitem['Totalhouseareas'] = float(item_details[7].replace("m<SUP>2</SUP>", ""). \
                                                             replace("m<sup>2</sup>", ""))
                     result.append(approvalitem)
-
-                    if contextflag:
-                        project_base = {
-                            'source_url': building_url,
-                            'meta': {'PageType': 'building',
-                                     'projectuuid': projectuuid,
-                                     'projectname': projectname,
-                                     'Approvalno': opening_unit_no,
-                                     }}
-                        project_base_json = json.dumps(project_base, sort_keys=True)
-                        self.r.sadd('FuzhouCrawler:start_urls', project_base_json)
         return result
 
     def process_spider_exception(self, response, exception, spider):
@@ -372,7 +352,6 @@ class BuildingBaseHandleMiddleware(object):
     def __init__(self, settings):
         self.settings = settings
         self.shprojectmain_url = 'http://222.77.178.63:7002/'
-        self.r = redis.Redis(host=setting.REDIS_HOST, port=setting.REDIS_PORT)
 
     @classmethod
     def from_crawler(cls, crawler):
@@ -435,18 +414,17 @@ class BuildingBaseHandleMiddleware(object):
                     buildingrecod.append(building_name)
                 buildingitem['buildingno'] = str(building_no)
                 result.append(buildingitem)
-                if contextflag:
-                    project_base = {
-                        'source_url': building_detail_page_url,
-                        'meta': {'PageType': 'HouseBase',
-                                 'projectuuid': str(projectuuid),
-                                 'projectname': projectname,
-                                 'Approvalno': Approvalno,
-                                 'building_no': str(building_no),
-                                 'building_name': buildingitem['buildingname'],
-                                 }}
-                    project_base_json = json.dumps(project_base, sort_keys=True)
-                    self.r.sadd('FuzhouCrawler:start_urls', project_base_json)
+                req = Request(url = building_detail_page_url,
+                              meta = {
+                                  'PageType': 'HouseBase',
+                                  'projectuuid': str(projectuuid),
+                                  'projectname': projectname,
+                                  'Approvalno': Approvalno,
+                                  'building_no': str(building_no),
+                                  'building_name': buildingitem['buildingname'],
+                              })
+                result.append(req)
+
 
         return result
     def process_spider_exception(self, response, exception, spider):
@@ -479,7 +457,6 @@ class HouseBaseHandleMiddleware(object):
     def __init__(self, settings):
         self.settings = settings
         self.shprojectmain_url = 'http://222.77.178.63:7002/'
-        self.r = redis.Redis(host=setting.REDIS_HOST, port=setting.REDIS_PORT)
 
     @classmethod
     def from_crawler(cls, crawler):
@@ -610,10 +587,7 @@ class HouseBaseHandleMiddleware(object):
                 '//*[@id="Table1"]/tr/td/table/tbody/tr[13]/td[2]/text()').extract_first()
             if house_area_real_dx:
                 houseitem['house_area_real_dx'] = house_area_real_dx
-
             result.append(houseitem)
-
-
         return result
     def process_spider_exception(self, response, exception, spider):
         # Called when a spider or process_spider_input() method
