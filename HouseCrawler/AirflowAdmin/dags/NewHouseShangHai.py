@@ -79,52 +79,18 @@ dag = DAG(
     schedule_interval="30 */5 * * *")
 
 
-def getData():
-    resultdata = []
-    headers = {
-        'Host': 'www.fangdi.com.cn',
-        'Proxy-Connection': 'keep-alive',
-        'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8',
-        'Accept-Encoding': 'gzip, deflate',
-        'Accept-Language': 'zh-CN,zh;q=0.9',
-        'Upgrade-Insecure-Requests': '1',
-        'Referer': 'http://www.fangdi.com.cn/moreRegion.asp',
-        'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64; rv:52.0) Gecko/20100101 Firefox/52.0',
-    }
-    url = 'http://www.fangdi.com.cn/moreRegion.asp'
-    req = requests.get(url, headers=headers)
-    req.encoding = req.apparent_encoding
-    html = str(req.text).replace('\r', '').replace('\n', '') \
-        .replace('\t', '').replace(" ", "")
-    tables = re.findall(r'districtID=(\d+)&Region_ID=(\d+)">', html)
-    for districtID, Region_ID in tables:
-        resultdata.append({
-            'county_no': districtID,
-            'blank_no': Region_ID
-        })
-    return resultdata
-selcirls = ['1', '2', '3']
-selstats = ['1', '2', '4']
-datas = getData()
-project_info_list = []
-for selstat in selstats:
-    for data in datas:
-        for selcirl in selcirls:
-            starurl = 'http://www.fangdi.com.cn/complexpro.asp?page=1&districtID=%s&Region_ID=%s' \
-                '&projectAdr=&projectName=&startCod=&buildingType=1' \
-                '&houseArea=0&averagePrice=0&selState=%s&selCircle=%s' \
-                % (data['county_no'], data['blank_no'], selstat, selcirl)
-
-            project_info = {'source_url': starurl,
-                            'meta': {'PageType': 'GetProjectBase'}}
-            project_info_list.append(project_info)
+starurl = 'http://www.fangdi.com.cn/moreRegion.asp'
 t1 = PythonOperator(
     task_id='LoadProjectBaseShanghai',
     python_callable=spider_call,
     op_kwargs={
         'spiderName': 'DefaultCrawler',
         'settings': spider_settings,
-        'urlList': project_info_list,
+        'urlList': [
+            {'source_url': starurl,
+             'meta': {
+                        'PageType': 'StartProjectBase'}
+                     }],
         'spider_count': 10
     },
     dag=dag

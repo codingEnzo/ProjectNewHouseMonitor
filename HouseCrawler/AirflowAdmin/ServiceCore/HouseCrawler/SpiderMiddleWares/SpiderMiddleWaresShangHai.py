@@ -59,10 +59,35 @@ class GetProjectBaseHandleMiddleware(object):
             if result:
                 return result
             return []
-        if response.meta.get('PageType') not in ('GetProjectBase'):
+        if response.meta.get('PageType') not in ('StartProjectBase','GetProjectBase'):
             if result:
                 return result
             return []
+        if response.meta.get('PageType') == 'StartProjectBase':
+            resultdata = []
+            responsetext = response.body_as_unicode()
+            html = str(responsetext).replace('\r', '').replace('\n', '') \
+                .replace('\t', '').replace(" ", "")
+            tables = re.findall(r'districtID=(\d+)&Region_ID=(\d+)">', html)
+            for districtID, Region_ID in tables:
+                resultdata.append({
+                    'county_no': districtID,
+                    'blank_no': Region_ID
+                })
+            selcirls = ['1', '2', '3']
+            selstats = ['1', '2', '4']
+            for selstat in selstats:
+                for data in resultdata:
+                    for selcirl in selcirls:
+                        starurl = 'http://www.fangdi.com.cn/complexpro.asp?page=1&districtID=%s&Region_ID=%s' \
+                                  '&projectAdr=&projectName=&startCod=&buildingType=1' \
+                                  '&houseArea=0&averagePrice=0&selState=%s&selCircle=%s' \
+                                  % (data['county_no'], data['blank_no'], selstat, selcirl)
+                        req = Request(url = starurl,
+                                      meta = {
+                                          'PageType': 'GetProjectBase'
+                                      })
+                        result.append(req)
         if response.meta.get('PageType') == 'GetProjectBase':
             result1 = response.xpath('//*[@id="Table7"]/tr/td[5]').extract()
             result2 = response.xpath('//*[@id="Table7"]/tr/td[4]').extract()
@@ -150,19 +175,6 @@ class ProjectBaseHandleMiddleware(object):
                 shprojectitem['project_house_num'] = get_result.xpath('./td[4]/text()').extract_first()
                 shprojectitem['project_house_area'] = get_result.xpath('./td[5]/text()').extract_first()
                 prdetailhref = get_result.xpath('./td[2]/a/@href').extract_first()
-                # if 'middle' in get_result:
-                #     get_result = get_result.replace('\r', ''). \
-                #         replace('\n', '').replace('\t', ''). \
-                #         replace(' ', '').replace(u' ', '')
-                #
-                #     #/html/body/center/table[5]/tbody/tr/td/table[2]/tbody/tr/td[2]/table/tbody/tr[2]/td/table/tbody/tr[1]/td[2]
-                #     myItems = re.findall('tyle="padding:3">(.*?)</td>', get_result, re.S)
-                #
-                #     shprojectitem['project_sts'] = myItems[0]
-                #     shprojectitem['project_addr'] = myItems[2]
-                #     shprojectitem['project_house_num'] = myItems[3]
-                #     shprojectitem['project_house_area'] = myItems[4]
-                #     prdetailhref = re.search('href="(.*?)"', myItems[1], re.S)
                 if prdetailhref:
                         new_url = self.shprojectmain_url + prdetailhref
                         req = Request(url=new_url,
@@ -173,7 +185,6 @@ class ProjectBaseHandleMiddleware(object):
                                       dont_filter=True)
                         result.append(req)
         if response.meta.get('PageType') == 'SubProject':
-            print('SubProject')
             SubProject_base = response.meta.get('item')
             shprojectitem = copy.deepcopy(SubProject_base)
             # /html/body/center/table[5]/tr/td/table[2]/tr/td[2]/table/tr[2]/td/table/tr[1]/td[2]
@@ -200,21 +211,22 @@ class ProjectBaseHandleMiddleware(object):
 
             project_image_link = Selector(response).xpath(
                 '//*[@id="div1"]/table/tr/td/img/@src').extract_first()
-            shprojectitem['project_detail_link'] = self.shprojectmain_url + project_image_link
+            if project_image_link:
+                shprojectitem['project_detail_link'] = self.shprojectmain_url + project_image_link
 
             #//*[@id="SUList"]
             project_sub_link = Selector(response).xpath(
                 '//*[@id="SUList"]/@src').extract_first()
-            openinguniturl = self.shprojectmain_url + project_sub_link
-            result.append(shprojectitem)
-            result.append(Request(url=openinguniturl,
-                                  meta={
-                                      'PageType': 'openingunit',
-                                      'project_no': project_no,
-                                      'project_name':shprojectitem['project_name']
-                                  }
-                                  ))
-
+            if project_sub_link:
+                openinguniturl = self.shprojectmain_url + project_sub_link
+                result.append(shprojectitem)
+                result.append(Request(url=openinguniturl,
+                                      meta={
+                                          'PageType': 'openingunit',
+                                          'project_no': project_no,
+                                          'project_name': shprojectitem['project_name']
+                                      }
+                                      ))
         return result
 
     def process_spider_exception(self, response, exception, spider):
