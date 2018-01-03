@@ -95,40 +95,40 @@ t1 = PythonOperator(
     },
     dag=dag
 )
-# building_info_list = []
-# cur = BuildingBaseShanghai.objects.aggregate(
-#     *[
-#         {
-#             "$sort": {
-#                 "CurTimeStamp": 1}}, {
-#                     '$group': {
-#                         '_id': "$building_no",
-#                         'project_name': {'$last': '$project_name'},
-#                         'project_no': {'$last': '$project_no'},
-#                         'opening_unit_no': {'$last': '$opening_unit_no'},
-#                         'building_name': {'$last': '$building_name'},
-#                         'building_no': {'$last': '$building_no'},
-#                         'building_url': {'$last': '$building_url'},
-#                         'building_sts': {'$last': '$building_sts'}
-#                     }}])
-# for item in cur:
-#     if item['building_url'] and item['building_sts']=='在售':
-#         building_info = {
-#             'source_url': item['building_url'],
-#             'meta': {
-#                 'PageType': 'HouseBase',
-#                 'project_no': item['project_no'],
-#                 'project_name': item['project_name'],
-#                 'opening_unit_no': str(item['opening_unit_no']),
-#                 'building_no': str(item['building_no'])}}
-#         building_info_list.append(building_info)
-#
-#
-# t2 = PythonOperator(
-#     task_id='LoadBuildingInfoShanghai',
-#     python_callable=spider_call,
-#     op_kwargs={'spiderName': 'DefaultCrawler',
-#                'settings': spider_settings,
-#                'urlList': building_info_list,
-#                'spider_count': 10},
-#     dag=dag)
+building_info_list = []
+cur = BuildingBaseShanghai.objects.aggregate(
+    *[
+        {
+            "$sort": {
+                "CurTimeStamp": 1}}, {
+                    '$group': {
+                        '_id': "$building_no",
+                        'project_name': {'$last': '$project_name'},
+                        'project_no': {'$last': '$project_no'},
+                        'opening_unit_no': {'$last': '$opening_unit_no'},
+                        'building_name': {'$last': '$building_name'},
+                        'building_no': {'$last': '$building_no'},
+                        'building_url': {'$last': '$building_url'},
+                        'building_sts': {'$last': '$building_sts'}
+                    }}],allowDiskUse=True)
+for item in cur:
+    if item['building_url'] and item['building_sts']=='在售':
+        building_info = {
+            'source_url': item['building_url'],
+            'meta': {
+                'PageType': 'HouseBase',
+                'project_no': item['project_no'],
+                'project_name': item['project_name'],
+                'opening_unit_no': str(item['opening_unit_no']),
+                'building_no': str(item['building_no'])}}
+        building_info_list.append(building_info)
+
+
+t2 = PythonOperator(
+    task_id='LoadBuildingInfoShanghai',
+    python_callable=spider_call,
+    op_kwargs={'spiderName': 'DefaultCrawler',
+               'settings': spider_settings,
+               'urlList': building_info_list,
+               'spider_count': 10},
+    dag=dag)
