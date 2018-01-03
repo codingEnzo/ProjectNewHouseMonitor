@@ -4,17 +4,13 @@ import sys
 import uuid
 import re
 import copy
-import redis
 import json
 import logging
 import random
 from scrapy import Request
 from scrapy import Selector
-from HouseCrawler import settings as setting
 from HouseNew.models import *
 from HouseCrawler.Items.ItemsWuxi import *
-from collections import OrderedDict
-
 if sys.version_info.major >= 3:
     import urllib.parse as urlparse
 else:
@@ -50,7 +46,6 @@ class SpiderMiddlerProjectBase(object):
     def __init__(self, settings):
         self.settings = settings
         self.headers = {
-            'User-Agent':random.choice(setting.USER_AGENTS),
             'Accept':'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8',
             'Accept-Encoding':'gzip, deflate',
             'Accept-Language':'zh-CN,zh;q=0.9',
@@ -59,7 +54,6 @@ class SpiderMiddlerProjectBase(object):
             'Content-Type':'application/x-www-form-urlencoded',
             'Host':'www.wxhouse.com:9097',
         }
-        self.r = redis.Redis(host=setting.REDIS_HOST, port=setting.REDIS_PORT)
         self.mainProjectUrl = 'http://www.wxhouse.com:9097/wwzs/queryLpxxInfo.action?tplLpxx.id='
         self.mainDetailUrl = 'http://www.wxhouse.com:9097/wwzs/queryGltInfo.action?tplLpxx.id='
         self.SoldStatusUrl = 'http://www.wxhouse.com:9097/wwzs/queryXsxzInfo.action?tplLpxx.id='
@@ -398,7 +392,6 @@ class SpiderMiddlerBuildingBase(object):
     def __init__(self, settings):
         self.settings = settings
         self.headers = {
-            'User-Agent':random.choice(setting.USER_AGENTS),
             'Accept':'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8',
             'Accept-Encoding':'gzip, deflate',
             'Accept-Language':'zh-CN,zh;q=0.9',
@@ -407,7 +400,6 @@ class SpiderMiddlerBuildingBase(object):
             'Content-Type':'application/x-www-form-urlencoded',
             'Host':'www.wxhouse.com:9097',
         }
-        self.r = redis.Redis(host=setting.REDIS_HOST, port=setting.REDIS_PORT)
 
 
 
@@ -511,17 +503,6 @@ class SpiderMiddlerBuildingBase(object):
                         monitorhousebaseitem['SourceUrl'] = response.url
                         headers = self.headers
                         headers['Referer'] = response.url
-                        # if HouseInfoUrl and HouseSts=='待售':
-                        #
-                        #     result.append(Request(url=HouseInfoUrl,
-                        #                           headers=headers,
-                        #                           method='GET',
-                        #                           meta={
-                        #                               'PageType': 'HouseBase',
-                        #                               'ProjectName': ProjectName,
-                        #                               'BuildingNum': BuildingNum,
-                        #                               'houseNo': HouseNo,
-                        #                           }))
                         result.append(monitorhousebaseitem)
         return result
 
@@ -541,7 +522,6 @@ class SpiderMiddlerDeveloperBase(object):
     def __init__(self, settings):
         self.settings = settings
         self.headers = {
-            'User-Agent':random.choice(setting.USER_AGENTS),
             'Accept':'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8',
             'Accept-Encoding':'gzip, deflate',
             'Accept-Language':'zh-CN,zh;q=0.9',
@@ -550,11 +530,6 @@ class SpiderMiddlerDeveloperBase(object):
             'Content-Type':'application/x-www-form-urlencoded',
             'Host':'www.wxhouse.com:9097',
         }
-        self.r = redis.Redis(host=setting.REDIS_HOST, port=setting.REDIS_PORT)
-
-
-
-
     @classmethod
     def from_crawler(cls, crawler):
         # This method is used by Scrapy to create your spiders.
@@ -647,9 +622,6 @@ class SpiderMiddlerHouseBase(object):
     # passed objects.
     def __init__(self, settings):
         self.settings = settings
-        self.r = redis.Redis(host=setting.REDIS_HOST, port=setting.REDIS_PORT)
-
-
 
     @classmethod
     def from_crawler(cls, crawler):
