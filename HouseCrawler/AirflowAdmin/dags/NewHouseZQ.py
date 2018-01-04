@@ -60,7 +60,8 @@ spider_settings = {
     'RETRY_ENABLE': True,
     'CLOSESPIDER_TIMEOUT': 3600 * 5.5,
     'CONCURRENT_REQUESTS': 8,
-    'RETRY_TIMES': 30
+    'RETRY_TIMES': 30,
+    'REDIRECT_ENABLED': True
 }
 
 dag = DAG('NewHouseZQ', default_args=default_args,
