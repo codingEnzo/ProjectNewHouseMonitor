@@ -73,20 +73,13 @@ class GetProjectPageBaseHandleMiddleware(object):
                         nexturl = 'http://222.77.178.63:7002/result_new.asp?' \
                                   'page2=%d&xm_search=&zl_search=&gs_search=&' \
                                   'pzs_search=&pzx_search=&xzq_search=&bk_search=' % i
-                        # req = Request(
-                        #     url=nexturl,
-                        #     meta={
-                        #         'PageType': 'ProjectBase',
-                        #     }
-                        # )
-                        # result.append(req)
-
-                        project_base = {
-                            'source_url': nexturl,
-                            'meta': {'PageType': 'ProjectBase',
-                                     }}
-                        project_base_json = json.dumps(project_base, sort_keys=True)
-                        self.r.sadd('FuzhouCrawler:start_urls', project_base_json)
+                        req = Request(
+                            url=nexturl,
+                            meta={
+                                'PageType': 'ProjectBase',
+                            }
+                        )
+                        result.append(req)
 
         return result
 
@@ -116,7 +109,6 @@ class GetProjectBaseHandleMiddleware(object):
                'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8',
                'Accept-Encoding': 'gzip, deflate',
                'Accept-Language': 'zh-CN,zh;q=0.9',
-               'User-Agent': random.choice(USER_AGENTS)
                }
 
     def __init__(self, settings):
@@ -281,7 +273,6 @@ class OpenningunitBaseHandleMiddleware(object):
                'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8',
                'Accept-Encoding': 'gzip, deflate',
                'Accept-Language': 'zh-CN,zh;q=0.9',
-               'User-Agent': random.choice(USER_AGENTS)
                }
 
     def __init__(self, settings):
@@ -373,8 +364,6 @@ class BuildingBaseHandleMiddleware(object):
                'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8',
                'Accept-Encoding': 'gzip, deflate',
                'Accept-Language': 'zh-CN,zh;q=0.9',
-               'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Ubuntu Chromium/62.0.3202.75 Chrome/62.0.3202.75 Safari/537.36'
-
                }
 
     def __init__(self, settings):
