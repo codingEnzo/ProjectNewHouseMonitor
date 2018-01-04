@@ -3,9 +3,6 @@ from scrapy_djangoitem import DjangoItem
 
 from HouseNew.models import *
 
-class SearchProjectBaseItem(DjangoItem):
-    django_model = SearchProjectBaseFuzhou
-
 class ProjectinfoBaseItem(DjangoItem):
     django_model = ProjectinfoBaseFuzhou
 
