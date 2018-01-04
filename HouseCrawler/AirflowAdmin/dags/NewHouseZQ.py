@@ -59,7 +59,8 @@ spider_settings = {
     },
     'RETRY_ENABLE': True,
     'CLOSESPIDER_TIMEOUT': 3600 * 5.5,
-    'CONCURRENT_REQUESTS': 16,
+    'CONCURRENT_REQUESTS': 8,
+    'RETRY_TIMES': 30
 }
 
 dag = DAG('NewHouseZQ', default_args=default_args,
@@ -98,7 +99,8 @@ t2 = PythonOperator(
     python_callable=spider_call,
     op_kwargs={'spiderName': 'DefaultCrawler',
                'settings': spider_settings,
-               'urlList': project_info_list},
+               'urlList': project_info_list,
+               'spider_count': 16},
     dag=dag
 )
 
