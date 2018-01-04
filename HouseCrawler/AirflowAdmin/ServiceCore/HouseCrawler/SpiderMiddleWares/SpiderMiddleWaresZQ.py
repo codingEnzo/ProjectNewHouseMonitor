@@ -479,7 +479,7 @@ class HouseInfoHandleMiddleware(object):
             return state
 
         result = list(result)
-        print(response.status, response.url)
+        print(response.status, response.url, response.meta.get('PageType'))
         if not(200 <= response.status < 300):  # common case
             if result:
                 return result
