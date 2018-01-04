@@ -133,5 +133,6 @@ for cur, index in enumerate(list(range(0, len(building_info_list), index_skip)))
         python_callable=spider_call,
         op_kwargs={'spiderName': 'DefaultCrawler',
                    'settings': spider_settings,
-                   'urlList': building_info_list[index:index + index_skip]},
+                   'urlList': building_info_list[index:index + index_skip],
+                   'spider_count': 16},
         dag=dag)

@@ -490,6 +490,7 @@ class HouseInfoHandleMiddleware(object):
         print('HouseInfoHandleMiddleware')
 
         if response.meta.get('PageType') == 'HouseInfo':
+            print(response.url)
             result.append(Request(url=response.url,
                                     headers=headers, meta={'PageType': 'HouseInfoUse'}))
         if response.meta.get('PageType') == 'HouseInfoUse':
