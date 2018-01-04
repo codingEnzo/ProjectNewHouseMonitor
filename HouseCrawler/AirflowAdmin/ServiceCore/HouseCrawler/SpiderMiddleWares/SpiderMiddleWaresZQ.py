@@ -479,6 +479,7 @@ class HouseInfoHandleMiddleware(object):
             return state
 
         result = list(result)
+        print(response.status, response.url)
         if not(200 <= response.status < 300):  # common case
             if result:
                 return result
@@ -490,7 +491,6 @@ class HouseInfoHandleMiddleware(object):
         print('HouseInfoHandleMiddleware')
 
         if response.meta.get('PageType') == 'HouseInfo':
-            print(response.url)
             result.append(Request(url=response.url,
                                     headers=headers, meta={'PageType': 'HouseInfoUse'}))
         if response.meta.get('PageType') == 'HouseInfoUse':
