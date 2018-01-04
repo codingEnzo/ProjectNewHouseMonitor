@@ -144,8 +144,8 @@ class ProjectInfoHandleMiddleware(object):
                 '//td[text()="所在地区："]/following-sibling::td[1]/text()').extract_first() or ''
             pinfo['ProjectEngPlanLicense'] = (response.xpath(
                 '//td[text()="建设工程规划许可证号："]/following-sibling::td[1]/text()').extract_first() or '').strip()
-            pinfo['ProjectPlanBuildingArea'] = response.xpath(
-                '//td[text()="规划建筑面积："]/following-sibling::td[1]/text()').extract_first() or ''
+            pinfo['ProjectPlanBuildingArea'] = (response.xpath(
+                '//td[text()="规划建筑面积："]/following-sibling::td[1]/text()').extract_first() or '').replace('m', '').strip()
             pinfo['ProjectLandLicense'] = response.xpath(
                 '//td[text()="土地证号："]/following-sibling::td[1]/text()').extract_first() or ''
             pinfo['ProjectLandArea'] = (response.xpath(
@@ -298,7 +298,7 @@ class BuildingListHandleMiddleware(object):
                 binfo = BuildingInfoItem()
                 binfo['ProjectName'] = response.xpath(
                     '//td[text()="项目名称："]/following-sibling::td[1]/text()').extract_first() or ''
-                binfo['ProjectUUID'] = uuid.uuid3(uuid.NAMESPACE_DNS, pinfo[
+                binfo['ProjectUUID'] = uuid.uuid3(uuid.NAMESPACE_DNS, binfo[
                                                   'ProjectName'] + response.url)
                 binfo['BuildingName'] = b.xpath(
                     './td[2]/text()').extract_first() or ''
@@ -315,7 +315,7 @@ class BuildingListHandleMiddleware(object):
                 binfo = BuildingInfoItem()
                 binfo['ProjectName'] = response.xpath(
                     '//td[text()="项目名称："]/following-sibling::td[1]/text()').extract_first() or ''
-                binfo['ProjectUUID'] = uuid.uuid3(uuid.NAMESPACE_DNS, pinfo[
+                binfo['ProjectUUID'] = uuid.uuid3(uuid.NAMESPACE_DNS, binfo[
                                                   'ProjectName'] + response.url)
                 presell_url = urlparse.urljoin(response.url, b.xpath(
                     './td[4]/a/@href').extract_first() or '')
