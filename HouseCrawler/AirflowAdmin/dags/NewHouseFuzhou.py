@@ -56,12 +56,7 @@ spider_settings = {
     'HouseCrawler.SpiderMiddleWares.SpiderMiddleWaresFuzhou.BuildingBaseHandleMiddleware': 104,
     'HouseCrawler.SpiderMiddleWares.SpiderMiddleWaresFuzhou.HouseBaseHandleMiddleware': 105,
     },
-    'DOWNLOADER_MIDDLEWARES':{
-        'scrapy.downloadermiddlewares.httpproxy.HttpProxyMiddleware': 110,
-        'HouseCrawler.DownloadMiddleWares.ProxyMiddleWares.RandomUserAgent': 1,
-        'HouseCrawler.DownloadMiddleWares.ProxyMiddleWares.ProxyMiddleware': 100,
-        'HouseCrawler.DownloadMiddleWares.RetryMiddleWares.RetryMiddleware': 120,
-    },
+    'DOWNLOAD_FAIL_ON_DATALOSS' : False,
     'RETRY_ENABLE': False,
     'CLOSESPIDER_TIMEOUT': 3600 * 7.5,
     'RETRY_TIMES': 15,
@@ -105,19 +100,19 @@ cur = ProjectinfoBaseFuzhou.objects.aggregate(*[{"$sort": {"CurTimeStamp": 1}},
                                             }
                                        }], allowDiskUse=True)
 for item in cur:
-  if item['change_data'] != 'last':
-    print(item['change_data'])
-    print(item['ApprovalUrl'])      
-    project_base = {
-      'source_url': item['ApprovalUrl'],
-      'headers': headers,
-      'meta':{
-        'PageType': 'openingunit',
-        'projectuuid': item['_id'],
-        'Projectname': item['Projectname']
-        }
-        }
-    project_info_list.append(project_base)
+      if item['change_data'] != 'last':
+            print(item['change_data'])
+            print(item['ApprovalUrl'])
+            project_base = {
+                  'source_url': item['ApprovalUrl'],
+                  'headers': headers,
+                  'meta':{
+                    'PageType': 'openingunit',
+                    'projectuuid': item['_id'],
+                    'Projectname': item['Projectname']
+                    }
+                    }
+            project_info_list.append(project_base)
 
 t2 = PythonOperator(
     task_id='LoadBuildingInfoFuzhou',

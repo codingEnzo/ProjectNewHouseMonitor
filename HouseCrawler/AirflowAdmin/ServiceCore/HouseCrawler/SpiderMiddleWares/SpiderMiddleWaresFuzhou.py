@@ -5,15 +5,27 @@ import uuid
 import re
 import copy
 import json
+import random
+import redis
 from scrapy import Request
 from scrapy import Selector
+
 from HouseNew.models import *
 from HouseCrawler.Items.ItemsFuzhou import *
-
+from HouseCrawler.settings import USER_AGENTS
 if sys.version_info.major >= 3:
     import urllib.parse as urlparse
 else:
     import urlparse
+'''
+获取所有项目链接信息
+'''
+# contextflag = False
+contextflag = True
+'''
+获取项目列表页面
+'''
+
 
 class GetProjectPageBaseHandleMiddleware(object):
     # Not all methods need to be defined. If a method is not defined,
@@ -31,6 +43,7 @@ class GetProjectPageBaseHandleMiddleware(object):
     def __init__(self, settings):
         self.settings = settings
         self.shprojectmain_url = 'http://222.77.178.63:7002/'
+        self.r = redis.Redis(host='10.30.1.18', port=6379)
 
     @classmethod
     def from_crawler(cls, crawler):
@@ -60,13 +73,20 @@ class GetProjectPageBaseHandleMiddleware(object):
                         nexturl = 'http://222.77.178.63:7002/result_new.asp?' \
                                   'page2=%d&xm_search=&zl_search=&gs_search=&' \
                                   'pzs_search=&pzx_search=&xzq_search=&bk_search=' % i
-                        req = Request(
-                            url=nexturl,
-                            meta={
-                                'PageType': 'ProjectBase',
-                            }
-                        )
-                        result.append(req)
+                        # req = Request(
+                        #     url=nexturl,
+                        #     meta={
+                        #         'PageType': 'ProjectBase',
+                        #     }
+                        # )
+                        # result.append(req)
+
+                        project_base = {
+                            'source_url': nexturl,
+                            'meta': {'PageType': 'ProjectBase',
+                                     }}
+                        project_base_json = json.dumps(project_base, sort_keys=True)
+                        self.r.sadd('FuzhouCrawler:start_urls', project_base_json)
 
         return result
 
@@ -96,6 +116,7 @@ class GetProjectBaseHandleMiddleware(object):
                'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8',
                'Accept-Encoding': 'gzip, deflate',
                'Accept-Language': 'zh-CN,zh;q=0.9',
+               'User-Agent': random.choice(USER_AGENTS)
                }
 
     def __init__(self, settings):
@@ -125,29 +146,32 @@ class GetProjectBaseHandleMiddleware(object):
                     get_result = get_result.replace('\r', ''). \
                         replace('\n', '').replace('\t', ''). \
                         replace(' ', '').replace(u' ', '')
-                    projectitem = SearchProjectBaseItem()
+                    # projectitem = SearchProjectBaseItem()
                     myItems = re.findall(':#FFFFFF">(.*?)</td>', get_result, re.S)
+                    Presalelicensenumber = myItems[0]
                     # Presalelicensenumber
-                    projectitem['Presalelicensenumber'] = myItems[0]
-                    projectitem['Permittedarea'] = myItems[2]
-                    projectitem['Presalebuildingno'] = myItems[3]
-                    projectitem['Approvaldate'] = myItems[4]
-                    projectitem['Planenddate'] = myItems[5]
+                    # projectitem['Presalelicensenumber'] = myItems[0]
+                    # projectitem['Permittedarea'] = myItems[2]
+                    # projectitem['Presalebuildingno'] = myItems[3]
+                    # projectitem['Approvaldate'] = myItems[4]
+                    # projectitem['Planenddate'] = myItems[5]
                     SearchProjectuuid = uuid.uuid3(uuid.NAMESPACE_DNS,
                                                    str(myItems[0] + myItems[4])).hex
-                    projectitem['SearchProjectuuid'] = SearchProjectuuid
+                    # projectitem['SearchProjectuuid'] = SearchProjectuuid
                     Projecturl = re.search(r'href="(.*?)"', myItems[1])
                     if Projecturl:
                         new_url = self.shprojectmain_url + Projecturl.group(1)
                         result.append(Request(url=new_url,
                                               meta={
                                                   'PageType': 'SubProject',
-                                                  'item': projectitem,
-                                                  'lastname': myItems[0]},
+                                                  # 'item': projectitem,
+                                                  'Presalelicensenumber':Presalelicensenumber,
+                                                  },
                                               dont_filter=False))
         if response.meta.get('PageType') == 'SubProject':
-            SubProject_base = response.meta.get('item')
-            projectitem = copy.deepcopy(SubProject_base)
+            # SubProject_base = response.meta.get('item')
+            # projectitem = copy.deepcopy(SubProject_base)
+            Presalelicensenumber = response.meta.get('Presalelicensenumber')
             projectinfobaseitem = ProjectinfoBaseItem()
             results = re.findall(r'align="left"(\s)class="indextabletxt">(.*?)</td>', response.text, re.S)
             try:
@@ -158,12 +182,12 @@ class GetProjectBaseHandleMiddleware(object):
                 projectinfobaseitem['projectcomname'] = project_com_name
             except:
                 Projectname = response.meta.get('lastname')
-            projectitem['Projectname'] = Projectname
+            # projectitem['Projectname'] = Projectname
             projectinfobaseitem['Projectname'] = Projectname
 
-            result.append(projectitem)
+            # result.append(projectitem)
             project_uuid = uuid.uuid3(uuid.NAMESPACE_DNS,
-                                      str(Projectname)).hex
+                                      str(Projectname+Presalelicensenumber)).hex
             projectinfobaseitem['projectuuid'] = str(project_uuid)
 
             price_results_div2 = response.xpath('//*[@id="div2"]').extract_first()
@@ -257,7 +281,7 @@ class OpenningunitBaseHandleMiddleware(object):
                'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8',
                'Accept-Encoding': 'gzip, deflate',
                'Accept-Language': 'zh-CN,zh;q=0.9',
-               'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Ubuntu Chromium/62.0.3202.75 Chrome/62.0.3202.75 Safari/537.36'
+               'User-Agent': random.choice(USER_AGENTS)
                }
 
     def __init__(self, settings):
@@ -281,7 +305,7 @@ class OpenningunitBaseHandleMiddleware(object):
                 return result
             return []
         if response.meta.get('PageType') == 'openingunit':
-            projectuuid = response.meta['projectuuid']
+            projectno = response.meta['projectuuid']
             projectname = response.meta['Projectname']
             responsetext = response.body.decode('gbk', 'ignore').replace('\r', ''). \
                 replace('\n', '').replace('\t', ''). \
@@ -292,7 +316,7 @@ class OpenningunitBaseHandleMiddleware(object):
                 if 'itemLine' in openingunitdetail:
                     approvalitem = ApprovalBaseItem()
 
-                    approvalitem['projectno'] = str(projectuuid)
+                    approvalitem['projectno'] = str(projectno)
                     approvalitem['projectname'] = str(projectname)
                     item_details = re.findall(r'height="19">(.*?)</td>', openingunitdetail)
                     opening_unit_no = re.search(r'bold">(.*?)</span>', item_details[0]).group(1)
@@ -311,7 +335,17 @@ class OpenningunitBaseHandleMiddleware(object):
                                                        replace("m<sup>2</sup>", ""))
                     approvalitem['Totalhouseareas'] = float(item_details[7].replace("m<SUP>2</SUP>", ""). \
                                                             replace("m<sup>2</sup>", ""))
+
                     result.append(approvalitem)
+                    req = Request(url=building_url,
+                                  meta={
+                                      'PageType': 'buildingBase',
+                                      'projectno': projectno,
+                                      'projectname': projectname,
+                                      'Approvalno':opening_unit_no
+                                  },
+                                  dont_filter=False)
+                    result.append(req)
         return result
 
     def process_spider_exception(self, response, exception, spider):
@@ -359,12 +393,12 @@ class BuildingBaseHandleMiddleware(object):
             if result:
                 return result
             return []
-        if response.meta.get('PageType') not in ('building'):
+        if response.meta.get('PageType') not in ('buildingBase'):
             if result:
                 return result
             return []
-        if response.meta.get('PageType') == 'building':
-            projectuuid = response.meta.get('projectuuid')
+        if response.meta.get('PageType') == 'buildingBase':
+            projectno = response.meta.get('projectno')
             projectname = response.meta.get('projectname')
             Approvalno = response.meta.get('Approvalno')
 
@@ -380,7 +414,7 @@ class BuildingBaseHandleMiddleware(object):
                 # for buildingitemdetail in buildingitemdetails:
                 #     print(buildingitemdetail)
                 buildingitem = BuildingBaseItem()
-                buildingitem['projectno'] = projectuuid
+                buildingitem['projectno'] = projectno
                 buildingitem['projectname'] = projectname
                 buildingitem['Approvalno'] = Approvalno
 
@@ -401,17 +435,19 @@ class BuildingBaseHandleMiddleware(object):
                     buildingitem['buildinghouseareas'] = float(building_house_areas)
                 building_detail_page_url = self.shprojectmain_url + 'House.asp' + re.search(
                     'House.asp(.*?)"', buildingitemdetails[0], re.S).group(1)
+
                 if building_name in buildingrecod:
                     building_no = uuid.uuid3(uuid.NAMESPACE_DNS, str(building_detail_page_url)).hex
                 else:
                     building_no = uuid.uuid3(uuid.NAMESPACE_DNS, str(Approvalno + building_name)).hex
                     buildingrecod.append(building_name)
                 buildingitem['buildingno'] = str(building_no)
+                buildingitem['house_url'] = building_detail_page_url
                 result.append(buildingitem)
                 req = Request(url=building_detail_page_url,
                               meta={
                                   'PageType': 'HouseBase',
-                                  'projectuuid': str(projectuuid),
+                                  'projectuuid': projectno,
                                   'projectname': projectname,
                                   'Approvalno': Approvalno,
                                   'building_no': str(building_no),
@@ -440,12 +476,14 @@ class HouseBaseHandleMiddleware(object):
     # scrapy acts as if the spider middleware does not modify the
     # passed objects.
 
-    headers = {'Host': '222.77.178.63:7002',
-               'Connection': 'keep-alive',
-               'Content-Type': 'application/x-www-form-urlencoded',
-               'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8',
-               'Accept-Encoding': 'gzip, deflate',
-               'Accept-Language': 'zh-CN,zh;q=0.9'}
+    headers = {
+        'Host': '222.77.178.63:7002',
+        'Connection': 'keep-alive',
+        'Content-Type': 'application/x-www-form-urlencoded',
+        'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8',
+        'Accept-Encoding': 'gzip, deflate',
+        'Accept-Language': 'zh-CN,zh;q=0.9'
+    }
 
     def __init__(self, settings):
         self.settings = settings
@@ -517,19 +555,19 @@ class HouseBaseHandleMiddleware(object):
                     house_area_real_yc = re.search(u'实测面积(.*?)平方米', house_detail, re.S)
                     if house_area_real_yc:
                         houseitem['house_area_real_yc'] = house_area_real_yc.group(1).replace(":", "").replace("：", "")
+                    house_num = re.search(r'"black">(.*?)</font>', house_detail, re.S)
+
                     if 'href' in house_detail:
-                        house_num = re.search(r'"black">(.*?)</font>', house_detail, re.S)
                         if house_num:
                             house_num = str(house_num.group(1)).replace("（", "(").replace("）", ")")
-
-                            house_no = Approvalno + building_no + str(recnum) + real_floor
                             houseitem['house_num'] = house_num
+                        house_no = Approvalno + building_no + str(recnum) + real_floor
                     else:
                         house_num = re.search(u'平方米">(.*?)<br>', house_detail, re.S)
                         if house_num:
                             house_num = str(house_num.group(1)).replace("（", "(").replace("）", ")")
-                            house_no = Approvalno + building_no + str(recnum) + real_floor
                             houseitem['house_num'] = house_num
+                        house_no = Approvalno + building_no + str(recnum) + real_floor
                     while house_no in recordhouse:
                         house_no = house_no + '1'
                     recordhouse.append(house_no)

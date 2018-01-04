@@ -43,6 +43,7 @@ class Pipeline(object):
                 pass
         return str(value)
 
+
     def check_change(self, item, q_object):
         check_item_flag = False
         monitorkeys = {'house_sts'}
@@ -55,7 +56,8 @@ class Pipeline(object):
         changedata = ''
         if q_object:
             q_object.NewCurTimeStamp = nowtime
-            q_object.change_data = "last"
+            if 'ApprovalUrl' in item.keys():
+                q_object.ApprovalUrl = item['ApprovalUrl']
             q_object.save()
             for key in item:
                 if not hasattr(q_object, key):
@@ -89,34 +91,27 @@ class Pipeline(object):
     def check_item(self, item):
         check_item_flag = False
         q_object = item.django_model.objects
-        try:
-            if isinstance(item, ProjectinfoBaseItem):
-                res_object = q_object.filter(projectuuid=item['projectuuid']).latest(field_name='CurTimeStamp')
-                check_item_flag, item = self.check_change(item, res_object)
-        except:
-            logging.debug('No ProjectinfoBaseItem')
-        try:
-            if isinstance(item, ApprovalBaseItem):
-                res_object = q_object.filter(Approvalno=item['Approvalno']).latest(field_name='CurTimeStamp')
-                check_item_flag, item = self.check_change(item, res_object)
-        except:
-            logging.debug('No ApprovalBaseItem')
+        if isinstance(item, ProjectinfoBaseItem):
+            res_object = q_object.filter(projectuuid=item['projectuuid']).latest(field_name='CurTimeStamp')
+            check_item_flag, item = self.check_change(item, res_object)
 
-        try:
-            if isinstance(item, BuildingBaseItem):
-                res_object = q_object.filter(buildingno=item['buildingno']).latest(field_name='CurTimeStamp')
-                check_item_flag, item = self.check_change(item, res_object)
-        except:
-            logging.debug('No BuildingBaseItem')
+        elif isinstance(item, ApprovalBaseItem):
+            res_object = q_object.filter(Approvalno=item['Approvalno']).latest(field_name='CurTimeStamp')
+            check_item_flag, item = self.check_change(item, res_object)
 
-        try:
-            if isinstance(item, HouseBaseItem):
-                res_object = q_object.filter(HouseNo=item['HouseNo']).latest(field_name='CurTimeStamp')
-                check_item_flag, item = self.check_change(item, res_object)
+        elif isinstance(item, BuildingBaseItem):
+            res_object = q_object.filter(buildingno=item['buildingno']).latest(field_name='CurTimeStamp')
+            check_item_flag, item = self.check_change(item, res_object)
 
-        except:
-            logging.debug('No HouseBaseItem')
+
+        elif isinstance(item, HouseBaseItem):
+            res_object = q_object.filter(house_no=item['house_no']).latest(field_name='CurTimeStamp')
+            check_item_flag, item = self.check_change(item, res_object)
+        else:
+            pass
         return check_item_flag, item
+
+
 
     def storage_item(self, item):
         if hasattr(item, 'save') and hasattr(item, 'django_model'):
