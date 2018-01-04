@@ -278,6 +278,7 @@ class OpenningunitBaseHandleMiddleware(object):
                 return result
             return []
         if response.meta.get('PageType') == 'openingunit':
+            print('openingunit')
             projectno = response.meta['projectuuid']
             projectname = response.meta['Projectname']
             responsetext = response.body.decode('gbk', 'ignore').replace('\r', ''). \
@@ -369,6 +370,7 @@ class BuildingBaseHandleMiddleware(object):
                 return result
             return []
         if response.meta.get('PageType') == 'buildingBase':
+            print('buildingBase')
             projectno = response.meta.get('projectno')
             projectname = response.meta.get('projectname')
             Approvalno = response.meta.get('Approvalno')
@@ -390,6 +392,7 @@ class BuildingBaseHandleMiddleware(object):
                 buildingitem['Approvalno'] = Approvalno
 
                 get_building = re.search(r'TARGET="_BLANK">(.*?)</a>', buildingitemdetails[0], re.S)
+                print(get_building.group(1))
                 if get_building:
                     buildingitem['buildingname'] = get_building.group(1)
                 building_total_num = buildingitemdetails[1]
@@ -478,6 +481,7 @@ class HouseBaseHandleMiddleware(object):
                 return result
             return []
         if response.meta.get('PageType') == 'HouseBase':
+            print('HouseBase')
             shprojectuuid = response.meta.get('projectuuid')
             projectname = response.meta.get('projectname')
             Approvalno = response.meta.get('Approvalno')
