@@ -100,30 +100,21 @@ cur = ProjectinfoBaseFuzhou.objects.aggregate(*[{"$sort": {"CurTimeStamp": 1}},
                                             }
                                        }], allowDiskUse=True)
 for item in cur:
-    # if item['change_data'] != 'last':
-    #     res_object = ProjectinfoBaseFuzhou.objects.filter(projectuuid=item['_id']).latest(field_name='CurTimeStamp')
-    #     res_object.change_data = "last"
-    #     res_object.save()
-    #     project_base = {
-    #         'source_url': item['ApprovalUrl'],
-    #         'headers': headers,
-    #         'meta': {
-    #             'PageType': 'openingunit',
-    #             'projectuuid': item['_id'],
-    #             'Projectname': item['Projectname']
-    #         }
-    #     }
-    #     project_info_list.append(project_base)
-    project_base = {
-        'source_url': item['ApprovalUrl'],
-        'headers': headers,
-        'meta': {
-            'PageType': 'openingunit',
-            'projectuuid': item['_id'],
-            'Projectname': item['Projectname']
+    if item['change_data'] != 'last':
+        project_base = {
+            'source_url': item['ApprovalUrl'],
+            'headers': headers,
+            'meta': {
+                'PageType': 'openingunit',
+                'projectuuid': item['_id'],
+                'Projectname': item['Projectname']
+            }
         }
-    }
-    project_info_list.append(project_base)
+        project_info_list.append(project_base)
+        res_object = ProjectinfoBaseFuzhou.objects.filter(projectuuid=item['_id']).latest(field_name='CurTimeStamp')
+        res_object.change_data = "last"
+        res_object.save()
+
 
 
 
