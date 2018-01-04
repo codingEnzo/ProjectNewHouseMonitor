@@ -66,7 +66,7 @@ class ProjectBaseHandleMiddleware(object):
             page_10_next_path = response.xpath(
                 '//td[@id="pagetd"]/a[@title="下十页"]/@href').extract_first()
             if page_10_next_path:
-                page_10_next_url = urlparsbbbbe.urljoin(
+                page_10_next_url = urlparse.urljoin(
                     response.url, page_10_next_path)
                 result.append(Request(url=page_10_next_url,
                                       headers=headers, meta={'PageType': 'ProjectPage'}))
