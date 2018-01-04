@@ -97,6 +97,8 @@ class Pipeline(object):
         try:
             if isinstance(item, MonitorProjectBaseItem):
                 res_object = q_object.filter(ProjectNo=item['ProjectNo']).latest(field_name='CurTimeStamp')
+                res_object.change_data = 'last'
+                res_object.save()
                 check_item_flag, item = self.check_change(item, res_object)
         except:
             logging.debug('No MonitorProjectBaseItem')
@@ -110,6 +112,8 @@ class Pipeline(object):
         try:
             if isinstance(item, MonitorHouseBaseItem):
                 res_object = q_object.filter(HouseNo=item['HouseNo']).latest(field_name='CurTimeStamp')
+                res_object.change_data = 'last'
+                res_object.save()
                 check_item_flag, item = self.check_change(item, res_object)
         except:
             logging.debug('No MonitorHouseBaseItem')
