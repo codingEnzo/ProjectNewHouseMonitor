@@ -390,9 +390,7 @@ class BuildingBaseHandleMiddleware(object):
                 buildingitem['projectno'] = projectno
                 buildingitem['projectname'] = projectname
                 buildingitem['Approvalno'] = Approvalno
-
                 get_building = re.search(r'TARGET="_BLANK">(.*?)</a>', buildingitemdetails[0], re.S)
-                print(get_building.group(1))
                 if get_building:
                     buildingitem['buildingname'] = get_building.group(1)
                 building_total_num = buildingitemdetails[1]
@@ -417,7 +415,6 @@ class BuildingBaseHandleMiddleware(object):
                         building_no = uuid.uuid3(uuid.NAMESPACE_DNS, str(Approvalno + buildingitem['buildingname'])).hex
                         buildingrecod.append(buildingitem['buildingname'])
                     buildingitem['buildingno'] = str(building_no)
-                    buildingitem['house_url'] = building_detail_page_url
                     result.append(buildingitem)
                     req = Request(url=building_detail_page_url,
                                   meta={
