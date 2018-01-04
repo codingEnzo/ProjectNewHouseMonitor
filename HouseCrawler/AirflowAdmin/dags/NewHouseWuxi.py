@@ -101,7 +101,7 @@ cur = MonitorProjectBaseWuxi.objects.aggregate(*[{"$sort": {"CurTimeStamp": 1}},
 for item in cur:
     change_data = item['change_data']
     projectDetailUrl = item['projectDetailUrl']
-    if projectDetailUrl and change_data != "last" and change_data != "":
+    if projectDetailUrl :
         ProjectCode = item['ProjectCode']
         projectInfo = {'source_url': item['projectDetailUrl'],
                        'meta': {
@@ -141,7 +141,7 @@ for item in cur:
     ProjectName = item['ProjectName']
     BuildingNum = item['BuildingNum']
     SourceUrl = item['SourceUrl']
-    if change_data != "last":
+    if HouseInfoUrl:
         headers['Referer'] = SourceUrl
         houseInfo = {'source_url': HouseInfoUrl,
                        'headers': headers,
@@ -154,7 +154,6 @@ for item in cur:
                        }
                        }
         house_info_list.append(houseInfo)
-
 t3 = PythonOperator(
     task_id='LoadHouseInfoWuxi',
     python_callable=spider_call,
