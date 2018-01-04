@@ -2515,7 +2515,7 @@ class ProjectinfoBaseFuzhou(Document):
     projectpricehouseback = fields.StringField(default='', max_length=255, null=False)
     change_data = fields.StringField(default='', max_length=1023, null=False)
     NewCurTimeStamp = fields.StringField(default=str(datetime.datetime.now()), index=True)
-    ApprovalUrl = fields.URLField(default=None, null=True, blank=True)
+    ApprovalUrl = fields.StringField(default='', max_length=1023, null=False)
 
     meta = {
         'indexes': [
