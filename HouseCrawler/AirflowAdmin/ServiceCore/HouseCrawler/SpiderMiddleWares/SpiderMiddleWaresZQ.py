@@ -81,8 +81,8 @@ class ProjectBaseHandleMiddleware(object):
                     './td[2]/text()').extract_first() or ''
                 pb['ProjectDistrict'] = p.xpath(
                     './td[3]/text()').extract_first() or ''
-                pb['ProjectURL'] = urlparse.urljoin(
-                    response.url, p.xpath('./td[1]/a/@href').extract_first() or '')
+                pb['ProjectURL'] = (urlparse.urljoin(
+                    response.url, p.xpath('./td[1]/a/@href').extract_first() or '')).replace(' ', '').strip()
                 pb['ProjectUUID'] = uuid.uuid3(
                     uuid.NAMESPACE_DNS, pb['ProjectName'] + pb['ProjectURL'])
                 result.append(pb)
@@ -306,8 +306,8 @@ class BuildingListHandleMiddleware(object):
                     './td[1]/text()').extract_first() or ''
                 binfo['BuildingRegUUID'] = uuid.uuid3(
                     uuid.NAMESPACE_DNS, binfo['BuildingRegName'])
-                binfo['BuildingURL'] = urlparse.urljoin(
-                    response.url, b.xpath('./td[4]/a/@href').extract_first() or '')
+                binfo['BuildingURL'] = (urlparse.urljoin(
+                    response.url, b.xpath('./td[4]/a/@href').extract_first() or '')).replace(' ', '').strip()
                 binfo['BuildingUUID'] = uuid.uuid3(uuid.NAMESPACE_DNS, binfo[
                                                    'BuildingName'] + binfo['BuildingURL'])
                 result.append(binfo)
