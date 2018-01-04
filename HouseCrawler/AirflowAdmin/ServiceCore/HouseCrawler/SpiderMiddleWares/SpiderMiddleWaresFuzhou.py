@@ -5,7 +5,6 @@ import uuid
 import re
 import copy
 import json
-import random
 import redis
 from scrapy import Request
 from scrapy import Selector
@@ -17,15 +16,6 @@ if sys.version_info.major >= 3:
     import urllib.parse as urlparse
 else:
     import urlparse
-'''
-获取所有项目链接信息
-'''
-# contextflag = False
-contextflag = True
-'''
-获取项目列表页面
-'''
-
 
 class GetProjectPageBaseHandleMiddleware(object):
     # Not all methods need to be defined. If a method is not defined,
@@ -138,26 +128,18 @@ class GetProjectBaseHandleMiddleware(object):
                     get_result = get_result.replace('\r', ''). \
                         replace('\n', '').replace('\t', ''). \
                         replace(' ', '').replace(u' ', '')
-                    # projectitem = SearchProjectBaseItem()
                     myItems = re.findall(':#FFFFFF">(.*?)</td>', get_result, re.S)
                     Presalelicensenumber = myItems[0]
-                    # Presalelicensenumber
-                    # projectitem['Presalelicensenumber'] = myItems[0]
-                    # projectitem['Permittedarea'] = myItems[2]
-                    # projectitem['Presalebuildingno'] = myItems[3]
-                    # projectitem['Approvaldate'] = myItems[4]
-                    # projectitem['Planenddate'] = myItems[5]
-                    SearchProjectuuid = uuid.uuid3(uuid.NAMESPACE_DNS,
-                                                   str(myItems[0] + myItems[4])).hex
-                    # projectitem['SearchProjectuuid'] = SearchProjectuuid
                     Projecturl = re.search(r'href="(.*?)"', myItems[1])
-                    if Projecturl:
+                    ProjectName =  re.search(r'target="_blank">(.*?)<', myItems[1])
+                    print(ProjectName.group(1))
+                    if Projecturl and ProjectName:
                         new_url = self.shprojectmain_url + Projecturl.group(1)
                         result.append(Request(url=new_url,
                                               meta={
                                                   'PageType': 'SubProject',
-                                                  # 'item': projectitem,
                                                   'Presalelicensenumber':Presalelicensenumber,
+                                                  'lastname':ProjectName.group(1)
                                                   },
                                               dont_filter=False))
         if response.meta.get('PageType') == 'SubProject':
@@ -407,9 +389,9 @@ class BuildingBaseHandleMiddleware(object):
                 buildingitem['projectname'] = projectname
                 buildingitem['Approvalno'] = Approvalno
 
-                building_name = re.search(r'TARGET="_BLANK">(.*?)</a>', buildingitemdetails[0], re.S).group(1)
-                buildingitem['buildingname'] = building_name
-
+                get_building = re.search(r'TARGET="_BLANK">(.*?)</a>', buildingitemdetails[0], re.S)
+                if get_building:
+                    buildingitem['buildingname'] = get_building.group(1)
                 building_total_num = buildingitemdetails[1]
                 if building_total_num:
                     buildingitem['buildingtotalnum'] = int(building_total_num)
@@ -425,24 +407,25 @@ class BuildingBaseHandleMiddleware(object):
                 building_detail_page_url = self.shprojectmain_url + 'House.asp' + re.search(
                     'House.asp(.*?)"', buildingitemdetails[0], re.S).group(1)
 
-                if building_name in buildingrecod:
-                    building_no = uuid.uuid3(uuid.NAMESPACE_DNS, str(building_detail_page_url)).hex
-                else:
-                    building_no = uuid.uuid3(uuid.NAMESPACE_DNS, str(Approvalno + building_name)).hex
-                    buildingrecod.append(building_name)
-                buildingitem['buildingno'] = str(building_no)
-                buildingitem['house_url'] = building_detail_page_url
-                result.append(buildingitem)
-                req = Request(url=building_detail_page_url,
-                              meta={
-                                  'PageType': 'HouseBase',
-                                  'projectuuid': projectno,
-                                  'projectname': projectname,
-                                  'Approvalno': Approvalno,
-                                  'building_no': str(building_no),
-                                  'building_name': buildingitem['buildingname'],
-                              })
-                result.append(req)
+                if get_building:
+                    if buildingitem['buildingname'] in buildingrecod:
+                        building_no = uuid.uuid3(uuid.NAMESPACE_DNS, str(building_detail_page_url)).hex
+                    else:
+                        building_no = uuid.uuid3(uuid.NAMESPACE_DNS, str(Approvalno + buildingitem['buildingname'])).hex
+                        buildingrecod.append(buildingitem['buildingname'])
+                    buildingitem['buildingno'] = str(building_no)
+                    buildingitem['house_url'] = building_detail_page_url
+                    result.append(buildingitem)
+                    req = Request(url=building_detail_page_url,
+                                  meta={
+                                      'PageType': 'HouseBase',
+                                      'projectuuid': projectno,
+                                      'projectname': projectname,
+                                      'Approvalno': Approvalno,
+                                      'building_no': str(building_no),
+                                      'building_name': buildingitem['buildingname'],
+                                  })
+                    result.append(req)
 
         return result
 
