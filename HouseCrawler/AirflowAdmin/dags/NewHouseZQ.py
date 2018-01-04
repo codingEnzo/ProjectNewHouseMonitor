@@ -28,7 +28,7 @@ django.setup()
 from HouseNew.models import ProjectBaseZhaoqing, BuildingInfoZhaoqing
 from services.spider_service import spider_call
 
-STARTDATE = datetime.datetime.now() - datetime.timedelta(hours=9)
+STARTDATE = datetime.datetime.now() - datetime.timedelta(hours=8)
 
 default_args = {
     'owner': 'airflow',
@@ -126,7 +126,7 @@ for item in cur:
                                       'BuildingUUID': str(item['BuildingUUID'])}}
             building_info_list.append(building_info)
 
-index_skip = int(math.ceil(len(building_info_list) / float(2))) + 1
+index_skip = int(math.ceil(len(building_info_list) / float(3))) + 1
 for cur, index in enumerate(list(range(0, len(building_info_list), index_skip))):
     t3 = PythonOperator(
         task_id='LoadBuildingInfoZQ_%s' % cur,
@@ -134,5 +134,5 @@ for cur, index in enumerate(list(range(0, len(building_info_list), index_skip)))
         op_kwargs={'spiderName': 'DefaultCrawler',
                    'settings': spider_settings,
                    'urlList': building_info_list[index:index + index_skip],
-                   'spider_count': 16},
+                   'spider_count': 32},
         dag=dag)

@@ -414,7 +414,7 @@ class PreSellInfoHandleMiddleware(object):
             bank_list = response.xpath(
                 '//table[@id="banktable"]/tr[@bgcolor="#f5f5f5"]')
             for bank in bank_list:
-                bank_list.append({'BankName': bank.xpath('./td[1]/text()').extract_first() or '',
+                preinfo['PreBankList'].append({'BankName': bank.xpath('./td[1]/text()').extract_first() or '',
                                   'BankAcount': bank.xpath('./td[2]/text()').extract_first() or '',
                                   'BankPhone': bank.xpath('./td[3]/text()').extract_first() or ''})
             preinfo_url = urlparse.urljoin(response.url, response.xpath(
