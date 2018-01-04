@@ -100,7 +100,7 @@ cur = ProjectinfoBaseFuzhou.objects.aggregate(*[{"$sort": {"CurTimeStamp": 1}},
                                             }
                                        }], allowDiskUse=True)
 for item in cur:
-    if item['change_data'] != 'last':
+    if item['change_data']:
         project_base = {
             'source_url': item['ApprovalUrl'],
             'headers': headers,
@@ -111,9 +111,9 @@ for item in cur:
             }
         }
         project_info_list.append(project_base)
-        res_object = ProjectinfoBaseFuzhou.objects.filter(projectuuid=item['_id']).latest(field_name='CurTimeStamp')
-        res_object.change_data = "last"
-        res_object.save()
+        # res_object = ProjectinfoBaseFuzhou.objects.filter(projectuuid=item['_id']).latest(field_name='CurTimeStamp')
+        # res_object.change_data = "last"
+        # res_object.save()
 
 
 
