@@ -117,13 +117,16 @@ class ProjectInfoHandleMiddleware(object):
             if result:
                 return result
             return []
-        if response.meta.get('PageType') not in ('ProjectInfo',):
+        if response.meta.get('PageType') not in ('ProjectInfo', 'ProjectInfoUse'):
             if result:
                 return result
             return []
         print('ProjectInfoHandleMiddleware')
 
         if response.meta.get('PageType') == 'ProjectInfo':
+            result.append(Request(url=response.url,
+                                    headers=headers, meta={'PageType': 'ProjectInfoUse'}))
+        elif response.meta.get('PageType') == 'ProjectInfoUse':
             pinfo = ProjectInfoItem()
             pinfo['ProjectName'] = response.xpath(
                 '//td[text()="项目名称："]/following-sibling::td[1]/text()').extract_first() or ''
@@ -480,13 +483,16 @@ class HouseInfoHandleMiddleware(object):
             if result:
                 return result
             return []
-        if response.meta.get('PageType') not in ('HouseInfo', 'HouseInfoDetail'):
+        if response.meta.get('PageType') not in ('HouseInfo', 'HouseInfoUse', 'HouseInfoDetail'):
             if result:
                 return result
             return []
         print('HouseInfoHandleMiddleware')
 
         if response.meta.get('PageType') == 'HouseInfo':
+            result.append(Request(url=response.url,
+                                    headers=headers, meta={'PageType': 'HouseInfoUse'}))
+        if response.meta.get('PageType') == 'HouseInfoUse':
             if (not response.meta.get('ProjectName')) or (not response.meta.get('BuildingName'))\
                     or (not response.meta.get('ProjectUUID')) or (not response.meta.get('BuildingUUID')):
                 if result:
