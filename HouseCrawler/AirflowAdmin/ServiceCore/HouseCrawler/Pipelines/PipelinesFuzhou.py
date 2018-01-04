@@ -93,6 +93,8 @@ class Pipeline(object):
         q_object = item.django_model.objects
         if isinstance(item, ProjectinfoBaseItem):
             res_object = q_object.filter(projectuuid=item['projectuuid']).latest(field_name='CurTimeStamp')
+            res_object.change_data = 'last'
+            res_object.save()
             check_item_flag, item = self.check_change(item, res_object)
 
         elif isinstance(item, ApprovalBaseItem):
