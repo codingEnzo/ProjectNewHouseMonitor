@@ -142,14 +142,14 @@ class ProjectInfoHandleMiddleware(object):
                 '//td[text()="栋数："]/following-sibling::td[1]/text()').extract_first() or ''
             pinfo['ProjectDistrict'] = response.xpath(
                 '//td[text()="所在地区："]/following-sibling::td[1]/text()').extract_first() or ''
-            pinfo['ProjectEngPlanLicense'] = response.xpath(
-                '//td[text()="建设工程规划许可证号："]/following-sibling::td[1]/text()').extract_first() or ''
+            pinfo['ProjectEngPlanLicense'] = (response.xpath(
+                '//td[text()="建设工程规划许可证号："]/following-sibling::td[1]/text()').extract_first() or '').strip()
             pinfo['ProjectPlanBuildingArea'] = response.xpath(
                 '//td[text()="规划建筑面积："]/following-sibling::td[1]/text()').extract_first() or ''
             pinfo['ProjectLandLicense'] = response.xpath(
                 '//td[text()="土地证号："]/following-sibling::td[1]/text()').extract_first() or ''
-            pinfo['ProjectLandArea'] = response.xpath(
-                '//td[text()="土地使用权面积："]/following-sibling::td[1]/text()').extract_first() or ''
+            pinfo['ProjectLandArea'] = (response.xpath(
+                '//td[text()="土地使用权面积："]/following-sibling::td[1]/text()').extract_first() or '').replace('m', '').strip()
             pinfo['ProjectLandYearLimit'] = response.xpath(
                 '//td[text()="土地使用期限："]/following-sibling::td[1]/text()').extract_first() or ''
             pinfo['ProjectUsage'] = response.xpath(
@@ -219,13 +219,13 @@ class CompanyInfoHandleMiddleware(object):
             if result:
                 return result
             return []
-        if response.meta.get('PageType') not in ('ProjectInfo',):
+        if response.meta.get('PageType') not in ('ProjectInfoUse',):
             if result:
                 return result
             return []
         print('CompanyInfoHandleMiddleware')
 
-        if response.meta.get('PageType') == 'ProjectInfo':
+        if response.meta.get('PageType') == 'ProjectInfoUse':
             cinfo = CompanyInfoItem()
             cinfo['CompanyName'] = response.xpath(
                 '//td[text()="开发商名称："]/following-sibling::td[1]/a/text()').extract_first() or ''
@@ -283,13 +283,13 @@ class BuildingListHandleMiddleware(object):
             if result:
                 return result
             return []
-        if response.meta.get('PageType') not in ('ProjectInfo', 'BuildingPreSell'):
+        if response.meta.get('PageType') not in ('ProjectInfoUse', 'BuildingPreSell'):
             if result:
                 return result
             return []
         print('BuildingListHandleMiddleware')
 
-        if response.meta.get('PageType') == 'ProjectInfo':
+        if response.meta.get('PageType') == 'ProjectInfoUse':
             b_sell_list = response.xpath(
                 '//table[@id="selltable1"]/tr[position()>1]')
             b_presell_list = response.xpath(
