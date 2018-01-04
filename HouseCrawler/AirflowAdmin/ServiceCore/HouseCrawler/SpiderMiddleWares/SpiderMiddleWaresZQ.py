@@ -2,6 +2,7 @@
 import re
 import sys
 import uuid
+import copy
 from scrapy import Request
 from HouseNew.models import *
 from HouseCrawler.Items.ItemsZQ import *
@@ -491,8 +492,10 @@ class HouseInfoHandleMiddleware(object):
         print('HouseInfoHandleMiddleware')
 
         if response.meta.get('PageType') == 'HouseInfo':
+            meta = copy.deepcopy(response.meta)
+            meta['PageType'] = 'HouseInfoUse'
             result.append(Request(url=response.url,
-                                    headers=headers, meta={'PageType': 'HouseInfoUse'}))
+                                    headers=headers, meta=meta))
         if response.meta.get('PageType') == 'HouseInfoUse':
             if (not response.meta.get('ProjectName')) or (not response.meta.get('BuildingName'))\
                     or (not response.meta.get('ProjectUUID')) or (not response.meta.get('BuildingUUID')):
