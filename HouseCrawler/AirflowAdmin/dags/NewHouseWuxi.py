@@ -102,9 +102,6 @@ for item in cur:
     change_data = item['change_data']
     projectDetailUrl = item['projectDetailUrl']
     if projectDetailUrl and change_data != "last" and change_data != "":
-        res_object = MonitorProjectBaseWuxi.objects.filter(ProjectNo=item['_id']).latest(field_name='CurTimeStamp')
-        res_object.change_data = "last"
-        res_object.save()
         ProjectCode = item['ProjectCode']
         projectInfo = {'source_url': item['projectDetailUrl'],
                        'meta': {
@@ -145,9 +142,6 @@ for item in cur:
     BuildingNum = item['BuildingNum']
     SourceUrl = item['SourceUrl']
     if change_data != "last":
-        res_object = MonitorHouseBaseWuxi.objects.filter(HouseNo=item['_id']).latest(field_name='CurTimeStamp')
-        res_object.change_data = "last"
-        res_object.save()
         headers['Referer'] = SourceUrl
         houseInfo = {'source_url': HouseInfoUrl,
                        'headers': headers,
