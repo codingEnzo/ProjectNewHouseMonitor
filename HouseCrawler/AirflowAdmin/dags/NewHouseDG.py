@@ -83,7 +83,6 @@ for item in cur:
     project_info = {'source_url': item.ProjectURL,
                     'meta': {'PageType': 'ProjectInfo'}}
     project_info_list.append(project_info)
-
 t2 = PythonOperator(
     task_id='LoadProjectInfoDG',
     python_callable=spider_call,
@@ -92,6 +91,7 @@ t2 = PythonOperator(
                'urlList': project_info_list},
     dag=dag
 )
+t2.set_upstream(t1)
 
 building_info_list = []
 cur = BuildingInfoDongguan.objects.aggregate(*[{"$sort": {"CurTimeStamp": 1}},
@@ -115,12 +115,13 @@ for item in cur:
                                       'BuildingUUID': str(item['BuildingUUID'])}}
             building_info_list.append(building_info)
 
-index_skip = int(math.ceil(len(building_info_list) / float(4))) + 1
+index_skip = int(math.ceil(len(building_info_list) / float(5))) + 1
 for cur, index in enumerate(list(range(0, len(building_info_list), index_skip))):
     t3 = PythonOperator(
         task_id='LoadBuildingInfoDG_%s' % cur,
         python_callable=spider_call,
         op_kwargs={'spiderName': 'DefaultCrawler',
                    'settings': spider_settings,
-                   'urlList': building_info_list[index:index + index_skip]},
+                   'urlList': building_info_list[index:index + index_skip],
+                   'spider_count': 80},
         dag=dag)
