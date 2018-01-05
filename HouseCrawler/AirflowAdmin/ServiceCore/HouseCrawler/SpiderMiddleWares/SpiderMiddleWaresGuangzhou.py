@@ -83,7 +83,7 @@ class ProjectBaseHandleMiddleware(object):
             for tr in tr_arr:
                 href = tr.xpath('td[2]/a/@href').extract_first()
                 req = Request(
-                        url = 'http://www.gzcc.gov.cn/housing' + href,
+                        url = 'http://www.gzcc.gov.cn' + href,
                         headers = self.settings.getdict('DEFAULT_REQUEST_HEADERS'),
                         meta = {'PageType': 'IframePage'})
                 result.append(req)
