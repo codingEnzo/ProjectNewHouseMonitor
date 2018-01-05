@@ -94,7 +94,7 @@ t2 = PythonOperator(
 t2.set_upstream(t1)
 
 building_info_list = []
-cur = BuildingInfoDongguan.objects.aggregate(*[{"$sort": {"CurTimeStamp": 1}},
+cur = BuildingInfoDongguan.objects.aggregate(*[{"$sort": {"CurTimeStamp": -1}},
                                                {'$group': {
                                                    '_id': "$BuildingUUID",
                                                    'ProjectName': {'$first': '$ProjectName'},
@@ -123,5 +123,5 @@ for cur, index in enumerate(list(range(0, len(building_info_list), index_skip)))
         op_kwargs={'spiderName': 'DefaultCrawler',
                    'settings': spider_settings,
                    'urlList': building_info_list[index:index + index_skip],
-                   'spider_count': 80},
+                   'spider_count': 96},
         dag=dag)

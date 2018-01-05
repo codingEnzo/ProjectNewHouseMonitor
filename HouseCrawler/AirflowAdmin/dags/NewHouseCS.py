@@ -53,7 +53,7 @@ spider_settings = {
         'HouseCrawler.SpiderMiddleWares.SpiderMiddleWaresCS.HouseInfoHandleMiddleware': 105,
     },
     'RETRY_ENABLE': True,
-    'CLOSESPIDER_TIMEOUT': 3600 * 7.5,
+    'CLOSESPIDER_TIMEOUT': 3600 * 3.6,
     'CONCURRENT_REQUESTS': 64,
 }
 
