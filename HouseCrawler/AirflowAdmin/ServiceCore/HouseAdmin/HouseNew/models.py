@@ -1866,13 +1866,17 @@ class HouseInfoGuangzhou(Document):
             'HouseID',
             'HouseNumber',
             'HouseUseType',
+            'ForecastBuildingArea',
+            'ForecastInsideOfBuildingArea',
+            'ForecastPublicArea',
+            'MeasuredBuildingArea',
+            'MeasuredInsideOfBuildingArea',
+            'MeasuredSharedPublicArea',
             'HouseState',
             'HouseStateLatest',
             'HouseLabel',
             'HouseLabelLatest',
             'SourceUrl',
-            'ForecastBuildingArea',
-            'MeasuredBuildingArea',
         ]
     }
 
