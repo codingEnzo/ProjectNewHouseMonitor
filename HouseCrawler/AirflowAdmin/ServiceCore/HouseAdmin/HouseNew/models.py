@@ -1,6 +1,7 @@
 # encoding = utf-8
 import datetime
 import uuid
+import time
 
 from django_mongoengine import *
 from django_mongoengine import fields
@@ -1554,10 +1555,10 @@ class ProjectInfoJiujiang(Document):
 
 class BuildingInfoJiujiang(Document):
     RecordID = fields.UUIDField(default=uuid.uuid1(),
-                                    binary=True, primary_key=True, null=False)
+                                binary=True, primary_key=True, null=False)
     CurTimeStamp = fields.StringField(default=str(datetime.datetime.now()), index=True)
     ProjectUUID = fields.UUIDField(default=uuid.uuid3(uuid.NAMESPACE_DNS, ''),
-                                    binary=False, null=False)
+                                   binary=False, null=False)
     ProjectName = fields.StringField(default='', max_length=1024, null=False)
     BuildingName = fields.StringField(default='', max_length=1024, null=False)
     BuildingUUID = fields.UUIDField(default=uuid.uuid3(uuid.NAMESPACE_DNS, ''),
@@ -1594,17 +1595,17 @@ class BuildingInfoJiujiang(Document):
 
 class HouseInfoJiujiang(Document):
     RecordID = fields.UUIDField(default=uuid.uuid1(),
-                                    binary=True, primary_key=True, null=False)
+                                binary=True, primary_key=True, null=False)
     CurTimeStamp = fields.StringField(default=str(datetime.datetime.now()), index=True)
     ProjectName = fields.StringField(default='', max_length=1024, null=False)
     BuildingName = fields.StringField(default='', max_length=1024, null=False)
     ProjectUUID = fields.UUIDField(default=uuid.uuid3(uuid.NAMESPACE_DNS, ''),
-                                    binary=False, null=False)
+                                   binary=False, null=False)
     BuildingUUID = fields.UUIDField(default=uuid.uuid3(uuid.NAMESPACE_DNS, ''),
                                     binary=False, null=False)
     HouseName = fields.StringField(default='', max_length=1024, null=False)
     HouseUUID = fields.UUIDField(default=uuid.uuid3(uuid.NAMESPACE_DNS, ''),
-                                    binary=False, null=False)
+                                 binary=False, null=False)
     HouseOSEQ = fields.StringField(default='', max_length=1024, null=False)
     HouseFloor = fields.StringField(default='', max_length=1024, null=False)
     HouseKey = fields.StringField(default='', max_length=1024, null=False)
@@ -2060,3 +2061,711 @@ class HouseInfoQingdao(Document):
             'HouseUnitShape',
         ]
     }
+
+
+def set_field(kind, empty=False, key=False, choice=False):
+    '''
+    primary_key#zhujian;   choices#kexuanshuxing; binary#erjinzhi;  null#feikong; index#suoyin
+    '''
+    if kind == "string":
+
+        return fields.StringField(default='', null=empty, primary_key=key, choices=choice)
+
+    elif kind == "int":
+
+        return fields.IntField(default=0, null=True, primary_key=key, choices=choice)
+
+    elif kind == 'url':
+
+        return fields.URLField(default=None, null=True, blank=True, primary_key=key, choices=choice)
+
+    elif kind == 'uuid1':
+
+        return fields.UUIDField(default=uuid.uuid1(), binary=True, primary_key=key, null=empty, choices=choice)
+
+    elif kind == 'uuid3':
+
+        return fields.UUIDField(default=uuid.uuid3(uuid.NAMESPACE_DNS, ''), binary=False, null=empty, primary_key=key,
+                                choices=choice)
+
+    elif kind == 'time':
+
+        return fields.StringField(default=str(datetime.datetime.now()), index=True)
+
+    elif kind == 'day':
+
+        return fields.StringField(default=time.strftime("%Y-%m-%d", time.localtime()), index=True)
+
+    elif kind == 'string':
+
+        return fields.TextField(default='', null=empty, primary_key=key, choices=choice)
+
+
+class ProjectDetailFoshan(Document):
+    RecordID = set_field(kind='uuid1', key=True)
+    RecordTime = set_field(kind='time')
+    CheackTimeLatest = set_field(kind='time')
+    ProjectUUID = set_field(kind='uuid3')
+    RealEstateProjectID = set_field(kind='string')
+    ProjectUrl = set_field(kind='url')
+    SourceUrl = set_field(kind='url')
+
+    AveragePrice = set_field(kind='string')  # 均价
+    ProjectName = set_field(kind='string')
+    ProjectAddress = set_field(kind='string')  # 惠州市惠城区金山大道与三环南路交汇处
+    Developer = set_field(kind='string')  # 发展商
+
+    FloorAreaRatio = set_field(kind='string')  # 容积率
+    DistrictName = set_field(kind='string')  # 行政区
+    ManagementFees = set_field(kind='string')  # 物业费
+    ManagementCompany = set_field(kind='string')  # 物业公司
+    TotalBuidlingArea = set_field(kind='string')  # 总建筑面积
+
+    HouseSoldAmount = set_field(kind='string')  # 已售套数
+    HouseUnsoldAmount = set_field(kind='string')  # 未售套数
+    DeveloperLevel = set_field(kind='string')  # 资质等级
+    DeveloperPermitNumber = set_field(kind='string')  # 开发商资质证书
+
+    SaleTelphoneNumber = set_field(kind='string')  # 销售电话
+
+    meta = {
+        'indexes': [
+            'RecordTime',
+            'ProjectUUID',
+            'ProjectName',
+
+        ]
+    }
+
+
+class BuildingDetailFoshan(Document):
+    RecordID = set_field(kind='uuid1', key=True)
+    RecordTime = set_field(kind='time')
+    CheackTimeLatest = set_field(kind='time')
+    RecordDay = set_field(kind='day')
+    BuildingUrl = set_field(kind='string')
+    SourceUrl = set_field(kind='string')
+
+    ProjectName = set_field(kind='string')
+    RealEstateProjectID = set_field(kind='string')
+    ProjectUUID = set_field(kind='uuid3')
+
+    RegionName = set_field(kind='string')
+
+    BuildingID = set_field(kind='string')
+    BuildingUUID = set_field(kind='uuid3')
+    BuildingName = set_field(kind='string')
+
+    meta = {
+        'indexes': [
+            'RecordTime',
+            'ProjectUUID',
+            'BuildingUUID',
+            'RecordTime'
+        ]
+    }
+
+
+class HouseDetailFoshan(Document):
+    RecordID = set_field(kind='uuid1', key=True)
+    RecordTime = set_field(kind='time')
+    RecordDay = set_field(kind='day')
+    CheackTimeLatest = set_field(kind='time')
+
+    ProjectUUID = set_field(kind='uuid3')
+    BuildingUUID = set_field(kind='uuid3')
+    HouseUUID = set_field(kind='uuid3')
+
+    ProjectName = set_field(kind='string')
+    BuildingName = set_field(kind='string')
+    UnitName = set_field(kind='string')
+
+    HouseUseType = set_field(kind='string')  # 用途
+    HouseID = set_field(kind='string')
+    HouseUrl = set_field(kind='string')
+    SourceUrl = set_field(kind='string')
+
+    RegionName = set_field(kind='string')  # 区域
+    FloorName = set_field(kind='string')  # 层名
+    HouseName = set_field(kind='string')
+    HouseSaleState = set_field(kind='string')  # 销售状态
+    HouseNature = set_field(kind='string')  # 房屋性质
+    HouseType = set_field(kind='string')  # 房屋类型
+
+    BalconyType = set_field(kind='string')  #
+    MeasuredBuildingArea = set_field(kind='string')  # 实测建筑面积
+    MeasuredInsideOfBuildingArea = set_field(kind='string')  # 实测套内面积
+    MeasuredSharedPublicArea = set_field(kind='string')  # 实测公摊面积
+    ForecastBuildingArea = set_field(kind='string')  # 预测建筑面积
+    ForecastInsideOfBuildingArea = set_field(kind='string')  # 预测套内面积
+    ForecastPublicArea = set_field(kind='string')  # 预测公摊面积
+    IsMortgage = set_field(kind='string')  # 是否抵押
+    IsAttachment = set_field(kind='string')  # 是否查封
+    Adress = set_field(kind='string')  # 地址
+    TotalPrice = set_field(kind='string')  # 总价
+    HouseSaleStateLatest = set_field(kind='string')
+    ComplateTag = set_field(kind='int')
+
+    meta = {
+        'indexes': [
+            "ProjectUUID",
+            'ComplateTag',
+            'RecordTime',
+            'HouseSaleStateLatest',
+            'CheackTimeLatest',
+            # "BuildingUUID",
+            'RecordTime',
+            'HouseUUID',
+            'HouseSaleState'
+        ]
+    }
+
+
+class CertificateDetailFoshan(Document):
+    RecordID = set_field(kind='uuid1', key=True)
+    RecordTime = set_field(kind='time')
+    PresalePermitUrl = set_field(kind='string')
+    SourceUrl = set_field(kind='string')
+    CheackTimeLatest = set_field(kind='time')
+    ProjectUUID = set_field(kind='uuid3')
+    ProjectName = set_field(kind='string')
+    RealEstateProjectID = set_field(kind='string')
+
+    PresalePermitNumber = set_field(kind='string')  # 预售证编号
+    PresalePermitNumberID = set_field(kind='string')  # 预售证编号
+    PresalePermitNumberUUID = set_field(kind='uuid3')
+
+    LssuingAuthority = set_field(kind='string')  # 发证机关
+    PresaleTotalBuidlingArea = set_field(kind='string')  # 预售总建筑面积
+    ValidityDateStartDate = set_field(kind='string')  # 有效期起始日期
+    ValidityDateClosingDate = set_field(kind='string')  # 有效期截止日期
+    LssueDate = set_field(kind='string')  # 发证日期
+    Bank_Account = set_field(kind='string')  # 预售款专用帐户
+    Bank = set_field(kind='string')  # 开户银行
+    LivingArea = set_field(kind='string')  # 住宅面积
+    BusinessArea = set_field(kind='string')  # 商业用房面积
+    OtherArea = set_field(kind='string')  # 其它面积
+    LivingCount = set_field(kind='string')  # 住宅套数
+    BusinessCount = set_field(kind='string')  # 商业套数
+    OtherCount = set_field(kind='string')  # 其它套数
+
+    PresaleHouseCount = set_field(kind='string')  # 本期总单元套数
+    PresaleBuildingNo = set_field(kind='string')  # 预售房屋栋号及层数
+
+    meta = {
+        'indexes': [
+            'RecordTime',
+            'PresalePermitNumberUUID',
+            'ProjectUUID',
+            'PresalePermitNumber',
+
+        ]
+    }
+
+
+class WebCountFoshan(Document):
+    RecordID = set_field(kind='uuid1', key=True)  # 记录id
+    RecordTime = set_field(kind='time')  # 记录时间
+    CheackTimeLatest = set_field(kind='time')  # 时间
+
+    riqi = set_field(kind='string')
+    quanshi_zhuzhai_taoshu = set_field(kind='string')
+    quanshi_zhuzhai_mianji = set_field(kind='string')
+    quanshi_shangye_taoshu = set_field(kind='string')
+    quanshi_shangye_mianji = set_field(kind='string')
+    quanshi_qita_taoshu = set_field(kind='string')
+    quanshi_qita_mianji = set_field(kind='string')
+
+    chancheng_zhuzhai_taoshu = set_field(kind='string')
+    chancheng_zhuzhai_mianji = set_field(kind='string')
+    chancheng_shangye_taoshu = set_field(kind='string')
+    chancheng_shangye_mianji = set_field(kind='string')
+    chancheng_qita_taoshu = set_field(kind='string')
+    chancheng_qita_mianji = set_field(kind='string')
+
+    nanhan_zhuzhai_taoshu = set_field(kind='string')
+    nanhan_zhuzhai_mianji = set_field(kind='string')
+    nanhan_shangye_taoshu = set_field(kind='string')
+    nanhan_shangye_mianji = set_field(kind='string')
+    nanhan_qita_taoshu = set_field(kind='string')
+    nanhan_qita_mianji = set_field(kind='string')
+
+    shunde_zhuzhai_taoshu = set_field(kind='string')
+    shunde_zhuzhai_mianji = set_field(kind='string')
+    shunde_shangye_taoshu = set_field(kind='string')
+    shunde_shangye_mianji = set_field(kind='string')
+    shunde_qita_taoshu = set_field(kind='string')
+    shunde_qita_mianji = set_field(kind='string')
+
+    gaoming_zhuzhai_taoshu = set_field(kind='string')
+    gaoming_zhuzhai_mianji = set_field(kind='string')
+    gaoming_shangye_taoshu = set_field(kind='string')
+    gaoming_shangye_mianji = set_field(kind='string')
+    gaoming_qita_taoshu = set_field(kind='string')
+    gaoming_qita_mianji = set_field(kind='string')
+
+    sanshui_zhuzhai_taoshu = set_field(kind='string')
+    sanshui_zhuzhai_mianji = set_field(kind='string')
+    sanshui_shangye_taoshu = set_field(kind='string')
+    sanshui_shangye_mianji = set_field(kind='string')
+    sanshui_qita_taoshu = set_field(kind='string')
+    sanshui_qita_mianji = set_field(kind='string')
+
+class ProjectBaseShanghai(Document):
+    RecordID = fields.UUIDField(default=uuid.uuid1(),
+                                binary=True, primary_key=True, null=False)
+    CurTimeStamp = fields.StringField(default=str(datetime.datetime.now()), index=True)
+    project_id = fields.UUIDField(default=uuid.uuid3(uuid.NAMESPACE_DNS, ''),
+                                  binary=False, null=False)
+    project_sts = fields.StringField(default='', max_length=255, null=False)
+
+    project_addr = fields.StringField(default='', max_length=255, null=False)
+    project_house_num = fields.StringField(default='', max_length=255, null=False)
+    project_house_area = fields.StringField(default='', max_length=255, null=False)
+    project_no = fields.UUIDField(default=uuid.uuid3(uuid.NAMESPACE_DNS, ''),
+                                  binary=False, null=False)
+    project_name = fields.StringField(default='', max_length=255, null=False)
+    project_county = fields.StringField(default='', max_length=255, null=False)
+    project_blank = fields.StringField(default='', max_length=255, null=False)
+    project_com_name = fields.StringField(default='', max_length=255, null=False)
+
+    project_price = fields.StringField(default='', max_length=255, null=False)
+    project_price_house = fields.StringField(default='', max_length=255, null=False)
+    project_price_back = fields.StringField(default='', max_length=255, null=False)
+    project_price_house_back = fields.StringField(default='', max_length=255, null=False)
+    project_detail_link = fields.StringField(default='', max_length=510, null=False)
+    change_data = fields.StringField(default='', max_length=1024, null=False)
+
+    NewCurTimeStamp = fields.StringField(default=str(datetime.datetime.now()), index=True)
+
+    meta = {
+        'indexes': [
+            'CurTimeStamp',
+            'NewCurTimeStamp',
+            'project_detail_link',
+            'change_data',
+            'project_id',
+            'project_no',
+
+        ]
+    }
+
+
+class OpeningunitBaseShanghai(Document):
+    RecordID = fields.UUIDField(default=uuid.uuid1(),
+                                binary=True, primary_key=True, null=False)
+    CurTimeStamp = fields.StringField(default=str(datetime.datetime.now()), index=True)
+    project_no = fields.StringField(default='', max_length=255, null=False)
+    project_name = fields.StringField(default='', max_length=255, null=False)
+    opening_unit_no = fields.StringField(default='', max_length=255, null=False)
+    opening_building_detail_link = fields.StringField(default='', max_length=510, null=False)
+    opening_unit_licence = fields.StringField(default='', max_length=255, null=False)
+    opening_unit_opendate = fields.StringField(default='', max_length=255, null=False)
+    opening_unit_num = fields.StringField(default='', max_length=255, null=False)
+    opening_unit_housenum = fields.StringField(default='', max_length=255, null=False)
+    opening_unit_area = fields.StringField(default='', max_length=255, null=False)
+    opening_unit_housearea = fields.StringField(default='', max_length=255, null=False)
+    opening_unit_sts = fields.StringField(default='', max_length=255, null=False)
+    change_data = fields.StringField(default='', max_length=1024, null=False)
+    NewCurTimeStamp = fields.StringField(default=str(datetime.datetime.now()), index=True)
+
+    meta = {
+        'indexes': [
+            'CurTimeStamp',
+            'NewCurTimeStamp',
+            'opening_unit_sts',
+            'change_data',
+            'project_no',
+            'opening_unit_no',
+        ]
+    }
+
+
+class BuildingBaseShanghai(Document):
+    RecordID = fields.UUIDField(default=uuid.uuid1(),
+                                binary=True, primary_key=True, null=False)
+    CurTimeStamp = fields.StringField(default=str(datetime.datetime.now()), index=True)
+    project_no = fields.StringField(default='', max_length=255, null=False)
+    project_name = fields.StringField(default='', max_length=255, null=False)
+    opening_unit_no = fields.StringField(default='', max_length=255, null=False)
+    building_name = fields.StringField(default='', max_length=255, null=False)
+    building_no = fields.StringField(default='', max_length=255, null=False)
+    building_price = fields.StringField(default='', max_length=255, null=False)
+    building_fluctuation = fields.StringField(default='', max_length=255, null=False)
+    building_num = fields.StringField(default='', max_length=255, null=False)
+    building_area = fields.StringField(default='', max_length=255, null=False)
+    building_sts = fields.StringField(default='', max_length=255, null=False)
+    change_data = fields.StringField(default='', max_length=1023, null=False)
+    building_url = fields.URLField(default=None, null=True, blank=True)
+    NewCurTimeStamp = fields.StringField(default=str(datetime.datetime.now()), index=True)
+
+    meta = {
+        'indexes': [
+            'CurTimeStamp',
+            'NewCurTimeStamp',
+            'change_data',
+            'project_no',
+            'building_sts',
+            'opening_unit_no',
+            'building_no',
+
+        ]
+    }
+
+
+class HouseBaseShanghai(Document):
+    RecordID = fields.UUIDField(default=uuid.uuid1(),
+                                binary=True, primary_key=True, null=False)
+    CurTimeStamp = fields.StringField(default=str(datetime.datetime.now()), index=True)
+    project_name = fields.StringField(default='', max_length=255, null=False)
+    project_no = fields.StringField(default='', max_length=255, null=False)
+    opening_unit_no = fields.StringField(default='', max_length=255, null=False)
+    building_no = fields.StringField(default='', max_length=255, null=False)
+    house_no = fields.StringField(default='', max_length=255, null=False)
+    house_floor = fields.StringField(default='', max_length=255, null=False)
+    house_num = fields.StringField(default='', max_length=255, null=False)
+    house_class = fields.StringField(default='', max_length=255, null=False)
+    house_use_type = fields.StringField(default='', max_length=255, null=False)
+    house_layout = fields.StringField(default='', max_length=255, null=False)
+    house_area_pr_yc = fields.StringField(default='', max_length=510, null=False)
+    house_area_pr_tn = fields.StringField(default='', max_length=255, null=False)
+    house_area_pr_ft = fields.StringField(default='', max_length=255, null=False)
+    house_area_pr_dx = fields.StringField(default='', max_length=255, null=False)
+    house_area_real_yc = fields.StringField(default='', max_length=255, null=False)
+    house_area_real_tn = fields.StringField(default='', max_length=255, null=False)
+    house_area_real_ft = fields.StringField(default='', max_length=255, null=False)
+    house_area_real_dx = fields.StringField(default='', max_length=255, null=False)
+    house_sts = fields.StringField(default='', max_length=255, null=False)
+    change_data = fields.StringField(default='', max_length=1023, null=False)
+    house_stsLatest = fields.StringField(default='', max_length=255, null=False)
+    NewCurTimeStamp = fields.StringField(default=str(datetime.datetime.now()), index=True)
+
+    meta = {
+        'indexes': [
+            'CurTimeStamp',
+            'NewCurTimeStamp',
+            'house_stsLatest',
+            'house_sts',
+            'change_data',
+            'project_no',
+            'opening_unit_no',
+            'building_no',
+            'house_no',
+        ]
+    }
+
+class SearchProjectBaseFuzhou(Document):
+    RecordID = fields.UUIDField(default=uuid.uuid1(),
+                                    binary=True, primary_key=True, null=False)
+    CurTimeStamp = fields.StringField(default=str(datetime.datetime.now()), index=True)
+
+    SearchProjectuuid = fields.StringField(default='', max_length=255, null=False)
+
+    Presalelicensenumber = fields.StringField(default='', max_length=255, null=False)
+    Projectname = fields.StringField(default='', max_length=255, null=False)
+    Permittedarea = fields.StringField(default='', max_length=255, null=False)
+    Presalebuildingno = fields.StringField(default='', max_length=255, null=False)
+    Approvaldate = fields.StringField(default='', max_length=255, null=False)
+    Planenddate = fields.StringField(default='', max_length=255, null=False)
+    NewCurTimeStamp = fields.StringField(default=str(datetime.datetime.now()), index=True)
+    change_data = fields.StringField(default='', max_length=1023, null=False)
+    meta = {
+        'indexes': [
+            'CurTimeStamp',
+            'SearchProjectuuid',         
+            'change_data',
+
+        ]
+    }
+class ProjectinfoBaseFuzhou(Document):
+    RecordID = fields.UUIDField(default=uuid.uuid1(),
+                                    binary=True, primary_key=True, null=False)
+    CurTimeStamp = fields.StringField(default=str(datetime.datetime.now()), index=True)
+
+    projectuuid = fields.StringField(default='', max_length=255, null=False)
+    Projectname = fields.StringField(default='', max_length=255, null=False)
+
+    projectcounty = fields.StringField(default='', max_length=255, null=False)
+    projectcomname = fields.StringField(default='', max_length=255, null=False)
+    projectaddr = fields.StringField(default='', max_length=255, null=False)
+    totalnum = fields.IntField(default=0, null=False)
+    totalareas = fields.IntField(default=0, null=False)
+    totalhousenum = fields.IntField(default=0, null=False)
+    totalhouseareas = fields.IntField(default=0, null=False)
+    cansalenum = fields.IntField(default=0, null=False)
+    cansaleareas = fields.IntField(default=0, null=False)
+    cansalehousenum = fields.IntField(default=0, null=False)
+    cansalehouseareas = fields.IntField(default=0, null=False)
+    prebuynum = fields.IntField(default=0, null=False)
+    prebuyareas = fields.IntField(default=0, null=False)
+    prebuyhousenum = fields.IntField(default=0, null=False)
+    prebuyhouseareas = fields.IntField(default=0, null=False)
+    salednum = fields.IntField(default=0, null=False)
+    saledareas = fields.IntField(default=0, null=False)
+    saledhousenum = fields.IntField(default=0, null=False)
+    saledhouseareas = fields.IntField(default=0, null=False)
+    registerednum = fields.IntField(default=0, null=False)
+    registeredareas = fields.IntField(default=0, null=False)
+    registeredhousenum = fields.IntField(default=0, null=False)
+    registeredhouseareas = fields.IntField(default=0, null=False)
+
+    projectprice = fields.StringField(default='', max_length=255, null=False)
+    projectpricehouse = fields.StringField(default='', max_length=255, null=False)
+    projectpriceback = fields.StringField(default='', max_length=255, null=False)
+    projectpricehouseback = fields.StringField(default='', max_length=255, null=False)
+    change_data = fields.StringField(default='', max_length=1023, null=False)
+    NewCurTimeStamp = fields.StringField(default=str(datetime.datetime.now()), index=True)
+    ApprovalUrl = fields.StringField(default='', max_length=1023, null=False)
+
+    meta = {
+        'indexes': [
+            'CurTimeStamp',
+            'Projectname',
+            'change_data',
+            'projectuuid',
+        ]
+    }
+
+
+class ApprovalBaseFuzhou(Document):
+
+    RecordID = fields.UUIDField(default=uuid.uuid1(),
+                                    binary=True, primary_key=True, null=False)
+    CurTimeStamp = fields.StringField(default=str(datetime.datetime.now()), index=True)
+    projectno = fields.StringField(default='', max_length=255, null=False)
+    projectname = fields.StringField(default='', max_length=255, null=False)
+    Approvalno = fields.StringField(default='', max_length=255, null=False)
+    Supervisionno = fields.StringField(default='', max_length=255, null=False)
+    Supervisionbank = fields.StringField(default='', max_length=255, null=False)
+    Approvaldate = fields.StringField(default='', max_length=255, null=False)
+    Totalnum = fields.IntField(default=0, null=False)
+    Totalhousenum = fields.IntField(default=0, null=False)
+    Totalareas = fields.FloatField(default=0.00,max_digits=10,decimal_places=2)
+    Totalhouseareas = fields.FloatField(default=0.00,max_digits=10,decimal_places=2)
+
+
+    change_data = fields.StringField(default='', max_length=1023, null=False)
+    NewCurTimeStamp = fields.StringField(default=str(datetime.datetime.now()), index=True)
+
+    meta = {
+        'indexes': [
+            'CurTimeStamp',
+            'Approvalno',
+        ]
+    }
+class BuildingBaseFuzhou(Document):
+    RecordID = fields.UUIDField(default=uuid.uuid1(),
+                                binary=True, primary_key=True, null=False)
+    CurTimeStamp = fields.StringField(default=str(datetime.datetime.now()), index=True)
+    projectno = fields.StringField(default='', max_length=255, null=False)
+    projectname = fields.StringField(default='', max_length=255, null=False)
+
+    Approvalno = fields.StringField(default='', max_length=255, null=False)
+    buildingname = fields.StringField(default='', max_length=255, null=False)
+    buildingno = fields.StringField(default='', max_length=255, null=False)
+    buildingtotalnum = fields.IntField(default=0, null=False)
+    buildingtotalareas = fields.FloatField(default=0.00,max_digits=10,decimal_places=2)
+    buildinghousenum = fields.IntField(default=0, null=False)
+    buildinghouseareas = fields.FloatField(default=0.00,max_digits=10,decimal_places=2)
+    NewCurTimeStamp = fields.StringField(default=str(datetime.datetime.now()), index=True)
+    change_data = fields.StringField(default='', max_length=1023, null=False)
+
+
+    meta = {
+        'indexes': [
+            'CurTimeStamp',
+            'projectno',
+            'Approvalno',
+            'buildingno',
+        ]
+    }
+
+
+class HouseBaseFuzhou(Document):
+    RecordID = fields.UUIDField(default=uuid.uuid1(),
+                                binary=True, primary_key=True, null=False)
+    CurTimeStamp = fields.StringField(default=str(datetime.datetime.now()), index=True)
+    project_no = fields.StringField(default='', max_length=255, null=False)
+    project_name = fields.StringField(default='', max_length=1020, null=False)
+    Approvalno = fields.StringField(default='', max_length=255, null=False)
+    building_no = fields.StringField(default='', max_length=255, null=False)
+    building_name = fields.StringField(default='', max_length=255, null=False)
+    house_no = fields.StringField(default='', max_length=255, null=False)
+    house_floor = fields.StringField(default='', max_length=255, null=False)
+    house_num = fields.StringField(default='', max_length=255, null=False)
+    house_class = fields.StringField(default='', max_length=255, null=False)
+    house_use_type = fields.StringField(default='', max_length=255, null=False)
+    house_layout = fields.StringField(default='', max_length=255, null=False)
+    house_area_pr_yc = fields.StringField(default='', max_length=510, null=False)
+    house_area_pr_tn = fields.StringField(default='', max_length=255, null=False)
+    house_area_pr_ft = fields.StringField(default='', max_length=255, null=False)
+    house_area_pr_dx = fields.StringField(default='', max_length=255, null=False)
+    house_area_real_yc = fields.StringField(default='', max_length=255, null=False)
+    house_area_real_tn = fields.StringField(default='', max_length=255, null=False)
+    house_area_real_ft = fields.StringField(default='', max_length=255, null=False)
+    house_area_real_dx = fields.StringField(default='', max_length=255, null=False)
+    house_sts = fields.StringField(default='', max_length=255, null=False)
+    change_data = fields.StringField(default='', max_length=1023, null=False)
+
+    house_stsLatest = fields.StringField(default='', max_length=255, null=False)
+    NewCurTimeStamp = fields.StringField(default=str(datetime.datetime.now()), index=True)
+
+    meta = {
+        'indexes': [
+    'CurTimeStamp',
+    'project_no', # 项目编号
+    'Approvalno',  # 开盘单元编号
+    'building_no', # 楼栋编号
+    'house_no',  # 房间编号
+        ]
+    }
+class MonitorProjectBaseWuxi(Document):
+    RecordID = fields.UUIDField(default=uuid.uuid1(),
+                                    binary=True, primary_key=True, null=False)
+    CurTimeStamp = fields.StringField(default=str(datetime.datetime.now()), index=True)
+    NewCurTimeStamp = fields.StringField(default=str(datetime.datetime.now()), index=True)
+    change_data = fields.StringField(default='', max_length=10240, null=False)
+    ProjectNo =  fields.StringField(default='', max_length=255, null=False)
+    ProjectName =  fields.StringField(default='', max_length=255, null=False)
+    TotalHouseNumber = fields.StringField(default='', max_length=255,)
+    OnSoldNumber = fields.StringField(default='', max_length=255,)
+    PresalePermitNumber = fields.StringField(default='', max_length=255,)
+    ProjectCode = fields.StringField(default='', max_length=255,)
+    projectDetailUrl = fields.URLField(default=None, blank=True)
+    meta = {
+        'indexes': [
+            'CurTimeStamp',
+            'change_data',
+            'ProjectNo',
+            'ProjectCode'
+        ]
+    }
+class ProjectBaseWuxi(Document):
+    RecordID = fields.UUIDField(default=uuid.uuid1(),
+                                    binary=True, primary_key=True, null=False)
+    CurTimeStamp = fields.StringField(default=str(datetime.datetime.now()), index=True)
+    NewCurTimeStamp = fields.StringField(default=str(datetime.datetime.now()), index=True)
+    change_data = fields.StringField(default='', max_length=10240, null=False)
+    ProjectNo =  fields.StringField(default='', max_length=255, null=False)
+    TotalHouseNumber = fields.StringField(default='', max_length=255,)
+    OnSoldNumber = fields.StringField(default='', max_length=255,)
+    SoldNumber = fields.StringField(default='', max_length=255,)
+    LimitSoldNumber = fields.StringField(default='', max_length=255,)
+    ProjectName = fields.StringField(default='', max_length=255,)
+    PresalePermitNumber = fields.StringField(default='', max_length=255,)
+    ProjectTemporaryName = fields.StringField(default='', max_length=255,)
+    ApprovalPresaleDepartment = fields.StringField(default='', max_length=255,)
+    Developer = fields.StringField(default='', max_length=255,)
+    DeveloperUrl = fields.StringField(default='', max_length=255,)
+    Cooperator = fields.StringField(default='', max_length=255,)
+    ProjectAddress = fields.StringField(default='', max_length=255,)
+    DistrictName = fields.StringField(default='', max_length=255,)
+    ApprovalForApproval = fields.StringField(default='', max_length=255,)
+    UsePermitNumber = fields.StringField(default='', max_length=255,)
+    OwnedLand = fields.StringField(default='', max_length=255,)
+    ConstructionPermitNumber = fields.StringField(default='', max_length=255,)
+    CertificateOfUseOfStateOwnedLand = fields.StringField(default='', max_length=255,)
+    PreSaleAreas = fields.StringField(default='', max_length=255,)
+    SaleCom = fields.StringField(default='', max_length=255,)
+    SaleComPhone = fields.StringField(default='', max_length=255,)
+    SaleAddress = fields.StringField(default='', max_length=255,)
+    SalePhone = fields.StringField(default='', max_length=255,)
+    ManagementCompany = fields.StringField(default='', max_length=255,)
+    SoldStatusInfo = fields.DictField(default={'0': '0'})
+    GetSoldStatusUrl = fields.URLField(default=None,  blank=True)
+    BuildingBaseUrl = fields.URLField(default=None,  blank=True)
+    SourceUrl = fields.URLField(default=None,  blank=True)
+    meta = {
+        'indexes': [
+            'CurTimeStamp',
+            'ProjectNo',
+            'OnSoldNumber',
+            'SoldNumber'
+            ]
+           }
+class MonitorHouseBaseWuxi(Document):
+    RecordID = fields.UUIDField(default=uuid.uuid1(),
+                                    binary=True, primary_key=True, null=False)
+    CurTimeStamp = fields.StringField(default=str(datetime.datetime.now()), index=True)
+    NewCurTimeStamp = fields.StringField(default=str(datetime.datetime.now()), index=True)
+    change_data = fields.StringField(default='', max_length=10240, null=False)
+    ProjectName =  fields.StringField(default='', max_length=255, null=False)
+    BuildingNum = fields.StringField(default='', max_length=255, null=False)
+    HouseTitle = fields.StringField(default='', max_length=255, null=False)
+    HouseNo = fields.StringField(default='', max_length=255, null=False)
+    HouseFwid = fields.StringField(default='', max_length=255, null=False)
+    HouseLpid = fields.StringField(default='', max_length=255, null=False)
+    HouseSts = fields.StringField(default='', max_length=255, null=False)
+    HouseStsLatest = fields.StringField(default='', max_length=255, null=False)
+    HouseInfoUrl = fields.URLField(default=None, blank=True)
+    SourceUrl = fields.URLField(default=None, blank=True)
+    meta = {
+        'indexes': [
+            'CurTimeStamp',
+            'change_data',
+            'HouseNo',
+            'HouseSts',
+            ]
+           }
+class DeveloperBaseWuxi(Document):
+    RecordID = fields.UUIDField(default=uuid.uuid1(),
+                                    binary=True, primary_key=True, null=False)
+    CurTimeStamp = fields.StringField(default=str(datetime.datetime.now()), index=True)
+    NewCurTimeStamp = fields.StringField(default=str(datetime.datetime.now()), index=True)
+    change_data = fields.StringField(default='', max_length=10240, null=False)
+    DeveloperNo =  fields.StringField(default='', max_length=255, null=False)
+    DeveloperName = fields.StringField(default='', max_length=255,)
+    DeveloperAddress = fields.StringField(default='', max_length=255,)
+    DeveloperFullName = fields.StringField(default='', max_length=255,)
+    DeveloperLevel = fields.StringField(default='', max_length=255,)
+    LegalPerson = fields.StringField(default='', max_length=255,)
+    SalesManager = fields.StringField(default='', max_length=255,)
+    ZipCode = fields.StringField(default='', max_length=255,)
+    Fax = fields.StringField(default='', max_length=255,)
+    Web = fields.StringField(default='', max_length=255,)
+    EMail = fields.StringField(default='', max_length=255,)
+    ProjectName = fields.StringField(default='', max_length=255,)
+    SourceUrl = fields.URLField(default=None, blank=True)
+    meta = {
+        'indexes': [
+            'CurTimeStamp',
+            'DeveloperNo',
+            'DeveloperAddress',
+            ]
+           }
+class HouseBaseWuxi(Document):
+    RecordID = fields.UUIDField(default=uuid.uuid1(),
+                                    binary=True, primary_key=True, null=False)
+    CurTimeStamp = fields.StringField(default=str(datetime.datetime.now()), index=True)
+    NewCurTimeStamp = fields.StringField(default=str(datetime.datetime.now()), index=True)
+    change_data = fields.StringField(default='', max_length=10240, null=False)
+    HouseNo =  fields.StringField(default='', max_length=255, null=False)
+    ProjectName = fields.StringField(default='', max_length=255, null=False)
+    BuildingNum = fields.StringField(default='', max_length=255, null=False)
+    HouseAddress = fields.StringField(default='', max_length=255, null=False)
+    HouseCode = fields.StringField(default='', max_length=255, null=False)
+    HouseSts = fields.StringField(default='', max_length=255, null=False)
+    HouseStsLatest = fields.StringField(default='', max_length=255, null=False)
+    BuildingNumber = fields.StringField(default='', max_length=255, null=False)
+    UnitNumber = fields.StringField(default='', max_length=255, null=False)
+    HouseNumber = fields.StringField(default='', max_length=255, null=False)
+    ActualFloor = fields.StringField(default='', max_length=255, null=False)
+    TotalFloor = fields.StringField(default='', max_length=255, null=False)
+    BuildingStructure = fields.StringField(default='', max_length=255, null=False)
+    HouseUseType = fields.StringField(default='', max_length=255, null=False)
+    AreasType = fields.StringField(default='', max_length=255, null=False)
+    TotalArea = fields.StringField(default='', max_length=255, null=False)
+    InsideOfBuildingArea = fields.StringField(default='', max_length=255, null=False)
+    MeasuredSharedPublicArea = fields.StringField(default='', max_length=255, null=False)
+    hightArea = fields.StringField(default='', max_length=255, null=False)
+    Remarks = fields.StringField(default='', max_length=255, null=False)
+    Price = fields.StringField(default='', max_length=255, null=False)
+    SourceUrl = fields.URLField(default=None, blank=True)
+    meta = {
+        'indexes': [
+            'CurTimeStamp',
+            'HouseNo',
+            'HouseSts',
+            'HouseStsLatest'
+            ]
+           }
