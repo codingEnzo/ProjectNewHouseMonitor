@@ -41,7 +41,7 @@ def getNumberImgToText():
 			'orderfield': '', 'ordertype': '', 'Submit': '(unable to decode value)',
 			'currPage': '0', 'judge': ''
 		}
-		url = 'http://housing.gzcc.gov.cn/search/project/projectSearch.jsp'
+		url = 'http://www.gzcc.gov.cn/housing/search/project/projectSearch.jsp'
 		response = requests.post(url, data)
 		soup = BeautifulSoup(response.text, 'html.parser')
 		elements = soup.select('table#tab > tr:nth-of-type(1) > td:nth-of-type(4) > a > img ')

@@ -18,7 +18,7 @@ else:
 logger = logging.getLogger(__name__)
 
 debug = False
-
+img_redis = Redis(host = '10.30.2.11', port = 6379, db = 1)
 
 # 从redis读取对应的key,将图片转数字
 def imgToNumberText(NUMBER_IMG, dot, img_list):
@@ -69,9 +69,9 @@ class ProjectBaseHandleMiddleware(object):
         if response.meta.get('GetPage'):
             total_page = get_totla_page(response.body_as_unicode())
             for i in range(total_page):
-                url = 'http://housing.gzcc.gov.cn/fyxx/fdcxmxx/index_{curPage}.shtml'.format(curPage = i)
+                url = 'http://www.gzcc.gov.cn/housing/fyxx/fdcxmxx/index_{curPage}.shtml'.format(curPage = i)
                 if i == 0:
-                    url = 'http://housing.gzcc.gov.cn/fyxx/fdcxmxx/index.shtml'
+                    url = 'http://www.gzcc.gov.cn/housing/fyxx/fdcxmxx/index.shtml'
                 project_base_req = Request(
                         url = url,
                         headers = self.settings.getdict('DEFAULT_REQUEST_HEADERS'),
@@ -83,7 +83,7 @@ class ProjectBaseHandleMiddleware(object):
             for tr in tr_arr:
                 href = tr.xpath('td[2]/a/@href').extract_first()
                 req = Request(
-                        url = 'http://housing.gzcc.gov.cn' + href,
+                        url = 'http://www.gzcc.gov.cn/housing' + href,
                         headers = self.settings.getdict('DEFAULT_REQUEST_HEADERS'),
                         meta = {'PageType': 'IframePage'})
                 result.append(req)
@@ -112,7 +112,7 @@ class IframePageHandleMiddleware(object):
             return result if result else []
         result = list(result)
         url_list = Selector(response).re(r'url="(.+)";')
-        project_info_url = 'http://housing.gzcc.gov.cn/search/project/' + url_list[0]
+        project_info_url = 'http://www.gzcc.gov.cn/housing/search/project/' + url_list[0]
         ProjectID = project_info_url[project_info_url.rindex('=') + 1:]
         ProjectUUID = uuid.uuid3(uuid.NAMESPACE_DNS, project_info_url)
         ProjectName = response.xpath('//input[@name="pjName"]/@value').extract_first()
@@ -131,7 +131,7 @@ class IframePageHandleMiddleware(object):
             CertificateOfUseOfStateOwnedLand = CertificateOfUseOfStateOwnedLand_dict['country_name'][:-1]
             if ',' in CertificateOfUseOfStateOwnedLand:
                 country_ids = CertificateOfUseOfStateOwnedLand_dict['country_id'][:-1].split(',')
-                url = 'http://housing.gzcc.gov.cn/search/project/country.jsp'
+                url = 'http://www.gzcc.gov.cn/housing/search/project/country.jsp'
                 for index, countryId in enumerate(country_ids):
                     req_dict = {
                         'flag': str(index),
@@ -154,7 +154,7 @@ class IframePageHandleMiddleware(object):
                     result.append(req)
             else:
                 countryId = CertificateOfUseOfStateOwnedLand_dict['country_id'][:-1]
-                req = Request(url = 'http://housing.gzcc.gov.cn/search/project/' + url_list[3],
+                req = Request(url = 'http://www.gzcc.gov.cn/housing/search/project/' + url_list[3],
                               headers = self.settings.getdict('DEFAULT_REQUEST_HEADERS'),
                               dont_filter = True,
                               meta = {
@@ -176,7 +176,7 @@ class IframePageHandleMiddleware(object):
                         'agreeId': ConstructionPermitNumber_dict['agreeId'],
                         'workAgreeId': agreeId
                     }
-                    req = Request(url = 'http://housing.gzcc.gov.cn/search/project/workAgree.jsp',
+                    req = Request(url = 'http://www.gzcc.gov.cn/housing/search/project/workAgree.jsp',
                                   method = 'POST',
                                   body = urlparse.urlencode(req_dict),
                                   headers = self.settings.getdict('POST_DEFAULT_REQUEST_HEADERS'),
@@ -191,7 +191,7 @@ class IframePageHandleMiddleware(object):
                     result.append(req)
             else:
                 agreeId = ConstructionPermitNumber_dict['agreeId'][:-1]
-                req = Request(url = 'http://housing.gzcc.gov.cn/search/project/' + url_list[4],
+                req = Request(url = 'http://www.gzcc.gov.cn/housing/search/project/' + url_list[4],
                               headers = self.settings.getdict('DEFAULT_REQUEST_HEADERS'),
                               dont_filter = True,
                               meta = {
@@ -216,7 +216,7 @@ class IframePageHandleMiddleware(object):
                     }
                     req_dict2 = {'layoutId': layoutId}
                     body = urlparse.urlencode(req_dict) + '&' + urlparse.urlencode(req_dict2)
-                    req = Request(url = 'http://housing.gzcc.gov.cn/search/project/layoutAgree.jsp',
+                    req = Request(url = 'http://www.gzcc.gov.cn/housing/search/project/layoutAgree.jsp',
                                   method = 'POST',
                                   body = body,
                                   headers = self.settings.getdict('POST_DEFAULT_REQUEST_HEADERS'),
@@ -231,7 +231,7 @@ class IframePageHandleMiddleware(object):
                     result.append(req)
             else:
                 layoutId = BuildingPermit_dict['layoutId'][:-1]
-                req = Request(url = 'http://housing.gzcc.gov.cn/search/project/' + url_list[5],
+                req = Request(url = 'http://www.gzcc.gov.cn/housing/search/project/' + url_list[5],
                               headers = self.settings.getdict('DEFAULT_REQUEST_HEADERS'),
                               dont_filter = True,
                               meta = {
@@ -388,7 +388,7 @@ class PermitInfoHandleMiddleware(object):
 class ProjectInfoHandleMiddleware(object):
     def __init__(self, settings):
         self.settings = settings
-        self.img_redis = Redis(host = '10.30.2.11', port = 6379, db = 1)
+
 
     @classmethod
     def from_crawler(cls, crawler):
@@ -451,7 +451,7 @@ class ProjectInfoHandleMiddleware(object):
                     pass
             projectInfoItem['HouseUseType'] = temp
 
-            NUMBER_IMG = self.img_redis.get('NUMBER_IMG')
+            NUMBER_IMG = img_redis.get('NUMBER_IMG')
             if NUMBER_IMG:
                 NUMBER_IMG = eval(NUMBER_IMG)
             else:
@@ -726,7 +726,7 @@ class ProjectInfoHandleMiddleware(object):
 
             # 获取街道
             street_req = Request(
-                    url = 'http://housing.gzcc.gov.cn/search/project/surroundPro.jsp?pjID={ProjectID}&sectionID=11'.format(
+                    url = 'http://www.gzcc.gov.cn/housing/search/project/surroundPro.jsp?pjID={ProjectID}&sectionID=11'.format(
                             ProjectID = projectInfoItem['ProjectID']),
                     headers = self.settings.getdict('DEFAULT_REQUEST_HEADERS'),
                     meta = {'PageType': 'StreetInfo', 'projectInfoItem': projectInfoItem})
@@ -743,18 +743,19 @@ class ProjectInfoHandleMiddleware(object):
                                     'maxPrice': '',
                                     'groundPrice': '',
                                     'preSellId': ysz}
-                        presell_req = Request(url = 'http://housing.gzcc.gov.cn/search/project/preSell.jsp',
+                        presell_req = Request(url = 'http://www.gzcc.gov.cn/housing/search/project/preSell.jsp',
                                               headers = self.settings.getdict('POST_DEFAULT_REQUEST_HEADERS'),
                                               method = 'POST',
                                               body = urlparse.urlencode(req_dict),
                                               meta = {'PageType': 'PresellInfo',
-                                                      'ProjectName': projectInfoItem['ProjectName'],
                                                       'ProjectID': projectInfoItem['ProjectID'],
+                                                      'ProjectName': projectInfoItem['ProjectName'],
+                                                      'ProjectUUID': str(projectInfoItem['ProjectUUID']),
                                                       'PresalePermitNumber': ysz})
                         result.append(presell_req)
                 else:
                     presell_req = Request(
-                            url = 'http://housing.gzcc.gov.cn/search/project/preSell.jsp?pjID={ProjectID}&presell={presell}&maxPrice=&groundPrice='.format(
+                            url = 'http://www.gzcc.gov.cn/housing/search/project/preSell.jsp?pjID={ProjectID}&presell={presell}&maxPrice=&groundPrice='.format(
                                     ProjectID = projectInfoItem['ProjectID'],
                                     presell = projectInfoItem['PresalePermitNumber']),
                             headers = self.settings.getdict('DEFAULT_REQUEST_HEADERS'),
@@ -887,7 +888,7 @@ class BuildingListHandleMiddleware(object):
                     'modeID': '1', 'hfID': '0', 'unitType': '0', 'houseStatusID': '0', 'totalAreaID': '0',
                     'inAreaID': '0', 'buildingID': str(buildingID)
                 }
-                building_req = Request(url = 'http://housing.gzcc.gov.cn/search/project/sellForm_pic.jsp',
+                building_req = Request(url = 'http://www.gzcc.gov.cn/housing/search/project/sellForm_pic.jsp',
                                        headers = self.settings.getdict('POST_DEFAULT_REQUEST_HEADERS'),
                                        dont_filter = True,
                                        meta = {
@@ -957,7 +958,7 @@ class SellFormInfoHandleMiddleware(object):
             return result
         a_list = response.xpath('//a[contains(@href,"sellFormDetail.jsp")]')
         for a in a_list:
-            href = 'http://housing.gzcc.gov.cn/search/project/' + a.xpath('@href').extract_first()
+            href = 'http://www.gzcc.gov.cn/housing/search/project/' + a.xpath('@href').extract_first()
             HouseID = href[href.rindex('=') + 1:]
             HouseUUID = uuid.uuid3(uuid.NAMESPACE_DNS, href)
             font_list = a.xpath('font/text()').extract()
@@ -990,7 +991,7 @@ class SellFormInfoHandleMiddleware(object):
 class HouseInfoHandleMiddleware(object):
     def __init__(self, settings):
         self.settings = settings
-        self.img_redis = Redis(host = '10.30.2.11', port = 6379, db = 1)
+
 
     @classmethod
     def from_crawler(cls, crawler):
@@ -1053,7 +1054,7 @@ class HouseInfoHandleMiddleware(object):
         houseDetailItem['IsAttachment'] = response.xpath(
                 '//td[starts-with(text(),"是否查封")]/following-sibling::td[1]/text()').extract_first()
 
-        NUMBER_IMG = self.img_redis.get('NUMBER_IMG')
+        NUMBER_IMG = img_redis.get('NUMBER_IMG')
         if NUMBER_IMG:
             NUMBER_IMG = eval(NUMBER_IMG)
         else:

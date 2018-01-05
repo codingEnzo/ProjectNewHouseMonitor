@@ -91,7 +91,7 @@ t1 = PythonOperator(
             'spiderName': 'DefaultCrawler',
             'settings': spider_settings,
             'urlList': [
-                {'source_url': 'http://housing.gzcc.gov.cn/fyxx/fdcxmxx/index_1.shtml',
+                {'source_url': 'http://www.gzcc.gov.cn/housing/fyxx/fdcxmxx/index_3.shtml',
                  'meta': {'PageType': 'ProjectBase', 'GetPage': True}}
             ]
         },
@@ -102,7 +102,7 @@ cur = ProjectInfoGuangzhou.objects.all()
 buildingList_info_list = []
 for item in cur:
     if item['ProjectID']:
-        url = 'http://housing.gzcc.gov.cn/search/project/sellForm.jsp?pjID={ProjectID}&presell={PresalePermitNumber}&chnlname=ysz'
+        url = 'http://www.gzcc.gov.cn/housing/search/project/sellForm.jsp?pjID={ProjectID}&presell={PresalePermitNumber}&chnlname=ysz'
         buildingList_info = {'source_url': url.format(ProjectID = item['ProjectID'],
                                                       PresalePermitNumber = item['PresalePermitNumber']),
                              'meta': {'PageType': 'BuildingList',
@@ -112,6 +112,7 @@ for item in cur:
                                       }
                              }
         buildingList_info_list.append(buildingList_info)
+buildingList_info_list = list(set(buildingList_info_list))
 
 t2 = PythonOperator(
         task_id = 'LoadBuildingListGuangzhou',
