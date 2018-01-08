@@ -112,7 +112,6 @@ for item in cur:
                                       }
                              }
         buildingList_info_list.append(buildingList_info)
-buildingList_info_list = list(set(buildingList_info_list))
 
 t2 = PythonOperator(
         task_id = 'LoadBuildingListGuangzhou',
