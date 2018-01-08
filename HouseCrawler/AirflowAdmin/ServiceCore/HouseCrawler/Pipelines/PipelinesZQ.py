@@ -41,6 +41,16 @@ class ZQPipeline(object):
         else:
             return sum([safe_format_value(value), ])
 
+    def check_item(self, item):
+        exist_flag = False
+        blank_count = 0
+        for key in item:
+            if item.get(key) in (None, ''):
+                blank_count += 1
+        if blank_count >= 0.8 * len(item):
+            exist_flag = True
+        return exist_flag
+
     def check_item_exist(self, item):
         exist_flag = False
         q_object = item.django_model.objects
@@ -144,16 +154,17 @@ class ZQPipeline(object):
 
     def process_item(self, item, spider):
         if item:
-            if self.check_item_exist(item):
-                logger.debug("item: %(item)s UUID existed",
-                             {'item': item})
-                diff_result, diff_item = self.check_item_change(item)
-                if diff_result:
-                    logger.debug("item: %(item)s changed",
+            if not self.check_item(item):
+                if self.check_item_exist(item):
+                    logger.debug("item: %(item)s UUID existed",
+                                 {'item': item})
+                    diff_result, diff_item = self.check_item_change(item)
+                    if diff_result:
+                        logger.debug("item: %(item)s changed",
+                                     {'item': item})
+                        self.storage_item(item)
+                else:
+                    logger.debug("item: %(item)s met first",
                                  {'item': item})
                     self.storage_item(item)
-            else:
-                logger.debug("item: %(item)s met first",
-                             {'item': item})
-                self.storage_item(item)
             return item
