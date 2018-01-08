@@ -805,6 +805,8 @@ class ProjectInfoDongguan(Document):
     ProjectUUID = fields.UUIDField(default=uuid.uuid3(uuid.NAMESPACE_DNS, ''),
                                    binary=False, null=False)
     ProjectName = fields.StringField(default='', max_length=1024, null=False)
+    ProjectOpenDate = fields.StringField(default='', max_length=1024, null=False)
+    ProjectAlias = fields.StringField(default='', max_length=1024, null=False)
     ProjectAddress = fields.StringField(
         default='', max_length=1024, null=False)
     ProjectUsage = fields.StringField(default='', max_length=1024, null=False)

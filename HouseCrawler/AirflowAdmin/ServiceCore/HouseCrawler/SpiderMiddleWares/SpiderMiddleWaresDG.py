@@ -157,6 +157,8 @@ class ProjectInfoHandleMiddleware(object):
             info_sel = Selector(response)
             pinfo = ProjectInfoItem()
             pinfo['ProjectName'] = info_sel.xpath('//span[@id="Projectname1"]/text()').extract_first() or ''
+            pinfo['ProjectOpenDate'] = (info_sel.xpath('//td[contains(text(),"开盘时间")]/following-sibling::td[1]/text()').extract_first() or '').strip()
+            pinfo['ProjectAlias'] = info_sel.xpath('//span[@id="Projectname"]/text()').extract_first() or ''
             pinfo['ProjectAddress'] = info_sel.xpath('//span[@id="Address"]/text()').extract_first() or ''
             pinfo['ProjectUsage'] = info_sel.xpath('//span[@id="yongtu"]/text()').extract_first() or ''
             pinfo['ProjectArea'] = info_sel.xpath('//span[@id="Totalarea"]/text()').extract_first() or ''
