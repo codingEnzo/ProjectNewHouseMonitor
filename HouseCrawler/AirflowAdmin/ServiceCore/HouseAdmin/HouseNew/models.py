@@ -3088,7 +3088,7 @@ class HouseInfoTaizhou(Document):
     HouseManagementFees = fields.StringField(default = '', null = False)  # 物业费
     Toward = fields.StringField(default = '', max_length = 50)  # 朝向
     DeclarationTime = fields.StringField(default = '', max_length = 50)  # 申报时间
-    SourceURL = fields.URLField(default = None, null = True, blank = True)  # 户详情地址
+    SourceUrl = fields.URLField(default = None, null = True, blank = True)  # 户详情地址
     meta = {
         'indexes': [
             'CurTimeStamp',
@@ -3101,6 +3101,6 @@ class HouseInfoTaizhou(Document):
             'BuildingName',
             'HouseState',
             'HouseStateLatest',
-            'SourceURL',
+            'SourceUrl',
         ]
     }
