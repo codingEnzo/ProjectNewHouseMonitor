@@ -564,9 +564,9 @@ class HouseInfoHandleMiddleware(object):
         # print('HouseInfoHandleMiddleware')
         result = list(result)
         houseInfoItem = response.meta.get('houseInfoItem')
-        houseInfoItem['HouseURL'] = response.url
+        houseInfoItem['SourceUrl'] = response.url
         houseInfoItem['HouseUUID'] = uuid.uuid3(uuid.NAMESPACE_DNS,
-                                                str(houseInfoItem['BuildingUUID']) + houseInfoItem['HouseURL'])
+                                                str(houseInfoItem['BuildingUUID']) + houseInfoItem['SourceUrl'])
         # 判断页面模板
         m = response.xpath('//li[@id="siteother"]').extract()
         if len(m) == 0:
