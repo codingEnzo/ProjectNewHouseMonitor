@@ -73,7 +73,7 @@ spider_settings = {
         # 'HouseCrawler.SpiderMiddleWares.SpiderMiddleWaresSZ.GetProjectPageBaseHandleMiddleware': 104,
         # 'HouseCrawler.SpiderMiddleWares.SpiderMiddleWaresSZ.BuildingHandleMiddleware': 105,
         # 'HouseCrawler.SpiderMiddleWares.SpiderMiddleWaresSZ.HouseHandleMiddleware': 106,
-        'HouseCrawler.SpiderMiddleWares.SpiderMiddleWaresSuzhou.HouseInfoHandleMiddleware': 107,
+        'HouseCrawler.SpiderMiddleWares.SpiderMiddleWaresSuzhou.ProjectBase1HandleMiddleware': 107,
     },
     'RETRY_ENABLE': True,
     'PROXY_ENABLE': False,

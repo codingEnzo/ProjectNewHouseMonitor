@@ -1079,3 +1079,28 @@ class HouseInfoHandleMiddleware(object):
         # Should return either None or an iterable of Response, dict
         # or Item objects.
         return
+
+
+class ProjectBase1HandleMiddleware(object):
+    # Not all methods need to be defined. If a method is not defined,
+    # scrapy acts as if the spider middleware does not modify the
+    # passed objects.
+
+    def __init__(self, settings):
+        self.settings = settings
+
+    @classmethod
+    def from_crawler(cls, crawler):
+        # This method is used by Scrapy to create your spiders.
+        return cls(crawler.settings)
+
+    def process_spider_output(self, response, result, spider):
+        return result
+
+    def process_spider_exception(self, response, exception, spider):
+        # Called when a spider or process_spider_input() method
+        # (from other spider middleware) raises an exception.
+
+        # Should return either None or an iterable of Response, dict
+        # or Item objects.
+        return
