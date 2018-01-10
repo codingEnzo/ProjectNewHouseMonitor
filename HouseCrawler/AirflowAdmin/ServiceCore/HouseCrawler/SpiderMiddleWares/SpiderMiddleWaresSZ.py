@@ -52,7 +52,6 @@ class GetYszBaseHandleMiddleware(object):
             'Cache-Control': 'max-age=0',
             'Host': 'www.szfcweb.com',
             'Content-Type': 'application/x-www-form-urlencoded',
-            'User-Agent': random.choice(setting.USER_AGENTS)
         }
 
     @classmethod
@@ -277,8 +276,6 @@ class GetProjectBaseHandleMiddleware(object):
             'Host': 'pf.szfcweb.com',
             'Origin': 'http://spf.szfcweb.com',
             'Content-Type': 'application/x-www-form-urlencoded',
-            'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Ubuntu Chromium/62.0.3202.75 Chrome/62.0.3202.75 Safari/537.36'
-
         }
 
     @classmethod
@@ -458,8 +455,6 @@ class GetProjectPageBaseHandleMiddleware(object):
                 'Origin': 'http://spf.szfcweb.com',
                 'Content-Type': 'application/x-www-form-urlencoded',
                 'Referer': response.url,
-                'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Ubuntu Chromium/62.0.3202.75 Chrome/62.0.3202.75 Safari/537.36'
-
             }
 
             main_url = str(response.url).replace(
@@ -571,8 +566,6 @@ class BuildingHandleMiddleware(object):
                 'Host': 'www.szfcweb.com',
                 'Content-Type': 'application/x-www-form-urlencoded',
                 'Referer': response.url,
-                'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Ubuntu Chromium/62.0.3202.75 Chrome/62.0.3202.75 Safari/537.36'
-
             }
             page_body = Selector(response).xpath(
                 '//*[@id="aspnetForm"]/div[3]/table/tr[2]/td/table').extract_first()
@@ -642,8 +635,6 @@ class BuildingHandleMiddleware(object):
                 'Cache-Control': 'max-age=0',
                 'Host': 'www.szfcweb.com',
                 'Content-Type': 'application/x-www-form-urlencoded',
-                'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Ubuntu Chromium/62.0.3202.75 Chrome/62.0.3202.75 Safari/537.36'
-
             }
             nPos = str(response.url).index('SaleInfo')
 
@@ -733,7 +724,6 @@ class HouseHandleMiddleware(object):
             'Cache-Control': 'max-age=0',
             'Host': 'www.szfcweb.com',
             'Content-Type': 'application/x-www-form-urlencoded',
-            'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Ubuntu Chromium/62.0.3202.75 Chrome/62.0.3202.75 Safari/537.36'
         }
         self.r = redis.Redis(host=settings.get(
             'REDIS_HOST') or '10.30.1.18', port=settings.get('REDIS_PORT') or 6379)
@@ -944,7 +934,6 @@ class HouseInfoHandleMiddleware(object):
             'Cache-Control': 'max-age=0',
             'Host': 'www.szfcweb.com',
             'Content-Type': 'application/x-www-form-urlencoded',
-            'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Ubuntu Chromium/62.0.3202.75 Chrome/62.0.3202.75 Safari/537.36'
         }
         self.r = redis.Redis(host=settings.get(
             'REDIS_HOST') or '10.30.1.18', port=settings.get('REDIS_PORT') or 6379)
