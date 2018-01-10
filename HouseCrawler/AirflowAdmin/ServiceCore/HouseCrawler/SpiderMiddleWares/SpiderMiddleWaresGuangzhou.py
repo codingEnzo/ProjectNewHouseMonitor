@@ -867,7 +867,7 @@ class BuildingListHandleMiddleware(object):
             return result if result else []
         if response.meta.get('PageType') != 'BuildingList':
             return result if result else []
-        # print('BuildingListHandleMiddleware')
+        print('BuildingListHandleMiddleware')
         ProjectID = response.meta.get('ProjectID')
         ProjectUUID = response.meta.get('ProjectUUID')
         ProjectName = response.meta.get('ProjectName')

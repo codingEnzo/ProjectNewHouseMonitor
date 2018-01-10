@@ -98,10 +98,25 @@ t1 = PythonOperator(
         dag = dag
 )
 
-cur = ProjectInfoGuangzhou.objects.all()
+cur = ProjectInfoGuangzhou.objects.aggregate(*[{
+        "$sort": {
+            "CurTimeStamp": -1
+        }
+    }, {
+        '$group': {
+            '_id': '$ProjectUUID',
+            'ProjectUUID': {'$first': '$ProjectUUID'},
+            'ProjectID': {'$first': '$ProjectID'},
+            'ProjectName': {'$first': '$ProjectName'},
+            'PresalePermitNumber': {'$first': '$PresalePermitNumber'},
+            'TotalUnsoldAmount': {'$first': '$TotalUnsoldAmount'},
+            'CurTimeStamp': {'$first': '$CurTimeStamp'},
+        }
+    }])
 buildingList_info_list = []
 for item in cur:
-    if item['ProjectID']:
+    if item['TotalUnsoldAmount'] != '0' or \
+                    item['CurTimeStamp'] >= str(datetime.datetime.now().date()):
         url = 'http://www.gzcc.gov.cn/housing/search/project/sellForm.jsp?pjID={ProjectID}&presell={PresalePermitNumber}&chnlname=ysz'
         buildingList_info = {'source_url': url.format(ProjectID = item['ProjectID'],
                                                       PresalePermitNumber = item['PresalePermitNumber']),
@@ -121,4 +136,4 @@ t2 = PythonOperator(
                      'urlList': buildingList_info_list},
         dag = dag)
 
-# t2.set_upstream(t1)
+t2.set_upstream(t1)
