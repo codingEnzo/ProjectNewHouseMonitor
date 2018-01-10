@@ -77,6 +77,7 @@ spider_settings = {
     },
     'RETRY_ENABLE': True,
     'PROXY_ENABLE': False,
+    'REDIRECT_ENABLED': True,
     'REDIS_HOST': '10.30.1.18',
     'REDIS_PORT': 6379,
     'CLOSESPIDER_TIMEOUT': 3600 * 5.8
