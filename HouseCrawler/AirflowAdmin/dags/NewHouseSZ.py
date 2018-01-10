@@ -68,8 +68,8 @@ spider_settings = {
         'HouseCrawler.Pipelines.PipelinesSZ.SZPipeline': 300,
     },
     'SPIDER_MIDDLEWARES': {
-        # 'HouseCrawler.SpiderMiddleWares.SpiderMiddleWaresSZ.GetYszBaseHandleMiddleware': 102,
-        # 'HouseCrawler.SpiderMiddleWares.SpiderMiddleWaresSZ.GetProjectBaseHandleMiddleware': 103,
+        'HouseCrawler.SpiderMiddleWares.SpiderMiddleWaresSZ.GetYszBaseHandleMiddleware': 102,
+        'HouseCrawler.SpiderMiddleWares.SpiderMiddleWaresSZ.GetProjectBaseHandleMiddleware': 103,
         # 'HouseCrawler.SpiderMiddleWares.SpiderMiddleWaresSZ.GetProjectPageBaseHandleMiddleware': 104,
         # 'HouseCrawler.SpiderMiddleWares.SpiderMiddleWaresSZ.BuildingHandleMiddleware': 105,
         # 'HouseCrawler.SpiderMiddleWares.SpiderMiddleWaresSZ.HouseHandleMiddleware': 106,
