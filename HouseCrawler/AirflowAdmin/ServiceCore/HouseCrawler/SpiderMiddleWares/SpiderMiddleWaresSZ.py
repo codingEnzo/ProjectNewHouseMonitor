@@ -8,7 +8,7 @@ from scrapy import Request
 from scrapy import Selector
 from HouseCrawler import settings as setting
 import random
-from HouseAdmin.HouseNew.models import *
+from HouseNew.models import *
 from HouseCrawler.Items.ItemsSZ import *
 if sys.version_info.major >= 3:
     import urllib.parse as urlparse
@@ -826,7 +826,7 @@ class HouseHandleMiddleware(object):
                                                                        recordnum)).hex
                                 recordnum = recordnum + 1
                                 if house_sts == '可售':
-                                    q_object = HouseBase.objects
+                                    q_object = HouseBaseSuzhou.objects
                                     res_object = q_object.filter(house_no=houseitem['house_no']).latest(
                                         field_name='CurTimeStamp')
                                     if not res_object:
