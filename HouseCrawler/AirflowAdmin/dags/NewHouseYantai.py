@@ -112,7 +112,7 @@ cur = ProjectBaseYantai.objects.aggregate(*[{
             'ProjectUUID': {'$first': '$ProjectUUID'},
             'SourceUrl': {'$first': '$SourceUrl'},
         }
-    }])
+    }],allowDiskUse=True)
 project_info_list = []
 for item in cur:
     if item['CurTimeStamp'] >= str(datetime.datetime.now().date()):
