@@ -72,6 +72,26 @@ def install_project():
 
 
 @parallel
+def install_OCR():
+    run('wget http://www.leptonica.com/source/leptonica-1.72.tar.gz')
+    run('tar -xvf leptonica-1.72.tar.gz')
+    with cd('leptonica-1.72'):
+        run('./configure && make && make install')
+    run('yum install -y automake libtool')
+    run('wget https://github.com/tesseract-ocr/tesseract/archive/3.04.00.tar.gz')
+    run('mv 3.04.00  Tesseract3.04.00.tar.gz')
+    run('tar -xvf Tesseract3.04.00.tar.gz')
+    with cd('tesseract-3.04.00'):
+        run('./autogen.sh')
+        run('./configure')
+        run('make && make install')
+
+
+def remove_leptonica():
+    run('rm leptonica-1.72.tar.gz')
+
+
+@parallel
 def update():
     with cd('/home/chiufung/work/ProjectNewHouseMonitor'):
         run('git fetch')
