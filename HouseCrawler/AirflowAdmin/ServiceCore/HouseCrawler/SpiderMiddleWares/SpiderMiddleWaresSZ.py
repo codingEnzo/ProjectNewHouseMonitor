@@ -1,18 +1,21 @@
-import sys
-import re
-import copy
-import traceback
-import redis
-import uuid
-from scrapy import Request
-from scrapy import Selector
-import random
-from HouseNew.models import *
-from HouseCrawler.Items.ItemsSZ import *
-if sys.version_info.major >= 3:
-    import urllib.parse as urlparse
-else:
-    import urlparse
+try:
+    import sys
+    import re
+    import copy
+    import traceback
+    import redis
+    import uuid
+    from scrapy import Request
+    from scrapy import Selector
+    import random
+    from HouseNew.models import *
+    from HouseCrawler.Items.ItemsSZ import *
+    if sys.version_info.major >= 3:
+        import urllib.parse as urlparse
+    else:
+        import urlparse
+except Exception:
+    traceback.print_exc()
 contextflag = True
 # http://www.szfcweb.com/
 
