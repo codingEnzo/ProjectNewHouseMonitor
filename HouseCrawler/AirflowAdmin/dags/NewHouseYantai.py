@@ -47,12 +47,11 @@ spider_settings = {
         'HouseCrawler.Pipelines.PipelinesYantai.PipelineYantai': 300,
     },
     'SPIDER_MIDDLEWARES': {
-         'HouseCrawler.SpiderMiddleWares.SpiderMiddleWaresYantai.ProjectBaseHandleMiddleware': 104,
-            'HouseCrawler.SpiderMiddleWares.SpiderMiddleWaresYantai.ProjectInfoHandleMiddleware': 105,
-            'HouseCrawler.SpiderMiddleWares.SpiderMiddleWaresYantai.PresellInfoHandleMiddleware': 106,
-            'HouseCrawler.SpiderMiddleWares.SpiderMiddleWaresYantai.HouseListHandleMiddleware': 107,
-            'HouseCrawler.SpiderMiddleWares.SpiderMiddleWaresYantai.HouseInfoHandleMiddleware': 107,
-            'scrapy.spidermiddlewares.httperror.HttpErrorMiddleware': 101
+        'HouseCrawler.SpiderMiddleWares.SpiderMiddleWaresYantai.ProjectBaseHandleMiddleware': 104,
+        'HouseCrawler.SpiderMiddleWares.SpiderMiddleWaresYantai.ProjectInfoHandleMiddleware': 105,
+        'HouseCrawler.SpiderMiddleWares.SpiderMiddleWaresYantai.PresellInfoHandleMiddleware': 106,
+        'HouseCrawler.SpiderMiddleWares.SpiderMiddleWaresYantai.HouseListHandleMiddleware': 107,
+        'HouseCrawler.SpiderMiddleWares.SpiderMiddleWaresYantai.HouseInfoHandleMiddleware': 107,
     },
     'RETRY_ENABLE': True,
     'CLOSESPIDER_TIMEOUT': 3600 * 7.5,
@@ -117,12 +116,11 @@ cur = ProjectBaseYantai.objects.aggregate(*[{
 project_info_list = []
 for item in cur:
     if item['CurTimeStamp'] >= str(datetime.datetime.now().date()):
-        url = 'http://www.gzcc.gov.cn/housing/search/project/sellForm.jsp?pjID={ProjectID}&presell={PresalePermitNumber}&chnlname=ysz'
-        buildingList_info = {
+        project_info = {
             'source_url': item['SourceUrl'],
             'meta': {'PageType': 'ProjectInfo'}
         }
-        project_info_list.append(buildingList_info)
+        project_info_list.append(project_info)
 
 t2 = PythonOperator(
         task_id = 'LoadBuildingListYantai',
