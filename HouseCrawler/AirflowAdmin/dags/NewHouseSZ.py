@@ -1,6 +1,7 @@
 # -*-coding=utf-8-*-
 import os
 import sys
+import redis
 import django
 import datetime
 import functools
@@ -130,6 +131,7 @@ cur = BuildingBaseSuzhou.objects.aggregate(*[{"$sort": {"CurTimeStamp": 1}},
                                                }
                                               },
                                              ], allowDiskUse=True)
+r = redis.Redis(host='10.30.1.18', port=6379)
 for item in cur:
     try:
         if (item['NewCurTimeStamp'] > str(d1 - datetime.timedelta(days=1))):
