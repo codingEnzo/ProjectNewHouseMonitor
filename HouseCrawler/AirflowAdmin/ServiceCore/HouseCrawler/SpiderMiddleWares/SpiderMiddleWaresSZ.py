@@ -6,7 +6,6 @@ import redis
 import uuid
 from scrapy import Request
 from scrapy import Selector
-from HouseCrawler import settings as setting
 import random
 from HouseNew.models import *
 from HouseCrawler.Items.ItemsSZ import *
