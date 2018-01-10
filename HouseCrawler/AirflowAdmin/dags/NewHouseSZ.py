@@ -132,20 +132,19 @@ cur = BuildingBaseSuzhou.objects.aggregate(*[{"$sort": {"CurTimeStamp": 1}},
                                              ], allowDiskUse=True)
 for item in cur:
     try:
-        if item['BuildingURL']:
-            if (item['NewCurTimeStamp'] > str(d1 - datetime.timedelta(days=1))):
-                getkey = str(r.get('SuzhouCrawlerkey%d' % random.randint(0, 9))).replace(
-                    "b'", "").replace("'", "")
-                nexturl = 'http://spf.szfcweb.com/szfcweb/%s/DataSerach/SaleInfoHouseShow.aspx?PBTAB_ID=%s&SPJ_ID=%s' \
-                    % (getkey, item['building_no'], item['project_no'])
-                builfing_info = {'source_url': nexturl,
-                                 'headers': headers,
-                                 'meta': {'PageType': 'HouseBase',
-                                          'BuildingName': building_name,
-                                          'project_name': project_name,
-                                          'retrytimes': 0
-                                          }}
-                builfing_info_list.append(builfing_info)
+        if (item['NewCurTimeStamp'] > str(d1 - datetime.timedelta(days=1))):
+            getkey = str(r.get('SuzhouCrawlerkey%d' % random.randint(0, 9))).replace(
+                "b'", "").replace("'", "")
+            nexturl = 'http://spf.szfcweb.com/szfcweb/%s/DataSerach/SaleInfoHouseShow.aspx?PBTAB_ID=%s&SPJ_ID=%s' \
+                % (getkey, item['building_no'], item['project_no'])
+            builfing_info = {'source_url': nexturl,
+                             'headers': headers,
+                             'meta': {'PageType': 'HouseBase',
+                                      'BuildingName': building_name,
+                                      'project_name': project_name,
+                                      'retrytimes': 0
+                                      }}
+            builfing_info_list.append(builfing_info)
     except Exception:
         import traceback
         traceback.print_exc()
