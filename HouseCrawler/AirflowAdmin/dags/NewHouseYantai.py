@@ -101,18 +101,19 @@ t1 = PythonOperator(
         dag = dag
 )
 
-cur = ProjectBaseYantai.objects.aggregate(*[{
-        "$sort": {
-            "CurTimeStamp": -1
-        }
-    }, {
-        '$group': {
-            '_id': '$ProjectUUID',
-            'CurTimeStamp': {'$first': '$CurTimeStamp'},
-            'ProjectUUID': {'$first': '$ProjectUUID'},
-            'SourceUrl': {'$first': '$SourceUrl'},
-        }
-    }],allowDiskUse=True)
+# cur = ProjectBaseYantai.objects.aggregate(*[{
+#         "$sort": {
+#             "CurTimeStamp": -1
+#         }
+#     }, {
+#         '$group': {
+#             '_id': '$ProjectUUID',
+#             'CurTimeStamp': {'$first': '$CurTimeStamp'},
+#             'ProjectUUID': {'$first': '$ProjectUUID'},
+#             'SourceUrl': {'$first': '$SourceUrl'},
+#         }
+#     }],allowDiskUse=True)
+cur = ProjectBaseYantai.objects.all()
 project_info_list = []
 for item in cur:
     if item['CurTimeStamp'] >= str(datetime.datetime.now().date()):
