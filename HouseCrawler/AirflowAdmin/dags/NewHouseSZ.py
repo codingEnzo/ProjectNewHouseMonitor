@@ -68,15 +68,17 @@ spider_settings = {
         'HouseCrawler.Pipelines.PipelinesSZ.SZPipeline': 300,
     },
     'SPIDER_MIDDLEWARES': {
-        # 'HouseCrawler.SpiderMiddleWares.SpiderMiddleWaresSZ.GetYszBaseHandleMiddleware': 102,
-        # 'HouseCrawler.SpiderMiddleWares.SpiderMiddleWaresSZ.GetProjectBaseHandleMiddleware': 103,
-        # 'HouseCrawler.SpiderMiddleWares.SpiderMiddleWaresSZ.GetProjectPageBaseHandleMiddleware': 104,
-        # 'HouseCrawler.SpiderMiddleWares.SpiderMiddleWaresSZ.BuildingHandleMiddleware': 105,
+        'HouseCrawler.SpiderMiddleWares.SpiderMiddleWaresSZ.GetYszBaseHandleMiddleware': 102,
+        'HouseCrawler.SpiderMiddleWares.SpiderMiddleWaresSZ.GetProjectBaseHandleMiddleware': 103,
+        'HouseCrawler.SpiderMiddleWares.SpiderMiddleWaresSZ.GetProjectPageBaseHandleMiddleware': 104,
+        'HouseCrawler.SpiderMiddleWares.SpiderMiddleWaresSZ.BuildingHandleMiddleware': 105,
         'HouseCrawler.SpiderMiddleWares.SpiderMiddleWaresSZ.HouseHandleMiddleware': 106,
-        'HouseCrawler.SpiderMiddleWares.SpiderMiddleWaresSuzhou.HouseInfoHandleMiddleware': 107,
+        'HouseCrawler.SpiderMiddleWares.SpiderMiddleWaresSZ.HouseInfoHandleMiddleware': 107,
     },
     'RETRY_ENABLE': True,
     'PROXY_ENABLE': False,
+    'REDIS_HOST': '10.30.1.18',
+    'REDIS_PORT': 6379,
     'CLOSESPIDER_TIMEOUT': 3600 * 5.8
 }
 
