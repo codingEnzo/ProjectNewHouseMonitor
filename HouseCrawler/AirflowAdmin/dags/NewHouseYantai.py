@@ -102,7 +102,7 @@ t1 = PythonOperator(
         dag = dag
 )
 
-cur = ProjectBase.objects.aggregate(*[{
+cur = ProjectBaseYantai.objects.aggregate(*[{
         "$sort": {
             "CurTimeStamp": -1
         }
