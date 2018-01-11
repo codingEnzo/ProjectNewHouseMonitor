@@ -14,7 +14,7 @@ class DefaultcrawlerSpider(scrapy.Spider):
                 if not data_raw:
                     continue
                 try:
-                    data = data_raw if isinstance(data_raw, dict) else json.loads(str(data_raw).decode())
+                    data = data_raw if isinstance(data_raw, dict) else json.loads(str(data_raw))
                 except Exception:
                     import traceback
                     traceback.print_exc()
