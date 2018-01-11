@@ -74,7 +74,8 @@ class JJPipeline(object):
         diff_flag = False
         q_object = item.django_model.objects
         if isinstance(item, ProjectBaseItem):
-            res_object = q_object.filter(ProjectUUID=item['ProjectUUID']).latest(field_name='CurTimeStamp')
+            res_object = q_object.filter(ProjectUUID=item['ProjectUUID']).latest(
+                field_name='CurTimeStamp')
             for key in item:
                 if not hasattr(res_object, key):
                     diff_flag = True
@@ -83,7 +84,8 @@ class JJPipeline(object):
                     diff_flag = True
                     break
         elif isinstance(item, ProjectInfoItem):
-            res_object = q_object.filter(ProjectUUID=item['ProjectUUID']).latest(field_name='CurTimeStamp')
+            res_object = q_object.filter(ProjectUUID=item['ProjectUUID']).latest(
+                field_name='CurTimeStamp')
             for key in item:
                 if not hasattr(res_object, key):
                     diff_flag = True
@@ -92,7 +94,8 @@ class JJPipeline(object):
                     diff_flag = True
                     break
         elif isinstance(item, BuildingInfoItem):
-            res_object = q_object.filter(BuildingUUID=item['BuildingUUID']).latest(field_name='CurTimeStamp')
+            res_object = q_object.filter(BuildingUUID=item['BuildingUUID']).latest(
+                field_name='CurTimeStamp')
             for key in item:
                 if not hasattr(res_object, key):
                     diff_flag = True
@@ -104,8 +107,9 @@ class JJPipeline(object):
                 for key in ('BuildingSaleState', ):
                     item[key + 'Latest'] = getattr(res_object, key)
         elif isinstance(item, HouseInfoItem):
-            res_object = q_object.filter(HouseUUID=item['HouseUUID']).latest(field_name='CurTimeStamp')
-            if item.get('HouseSaleState') not in ['可现售', '可售'] and res_object.get('HouseSaleState') not in ['可现售', '可售']:
+            res_object = q_object.filter(HouseUUID=item['HouseUUID']).latest(
+                field_name='CurTimeStamp')
+            if item.get('HouseSaleState') not in ['可现售', '可售'] and getattr(res_object, 'HouseSaleState') not in ['可现售', '可售']:
                 item['HouseUnitPrice'] = res_object.get('HouseUnitPrice')
             for key in item:
                 if not hasattr(res_object, key):
@@ -132,14 +136,14 @@ class JJPipeline(object):
             if not self.check_item(item):
                 if self.check_item_exist(item):
                     logger.debug("item: %(item)s UUID existed",
-                                    {'item': item})
+                                 {'item': item})
                     diff_result, diff_item = self.check_item_change(item)
                     if diff_result:
                         logger.debug("item: %(item)s changed",
-                                        {'item': item})
+                                     {'item': item})
                         self.storage_item(item)
                 else:
                     logger.debug("item: %(item)s met first",
-                                    {'item': item})
+                                 {'item': item})
                     self.storage_item(item)
             return item
