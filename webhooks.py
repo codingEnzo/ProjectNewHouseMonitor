@@ -6,6 +6,7 @@ from http.server import BaseHTTPRequestHandler
 
 
 class S(BaseHTTPRequestHandler):
+
     def _set_headers(self):
         self.send_response(200)
         self.send_header('Content-type', 'text/html')
@@ -20,8 +21,8 @@ class S(BaseHTTPRequestHandler):
         if post_data.get('ref'):
             # 提取 branch 名字
             branch = post_data.get('ref').split('/')[-1]
-            if branch == 'dev_airflow_test':
-                os.system('git pull')
+            if branch == 'dev_airflow':
+                os.system('fab -R worker update')
                 print('Done.')
-        self.wfile.write("POST request for {}".format(self.path).encode('utf-8'))
-
+        self.wfile.write("POST request for {}".format(
+            self.path).encode('utf-8'))
