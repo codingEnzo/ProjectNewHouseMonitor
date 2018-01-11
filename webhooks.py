@@ -17,7 +17,7 @@ class S(BaseHTTPRequestHandler):
         self._set_headers()
         content_length = int(self.headers['Content-Length'])
         raw_post_data = self.rfile.read(content_length)
-        post_data = json.loads(raw_post_data)
+        post_data = json.loads(raw_post_data.decode())
         if post_data.get('ref'):
             # 提取 branch 名字
             branch = post_data.get('ref').split('/')[-1]
