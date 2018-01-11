@@ -91,8 +91,8 @@ DATABASES = {
 
 MONGODB_DATABASES = {
     "default": {
-        "name": 'HouseNewAirflowTest',
-        "host": '192.168.6.204',
+        "name": 'HouseNewAirflow_TestVer',
+        "host": '10.30.1.67',
         "tz_aware": True,
     },
 }
