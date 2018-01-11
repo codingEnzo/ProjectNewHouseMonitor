@@ -9,9 +9,12 @@ from airflow.operators.python_operator import PythonOperator
 
 BASE_DIR = os.path.abspath(os.environ.get('AIRFLOW_HOME'))
 HOUSESERVICECORE_DIR = os.path.abspath(os.path.join(BASE_DIR, 'ServiceCore'))
-HOUSEADMIN_DIR = os.path.abspath(os.path.join(BASE_DIR, 'ServiceCore/HouseAdmin'))
-HOUSECRAWLER_DIR = os.path.abspath(os.path.join(BASE_DIR, 'ServiceCore/HouseCrawler'))
-HOUSESERVICE_DIR = os.path.abspath(os.path.join(BASE_DIR, 'ServiceCore/SpiderService'))
+HOUSEADMIN_DIR = os.path.abspath(
+    os.path.join(BASE_DIR, 'ServiceCore/HouseAdmin'))
+HOUSECRAWLER_DIR = os.path.abspath(
+    os.path.join(BASE_DIR, 'ServiceCore/HouseCrawler'))
+HOUSESERVICE_DIR = os.path.abspath(
+    os.path.join(BASE_DIR, 'ServiceCore/SpiderService'))
 
 sys.path.append(BASE_DIR)
 sys.path.append(HOUSEADMIN_DIR)
@@ -55,9 +58,18 @@ spider_settings = {
     'RETRY_ENABLE': True,
     'CLOSESPIDER_TIMEOUT': 3600 * 7.5,
     'CONCURRENT_REQUESTS': 64,
+    'DEFAULT_REQUEST_HEADERS': {'Host': 'www.qzfdc.gov.cn:2015',
+                                'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+                                'Accept-Language': 'en-US,en;q=0.5',
+                                'Accept-Encoding': 'gzip, deflate',
+                                'Content-Type': 'application/x-www-form-urlencoded',
+                                'Referer': 'http://www.qzfdc.gov.cn:2015/qzjsj_web2/xygs.do?method=fdcxxfb&title=zslp',
+                                'Connection': 'keep-alive',
+                                'Upgrade-Insecure-Requests': 1}
 }
 
-dag = DAG('NewHouseQZ', default_args=default_args, schedule_interval="15 */8 * * *")
+dag = DAG('NewHouseQZ', default_args=default_args,
+          schedule_interval="15 */8 * * *")
 
 t1 = PythonOperator(
     task_id='LoadProjectBaseQZ',
@@ -94,14 +106,14 @@ building_info_list = []
 
 cur = BuildingInfoQuanzhou.objects.aggregate(*[{"$sort": {"CurTimeStamp": 1}},
                                                {'$group':
-                                                    {'_id': "$BuildingUUID",
-                                                     'ProjectName': {'$first': '$ProjectName'},
-                                                     'ProjectUUID': {'$first': '$ProjectUUID'},
-                                                     'BuildingName': {'$first': '$BuildingName'},
-                                                     'BuildingUUID': {'$first': '$BuildingUUID'},
-                                                     'BuildingURL': {'$first': '$BuildingURL'},
-                                                     'BuildingURLCurTimeStamp': {'$first': '$BuildingURLCurTimeStamp'}
-                                                     }
+                                                {'_id': "$BuildingUUID",
+                                                 'ProjectName': {'$first': '$ProjectName'},
+                                                 'ProjectUUID': {'$first': '$ProjectUUID'},
+                                                 'BuildingName': {'$first': '$BuildingName'},
+                                                 'BuildingUUID': {'$first': '$BuildingUUID'},
+                                                 'BuildingURL': {'$first': '$BuildingURL'},
+                                                 'BuildingURLCurTimeStamp': {'$first': '$BuildingURLCurTimeStamp'}
+                                                 }
                                                 }])
 
 for item in cur:
