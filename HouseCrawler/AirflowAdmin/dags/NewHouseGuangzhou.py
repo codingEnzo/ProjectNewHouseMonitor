@@ -59,7 +59,7 @@ spider_settings = {
         'HouseCrawler.SpiderMiddleWares.SpiderMiddleWaresGuangzhou.HouseInfoHandleMiddleware': 109,
     },
     'RETRY_ENABLE': True,
-    'CLOSESPIDER_TIMEOUT': 3600 * 7.5,
+    'CLOSESPIDER_TIMEOUT': 3600 * 11.5,
     'CONCURRENT_REQUESTS': 64,
     'DEFAULT_REQUEST_HEADERS': {
         'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8',

@@ -28,7 +28,7 @@ django.setup()
 from HouseNew.models import *
 from services.spider_service import spider_call
 
-STARTDATE = datetime.datetime.now() - datetime.timedelta(hours=9)
+STARTDATE = datetime.datetime.now() - datetime.timedelta(hours=8)
 
 default_args = {
     'owner': 'airflow',
@@ -57,7 +57,7 @@ spider_settings = {
         'HouseCrawler.SpiderMiddleWares.SpiderMiddleWaresQingdao.HouseInfoHandleMiddleware': 106,
     },
     'RETRY_ENABLE': True,
-    'CLOSESPIDER_TIMEOUT': 3600 * 3.5,
+    'CLOSESPIDER_TIMEOUT': 3600 * 5.7,
     'DEFAULT_REQUEST_HEADERS': {
         'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8',
         'Accept-Encoding': 'gzip, deflate',
@@ -82,7 +82,7 @@ spider_settings = {
 }
 
 dag = DAG('NewHouseQingdao', default_args=default_args,
-          schedule_interval="0 19 * * *")
+          schedule_interval="0 */6 * * *")
 
 t1 = PythonOperator(
     task_id='LoadProjectBaseQingdao',
