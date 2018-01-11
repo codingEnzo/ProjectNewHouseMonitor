@@ -2,6 +2,7 @@
 import datetime
 import os
 import sys
+
 import django
 from airflow import DAG
 from airflow.operators.python_operator import PythonOperator
