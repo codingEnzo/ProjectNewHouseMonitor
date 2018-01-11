@@ -10,9 +10,12 @@ from airflow.operators.python_operator import PythonOperator
 
 BASE_DIR = os.path.abspath(os.environ.get('AIRFLOW_HOME'))
 HOUSESERVICECORE_DIR = os.path.abspath(os.path.join(BASE_DIR, 'ServiceCore'))
-HOUSEADMIN_DIR = os.path.abspath(os.path.join(BASE_DIR, 'ServiceCore/HouseAdmin'))
-HOUSECRAWLER_DIR = os.path.abspath(os.path.join(BASE_DIR, 'ServiceCore/HouseCrawler'))
-HOUSESERVICE_DIR = os.path.abspath(os.path.join(BASE_DIR, 'ServiceCore/SpiderService'))
+HOUSEADMIN_DIR = os.path.abspath(
+    os.path.join(BASE_DIR, 'ServiceCore/HouseAdmin'))
+HOUSECRAWLER_DIR = os.path.abspath(
+    os.path.join(BASE_DIR, 'ServiceCore/HouseCrawler'))
+HOUSESERVICE_DIR = os.path.abspath(
+    os.path.join(BASE_DIR, 'ServiceCore/SpiderService'))
 
 sys.path.append(BASE_DIR)
 sys.path.append(HOUSEADMIN_DIR)
@@ -62,44 +65,44 @@ default_args = {
 }
 
 spider_settings = {
-            'ITEM_PIPELINES': {
-                'HouseCrawler.Pipelines.PipelinesHF.HFPipeline': 300,
-                },
-            'SPIDER_MIDDLEWARES': {
-                'HouseCrawler.SpiderMiddleWares.SpiderMiddleWaresHF.ProjectBaseHandleMiddleware': 102,
-                'HouseCrawler.SpiderMiddleWares.SpiderMiddleWaresHF.ProjectInfoHandleMiddleware': 103,
-                'HouseCrawler.SpiderMiddleWares.SpiderMiddleWaresHF.BuildingListHandleMiddleware': 104,
-                'HouseCrawler.SpiderMiddleWares.SpiderMiddleWaresHF.HouseInfoHandleMiddleware': 105,
-                },
-            'RETRY_ENABLE': True,
-            'CLOSESPIDER_TIMEOUT': 3600 * 7.5,
-            'CONCURRENT_REQUESTS': 56,
-            }
+    'ITEM_PIPELINES': {
+        'HouseCrawler.Pipelines.PipelinesHF.HFPipeline': 300,
+    },
+    'SPIDER_MIDDLEWARES': {
+        'HouseCrawler.SpiderMiddleWares.SpiderMiddleWaresHF.ProjectBaseHandleMiddleware': 102,
+        'HouseCrawler.SpiderMiddleWares.SpiderMiddleWaresHF.ProjectInfoHandleMiddleware': 103,
+        'HouseCrawler.SpiderMiddleWares.SpiderMiddleWaresHF.BuildingListHandleMiddleware': 104,
+        'HouseCrawler.SpiderMiddleWares.SpiderMiddleWaresHF.HouseInfoHandleMiddleware': 105,
+    },
+    'RETRY_ENABLE': True,
+    'CLOSESPIDER_TIMEOUT': 3600 * 7.5,
+    'CONCURRENT_REQUESTS': 56,
+}
 
 
 dag = DAG('NewHouseHF', default_args=default_args,
-            schedule_interval="25 */8 * * *")
+          schedule_interval="25 */8 * * *")
 
 t1 = PythonOperator(
     task_id='LoadProjectBaseHF',
     python_callable=spider_call,
     op_kwargs={'spiderName': 'DefaultCrawler',
-              'settings': spider_settings,
-              'urlList': [{'source_url': 'http://real.hffd.gov.cn/',
-                    'meta': {'PageType': 'ProjectBase'}}]},
+               'settings': spider_settings,
+               'urlList': [{'source_url': 'http://real.hffd.gov.cn/',
+                            'meta': {'PageType': 'ProjectBase'}}]},
     dag=dag)
 
 
 building_info_list = []
 cur = BuildingInfoHefei.objects.aggregate(*[{"$sort": {"CurTimeStamp": 1}},
-                                             {'$group':
-                                                 {'_id': "$BuildingUUID",
-                                                  'ProjectName': {'$first': '$ProjectName'},
-                                                  'ProjectUUID': {'$first': '$ProjectUUID'},
-                                                  'BuildingName': {'$first': '$BuildingName'},
-                                                  'BuildingUUID': {'$first': '$BuildingUUID'},
-                                                  'BuildingURL': {'$first': '$BuildingURL'},
-                                                 }
+                                            {'$group':
+                                             {'_id': "$BuildingUUID",
+                                              'ProjectName': {'$first': '$ProjectName'},
+                                              'ProjectUUID': {'$first': '$ProjectUUID'},
+                                              'BuildingName': {'$first': '$BuildingName'},
+                                              'BuildingUUID': {'$first': '$BuildingUUID'},
+                                              'BuildingURL': {'$first': '$BuildingURL'},
+                                              }
                                              }])
 
 for item in cur:
@@ -107,11 +110,11 @@ for item in cur:
         if item['BuildingURL']:
             if True:
                 builfing_info = {'source_url': item['BuildingURL'],
-                                    'meta': {'PageType': 'HouseInfo',
-                                                'ProjectName': item['ProjectName'],
-                                                'BuildingName': item['BuildingName'],
-                                                'ProjectUUID': str(item['ProjectUUID']),
-                                                'BuildingUUID': str(item['BuildingUUID'])}}
+                                 'meta': {'PageType': 'HouseInfo',
+                                          'ProjectName': item['ProjectName'],
+                                          'BuildingName': item['BuildingName'],
+                                          'ProjectUUID': str(item['ProjectUUID']),
+                                          'BuildingUUID': str(item['BuildingUUID'])}}
                 building_info_list.append(builfing_info)
     except Exception:
         import traceback
@@ -122,7 +125,7 @@ for cur, index in enumerate(list(range(0, len(building_info_list), index_skip)))
         task_id='LoadBuildingInfoHF_%s' % cur,
         python_callable=spider_call,
         op_kwargs={'spiderName': 'DefaultCrawler',
-                      'settings': spider_settings,
-                      'urlList': building_info_list[index:index + index_skip],
-                      'spider_count': 128},
+                   'settings': spider_settings,
+                   'urlList': building_info_list[index:index + index_skip],
+                   'spider_count': 144},
         dag=dag)
