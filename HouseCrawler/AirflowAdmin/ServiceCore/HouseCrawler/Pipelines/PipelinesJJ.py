@@ -110,7 +110,7 @@ class JJPipeline(object):
             res_object = q_object.filter(HouseUUID=item['HouseUUID']).latest(
                 field_name='CurTimeStamp')
             if item.get('HouseSaleState') not in ['可现售', '可售'] and getattr(res_object, 'HouseSaleState') not in ['可现售', '可售']:
-                item['HouseUnitPrice'] = res_object.get('HouseUnitPrice')
+                item['HouseUnitPrice'] = getattr(res_object, 'HouseUnitPrice')
             for key in item:
                 if not hasattr(res_object, key):
                     diff_flag = True
