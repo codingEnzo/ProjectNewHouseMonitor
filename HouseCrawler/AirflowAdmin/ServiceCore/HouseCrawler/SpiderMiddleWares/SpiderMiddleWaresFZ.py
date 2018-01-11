@@ -56,7 +56,7 @@ class GetProjectPageBaseHandleMiddleware(object):
                 pageresults = pageresults.replace('\r', ''). \
                     replace('\n', '').replace('\t', ''). \
                     replace(' ', '').replace(u' ', '')
-                getnum = re.search(r'/共(\d+)页查到记录共(\d+)条', pageresults)
+                getnum = re.search(r'/共(\d+)页.+查到记录共(\d+)条', pageresults)
                 if getnum:
                     for i in range(1, int(getnum.group(1)) + 1):
                         nexturl = 'http://222.77.178.63:7002/result_new.asp?' \
