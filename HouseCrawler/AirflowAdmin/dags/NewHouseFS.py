@@ -77,6 +77,15 @@ spider_settings = {
     'RETRY_ENABLE': True,
     'CLOSESPIDER_TIMEOUT': 3600 * 7.5,
     'CONCURRENT_REQUESTS': 64,
+    'DEFAULT_REQUEST_HEADERS': {
+        "Referer":"http://fsfc.fsjw.gov.cn/",
+        "Host":"fsfc.fsjw.gov.cn",
+        "Accept":"text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8",
+        "Accept-Encoding":"gzip, deflate",
+        "Accept-Language":"zh-CN,zh;q=0.9",
+        "Connection":"keep-alive",
+        "Upgrade-Insecure-Requests":"1",
+    },
 }
 
 dag = DAG('NewHouseFS', default_args=default_args, schedule_interval='10 */8 * * *')
