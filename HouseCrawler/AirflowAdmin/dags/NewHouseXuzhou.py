@@ -128,7 +128,7 @@ t1 = PythonOperator(
 )
 
 
-cur = BuildingInfo.objects.aggregate(*[{
+cur = BuildingInfoXuzhou.objects.aggregate(*[{
     "$sort": {
         "CurTimeStamp": -1
     }
