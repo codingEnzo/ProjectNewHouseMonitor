@@ -79,7 +79,7 @@ class ProjectBaseHandleMiddleware(object):
                     req = Request(
                             url = projectInfoItem['SourceUrl'],
                             headers = self.settings.get('DEFAULT_REQUEST_HEADERS'),
-                            meta = {'PageType': 'ProjectInfo', 'projectInfoItem': projectInfoItem},
+                            meta = {'PageType': 'ProjectInfo', 'projectInfoItem': projectInfoItem, 'count': 1},
                             dont_filter = True)
                     result.append(req)
         elif response.meta.get('PageType') == 'ProjectBase':
