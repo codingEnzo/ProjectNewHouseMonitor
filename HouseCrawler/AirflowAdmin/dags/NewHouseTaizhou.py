@@ -84,7 +84,7 @@ spider_settings = {
 dag = DAG('NewHouseTaizhou', default_args=default_args, schedule_interval="50 */7 * * *")
 
 t1 = PythonOperator(
-    task_id='LoadProjectBaseGuangzhou',
+    task_id='LoadProjectBaseTaizhou',
     python_callable=spider_call,
     op_kwargs={
         'spiderName': 'DefaultCrawler',
