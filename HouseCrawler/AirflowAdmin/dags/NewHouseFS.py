@@ -129,12 +129,11 @@ for item in cur:
         'meta': {
             'PageType': 'hd_url',
             'Record_Data': {
-                "Crawler_type": 'ini',
-                "ProjectName": item.ProjectName,
-                "RegionName": item.RegionName,
-                'BuildingName': item.BuildingName,
-                'BuildingUUID': str(item.BuildingUUID),
-                "ProjectUUID": str(item.ProjectUUID),
+                "ProjectName": item['ProjectName'],
+                "RegionName": item['RegionName'],
+                'BuildingName': item['BuildingName'],
+                'BuildingUUID': str(item['BuildingUUID']),
+                "ProjectUUID": str(item['ProjectUUID']),
                 'Fidfailtime': 0
             }
         }
