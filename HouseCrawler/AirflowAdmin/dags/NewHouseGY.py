@@ -9,9 +9,12 @@ from airflow.operators.python_operator import PythonOperator
 
 BASE_DIR = os.path.abspath(os.environ.get('AIRFLOW_HOME'))
 HOUSESERVICECORE_DIR = os.path.abspath(os.path.join(BASE_DIR, 'ServiceCore'))
-HOUSEADMIN_DIR = os.path.abspath(os.path.join(BASE_DIR, 'ServiceCore/HouseAdmin'))
-HOUSECRAWLER_DIR = os.path.abspath(os.path.join(BASE_DIR, 'ServiceCore/HouseCrawler'))
-HOUSESERVICE_DIR = os.path.abspath(os.path.join(BASE_DIR, 'ServiceCore/SpiderService'))
+HOUSEADMIN_DIR = os.path.abspath(
+    os.path.join(BASE_DIR, 'ServiceCore/HouseAdmin'))
+HOUSECRAWLER_DIR = os.path.abspath(
+    os.path.join(BASE_DIR, 'ServiceCore/HouseCrawler'))
+HOUSESERVICE_DIR = os.path.abspath(
+    os.path.join(BASE_DIR, 'ServiceCore/SpiderService'))
 
 sys.path.append(BASE_DIR)
 sys.path.append(HOUSEADMIN_DIR)
@@ -61,30 +64,30 @@ default_args = {
 }
 
 spider_settings = {
-            'ITEM_PIPELINES': {
-                'HouseCrawler.Pipelines.PipelinesGY.GYPipeline': 300,
-                },
-            'SPIDER_MIDDLEWARES': {
-                'HouseCrawler.SpiderMiddleWares.SpiderMiddleWaresGY.ProjectBaseHandleMiddleware': 102,
-                'HouseCrawler.SpiderMiddleWares.SpiderMiddleWaresGY.ProjectInfoHandleMiddleware': 103,
-                'HouseCrawler.SpiderMiddleWares.SpiderMiddleWaresGY.BuildingListHandleMiddleware': 104,
-                'HouseCrawler.SpiderMiddleWares.SpiderMiddleWaresGY.HouseInfoHandleMiddleware': 105,
-                },
-            'RETRY_ENABLE': True,
-            'CLOSESPIDER_TIMEOUT': 3600 * 3.5
-            }
+    'ITEM_PIPELINES': {
+        'HouseCrawler.Pipelines.PipelinesGY.GYPipeline': 300,
+    },
+    'SPIDER_MIDDLEWARES': {
+        'HouseCrawler.SpiderMiddleWares.SpiderMiddleWaresGY.ProjectBaseHandleMiddleware': 102,
+        'HouseCrawler.SpiderMiddleWares.SpiderMiddleWaresGY.ProjectInfoHandleMiddleware': 103,
+        'HouseCrawler.SpiderMiddleWares.SpiderMiddleWaresGY.BuildingListHandleMiddleware': 104,
+        'HouseCrawler.SpiderMiddleWares.SpiderMiddleWaresGY.HouseInfoHandleMiddleware': 105,
+    },
+    'RETRY_ENABLE': True,
+    'CLOSESPIDER_TIMEOUT': 3600 * 3.5
+}
 
 
 dag = DAG('NewHouseGY', default_args=default_args,
-            schedule_interval="15 */4 * * *")
+          schedule_interval="15 */4 * * *")
 
 t1 = PythonOperator(
     task_id='LoadProjectBaseGY',
     python_callable=spider_call,
     op_kwargs={'spiderName': 'DefaultCrawler',
-              'settings': spider_settings,
-              'urlList': [{'source_url': 'http://www.gyfc.net.cn/2_proInfo/index.aspx?page=1',
-                    'meta': {'PageType': 'ProjectBase'}}]},
+               'settings': spider_settings,
+               'urlList': [{'source_url': 'http://www.gyfc.net.cn/2_proInfo/index.aspx?page=1',
+                            'meta': {'PageType': 'ProjectBase'}}]},
     dag=dag)
 
 project_info_list = []
@@ -97,40 +100,43 @@ t2 = PythonOperator(
     task_id='LoadProjectInfoGY',
     python_callable=spider_call,
     op_kwargs={'spiderName': 'DefaultCrawler',
-                  'settings': spider_settings,
-                  'urlList': project_info_list},
+               'settings': spider_settings,
+               'urlList': project_info_list},
     dag=dag)
 
-builfing_info_list = []
-cur = BuildingInfoGuiyang.objects.aggregate(*[{"$sort": {"CurTimeStamp": 1}},
-                                             {'$group':
-                                                 {'_id': "$BuildingUUID",
-                                                  'ProjectName': {'$first': '$ProjectName'},
-                                                  'ProjectUUID': {'$first': '$ProjectUUID'},
-                                                  'BuildingName': {'$first': '$BuildingName'},
-                                                  'BuildingUUID': {'$first': '$BuildingUUID'},
-                                                  'BuildingURL': {'$first': '$BuildingURL'},
-                                                 }
-                                             }])
 
-for item in cur:
-    try:
-        if item['BuildingURL']:
-            if True:
-                builfing_info = {'source_url': item['BuildingURL'],
-                                    'meta': {'PageType': 'HouseInfo',
-                                                'ProjectName': item['ProjectName'],
-                                                'BuildingName': item['BuildingName'],
-                                                'ProjectUUID': str(item['ProjectUUID']),
-                                                'BuildingUUID': str(item['BuildingUUID'])}}
-                builfing_info_list.append(builfing_info)
-    except Exception:
-        import traceback
-        traceback.print_exc()
+def get_builfing_info():
+    cur = BuildingInfoGuiyang.objects.aggregate(*[{"$sort": {"CurTimeStamp": 1}},
+                                                  {'$group':
+                                                   {'_id': "$BuildingUUID",
+                                                    'ProjectName': {'$first': '$ProjectName'},
+                                                    'ProjectUUID': {'$first': '$ProjectUUID'},
+                                                    'BuildingName': {'$first': '$BuildingName'},
+                                                    'BuildingUUID': {'$first': '$BuildingUUID'},
+                                                    'BuildingURL': {'$first': '$BuildingURL'},
+                                                    }
+                                                   }])
+
+    for item in cur:
+        try:
+            if item['BuildingURL']:
+                if True:
+                    builfing_info = {'source_url': item['BuildingURL'],
+                                     'meta': {'PageType': 'HouseInfo',
+                                              'ProjectName': item['ProjectName'],
+                                              'BuildingName': item['BuildingName'],
+                                              'ProjectUUID': str(item['ProjectUUID']),
+                                              'BuildingUUID': str(item['BuildingUUID'])}}
+                    yield builfing_info
+        except Exception:
+            import traceback
+            traceback.print_exc()
+
+
 t3 = PythonOperator(
     task_id='LoadBuildingInfoGY',
     python_callable=spider_call,
     op_kwargs={'spiderName': 'DefaultCrawler',
-                  'settings': spider_settings,
-                  'urlList': builfing_info_list},
+               'settings': spider_settings,
+               'urlList': get_builfing_info()},
     dag=dag)
