@@ -105,9 +105,24 @@ t1 = PythonOperator(
 )
 
 building_detail_list = []
-cur = BuildingDetailFoshan.objects.all()
+cur = BuildingDetailFoshan.objects.aggregate(*[
+        {
+            '$sort':{'RecordTime':-1}
+        },
+        {
+            '$group':{'_id':'$BuildingUUID',
+                      'ProjectName':{'$first':'$ProjectName'},
+                      'RegionName':{'$first':'$RegionName'},
+                      'BuildingName':{'$first':'$BuildingName'},
+                      'BuildingUUID':{'$first':'$BuildingUUID'},
+                      'ProjectUUID':{'$first':'$ProjectUUID'},
+                      'BuildingID':{'$first':'$BuildingID'},
+            }
+        }
+    ])
+
 for item in cur:
-    source_url = "http://fsfc.fsjw.gov.cn/hpms_project/room.jhtml?id={0}".format(item.BuildingID)
+    source_url = "http://fsfc.fsjw.gov.cn/hpms_project/room.jhtml?id={0}".format(item['BuildingID'])
     building_detail = {
         'source_url': source_url,
         'method': 'GET',
