@@ -70,6 +70,8 @@ class ProjectIndexHandleMiddleware(object):
                                      '成交面积（m2）': response.xpath('//table[@id="indextable1"]/tr[3]/td[6]/text()').extract_first('0.0').replace('--', '0.0').strip(),
                                      '成交均价（元/m2）': response.xpath('//table[@id="indextable1"]/tr[4]/td[6]/text()').extract_first('0.0').replace('--', '0.0').strip(),
                                      '成交总额（元）': response.xpath('//table[@id="indextable1"]/tr[5]/td[6]/text()').extract_first('0').replace('--', '0').strip()}
+        result.append(index_info)
+        return result
 
 
 class ProjectBaseHandleMiddleware(object):
