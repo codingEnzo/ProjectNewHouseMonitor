@@ -128,38 +128,21 @@ t1 = PythonOperator(
 )
 
 
-cur = BuildingInfoXuzhou.objects.aggregate(*[{
-    "$sort": {
-        "CurTimeStamp": -1
-    }
-}, {'$match': {
-    'CurTimeStamp': {
-        '$gte': str(datetime.datetime.now().date())
-    }
-}
-}, {
-    '$group': {'_id': '$BuildingUUID',
-               'PresellUUID': {'$first': '$PresellUUID'},
-               'ProjectUUID': {'$first': '$ProjectUUID'},
-               'ProjectName': {'$first': '$ProjectName'},
-               'BuildingUUID': {'$first': '$BuildingUUID'},
-               'BuildingName': {'$first': '$BuildingName'},
-               'SourceUrl': {'$first': '$SourceUrl'},
-               }
-}])
 
+cur = BuildingInfoXuzhou.objects.all()
 houseList_info_list = []
 for item in cur:
-    houseList_info = {'source_url': item['SourceUrl'],
-                      'meta': {'PageType': 'HouseList',
-                               'PresellUUID': str(item['PresellUUID']),
-                               'ProjectUUID': str(item['ProjectUUID']),
-                               'ProjectName': item['ProjectName'],
-                               'BuildingName': item['BuildingName'],
-                               'BuildingUUID': str(item['BuildingUUID']),
-                               }
-                      }
-    houseList_info_list.append(houseList_info)
+    if item['CurTimeStamp'] >= str(datetime.datetime.now().date()):
+        houseList_info = {'source_url': item['SourceUrl'],
+                          'meta': {'PageType': 'HouseList',
+                                   'PresellUUID': str(item['PresellUUID']),
+                                   'ProjectUUID': str(item['ProjectUUID']),
+                                   'ProjectName': item['ProjectName'],
+                                   'BuildingName': item['BuildingName'],
+                                   'BuildingUUID': str(item['BuildingUUID']),
+                                   }
+                          }
+        houseList_info_list.append(houseList_info)
 
 
 t2 = PythonOperator(
