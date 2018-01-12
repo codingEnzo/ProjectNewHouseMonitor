@@ -3516,3 +3516,152 @@ class UnitshapeImageInfoXuzhou(Document):
             'SourceUrl',
         ]
     }
+
+
+
+
+class ProjectBaseShaoxing(Document):
+    RecordID = fields.UUIDField(default = uuid.uuid1(),
+                                binary = True, primary_key = True, null = False)
+    CurTimeStamp = fields.StringField(default = str(datetime.datetime.now()), index = True)
+    ProjectUUID = fields.UUIDField(default = uuid.uuid3(uuid.NAMESPACE_DNS, ''), binary = False, null = False)
+    ProjectName = fields.StringField(default = '', max_length = 200, null = False)  # 楼盘名称
+    OnSaleState = fields.StringField(default = '', max_length = 100, null = False)  # 楼盘状态/在售状态
+    AveragePrice = fields.StringField(default = '', max_length = 200)  # 均价
+    OnsoldAmount = fields.StringField(default = '', max_length = 100)  # 可售套数
+    ApprovalPresaleAmount = fields.StringField(default = '', max_length = 100)  # 总套数/批准预售套数?
+    SourceUrl = fields.URLField(default = None, null = True, blank = True)  # 项目详细URL
+    meta = {
+        'indexes': [
+            'CurTimeStamp',
+            'ProjectUUID',
+            'ProjectName',
+            'OnSaleState',
+            'OnsoldAmount',
+            'SourceUrl',
+        ]
+    }
+
+class ProjectInfoShaoxing(Document):
+    RecordID = fields.UUIDField(default = uuid.uuid1(), binary = True, primary_key = True, null = False)
+    CurTimeStamp = fields.StringField(default = str(datetime.datetime.now()), index = True)  # 创建时间
+    ProjectUUID = fields.UUIDField(default = uuid.uuid3(uuid.NAMESPACE_DNS, ''), binary = False, null = False)
+    ProjectName = fields.StringField(default = '', max_length = 100, null = False)  # 楼盘名称
+    Developer = fields.StringField(default = '', max_length = 200)  # 开发商
+    DistrictName = fields.StringField(default = '', max_length = 50)  # 行政区
+    AreaRange= fields.StringField(default = '', max_length = 100)  # 面积范围
+    FloorArea = fields.StringField(default = '', max_length = 100)  # 占地面积
+    TotalBuidlingArea = fields.StringField(default = '', max_length = 100)  # 总建筑面积
+    PriceStart = fields.StringField(default = '', max_length = 100)  # 起价
+    EarliestOpeningTime= fields.StringField(default = '', max_length = 100)  # 开盘时间
+    AveragePrice= fields.StringField(default = '', max_length = 100)  # 均价
+    GreeningRate= fields.StringField(default = '', max_length = 100)  # 绿化率
+    OnSaleState = fields.StringField(default = '', max_length = 100, null = False)  # 在售状态
+    FloorAreaRatio = fields.StringField(default = '', max_length = 100)  # 容积率
+    LandUse = fields.StringField(default = '', max_length = 100)  # 物业类型/土地用途
+    ParkingSpaceAmount= fields.StringField(default = '', max_length = 100)  # 车位套数
+    FloorCondition= fields.StringField(default = '', max_length = 100)  # 楼层状况
+    PresalePermitNumber= fields.StringField(default = '')  # 预售证号
+    Contacts= fields.StringField(default = '', max_length = 100)  # 联系人
+    Selltel = fields.StringField(default = '', max_length = 100)  # 售楼部电话
+    ManagementCompany = fields.StringField(default = '', max_length = 100)  # 物业公司
+    SellAddress = fields.StringField(default = '', max_length = 200)  # 售楼地址
+    DecorationCondition = fields.StringField(default = '', max_length = 200)  # 装修状况
+    ProjectAddress = fields.StringField(default = '', max_length = 200)  # 项目地址
+    ProjectIntro = fields.StringField(default = '')  # 项目简介
+    TrafficSituation = fields.StringField(default = '')  # 交通情况
+    ProjectSupporting = fields.StringField(default = '')  # 项目配套
+    SourceUrl = fields.URLField(default = None, null = True, blank = True)  # 项目详细URL
+    meta = {
+        'indexes': [
+            'CurTimeStamp',
+            'ProjectUUID',
+            'ProjectName',
+            'DistrictName',
+            'AreaRange',
+            'FloorArea',
+            'TotalBuidlingArea',
+            'AveragePrice',
+            'GreeningRate',
+            'OnSaleState',
+            'FloorAreaRatio',
+            'LandUse',
+            'PresalePermitNumber',
+            'ProjectAddress',
+            'SourceUrl',
+        ]
+    }
+
+
+class BuildingInfoShaoxing(Document):
+    RecordID = fields.UUIDField(default = uuid.uuid1(),
+                                binary = True, primary_key = True, null = False)
+    CurTimeStamp = fields.StringField(default = str(datetime.datetime.now()), index = True)
+    ProjectUUID = fields.UUIDField(default = uuid.uuid3(uuid.NAMESPACE_DNS, ''), binary = False, null = False)
+    BuildingUUID = fields.UUIDField(default = uuid.uuid3(uuid.NAMESPACE_DNS, ''), binary = False, null = False)
+    ProjectName = fields.StringField(default='', max_length=255)  # 项目名称
+    BuildingName = fields.StringField(default = '', max_length = 100, null = False)  # 楼栋名
+    ApprovalPresaleAmount= fields.StringField(default = '', max_length = 100, null = False)  # 总套数
+    SoldAmount= fields.StringField(default = '', max_length = 100)  # 已售套数
+    OnsoldAmount= fields.StringField(default = '', max_length = 100)  # 可售套数
+    LimitAmount= fields.StringField(default = '', max_length = 100)  # 限制套数
+    BuildingURL = fields.URLField(default = None, null = True, blank = True)  # 楼栋销控表url
+    meta = {
+        'indexes': [
+            'CurTimeStamp',
+            'ProjectUUID',
+            'BuildingUUID',
+            'ProjectName',
+            'BuildingName',
+            'ApprovalPresaleAmount',
+            'SoldAmount',
+            'OnsoldAmount',
+            'BuildingURL',
+        ]
+    }
+
+
+class HouseInfoShaoxing(Document):
+    RecordID = fields.UUIDField(default = uuid.uuid1(),
+                                binary = True, primary_key = True, null = False)
+    CurTimeStamp = fields.StringField(default = str(datetime.datetime.now()), index = True)
+    ProjectUUID = fields.UUIDField(default = uuid.uuid3(uuid.NAMESPACE_DNS, ''), binary = False, null = False)
+    BuildingUUID = fields.UUIDField(default = uuid.uuid3(uuid.NAMESPACE_DNS, ''), binary = False, null = False)
+    HouseUUID = fields.UUIDField(default = uuid.uuid3(uuid.NAMESPACE_DNS, ''), binary = False, null = False)
+    ProjectName=fields.StringField(default = '', max_length = 255)  # 项目名称
+    BuildingName=fields.StringField(default = '', max_length = 255)  # 楼栋名称
+    HouseNO = fields.StringField(default = '', max_length = 50)  # 户号
+    HouseState = fields.StringField(default = '', max_length = 50)  # 当前状态
+    HouseStateLatest = fields.StringField(default = '', max_length = 255, null = False, blank = True) #上次状态
+    MeasuredBuildingArea = fields.StringField(default = '', null = False)  # 建筑面积
+    MeasuredInsideOfBuildingArea = fields.StringField(default = '', null = False)  # 套内面积
+    MeasuredSharedPublicArea = fields.StringField(default = '', null = False)  # 分摊面积
+    BuildingStructure=fields.StringField(default = '', max_length = 50)  # 建筑结构
+    FloorName = fields.StringField(default = '')  # 名义层/层名
+    ActualFloor = fields.StringField(default = '')  # 实际层
+    HouseUseType = fields.StringField(default = '', max_length = 50)  # 房屋用途
+    HouseSalePrice = fields.StringField(default = '', max_length = 50)  # 参考价格
+    HouseSalePriceUpdateTime = fields.StringField(default = '', max_length = 50)  # 参考价格更新时间
+    SourceUrl = fields.URLField(default = None, null = True, blank = True)  # 户详情地址
+    meta = {
+        'indexes': [
+            'CurTimeStamp',
+            'ProjectUUID',
+            'BuildingUUID',
+            'HouseUUID',
+            'ProjectName',
+            'BuildingName',
+            'HouseNO',
+            'HouseState',
+            'HouseStateLatest',
+            'MeasuredBuildingArea',
+            'MeasuredInsideOfBuildingArea',
+            'MeasuredSharedPublicArea',
+            'BuildingStructure',
+            'FloorName',
+            'ActualFloor',
+            'HouseUseType',
+            'HouseSalePrice',
+            'SourceUrl',
+        ]
+    }
