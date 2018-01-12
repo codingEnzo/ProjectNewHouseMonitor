@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from scrapy_djangoitem import DjangoItem
-from Newnanjing.HouseCrawler.HouseAdmin.HouseNew.models import *
+from HouseNew.models import *
 
 
 class ProjectBaseItem(DjangoItem):
