@@ -25,3 +25,7 @@ class CompanyInfoItem(DjangoItem):
 
 class PreSellInfoItem(DjangoItem):
     django_model = PreSellInfoZhaoqing
+
+
+class IndexInfoItem(DjangoItem):
+    django_model = IndexInfoZhaoqing

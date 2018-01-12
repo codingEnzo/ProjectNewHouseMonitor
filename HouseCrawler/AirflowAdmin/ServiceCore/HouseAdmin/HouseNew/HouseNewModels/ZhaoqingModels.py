@@ -7,6 +7,27 @@ from django_mongoengine import fields
 
 
 # Zhaoqing Model
+class IndexInfoZhaoqing(Document):
+    RecordID = fields.UUIDField(
+        default=uuid.uuid1(), binary=True, primary_key=True, null=False)
+    CurTimeStamp = fields.StringField(default=str(
+        datetime.datetime.now()), max_length=255, index=True)
+    District = fields.StringField(default='', max_length=255, null=False)
+    Date = fields.StringField(default='', max_length=255, null=False)
+    HouseSaleInfo = fields.DictField(default={'code': 0}, null=False)
+    OfficeSaleInfo = fields.DictField(default={'code': 0}, null=False)
+    BussinessSaleInfo = fields.DictField(default={'code': 0}, null=False)
+    OtherSaleInfo = fields.DictField(default={'code': 0}, null=False)
+    AllSaleInfo = fields.DictField(default={'code': 0}, null=False)
+    meta = {
+        'indexes': [
+            'CurTimeStamp',
+            'Date',
+            'District'
+        ]
+    }
+
+
 class ProjectBaseZhaoqing(Document):
     RecordID = fields.UUIDField(
         default=uuid.uuid1(), binary=True, primary_key=True, null=False)

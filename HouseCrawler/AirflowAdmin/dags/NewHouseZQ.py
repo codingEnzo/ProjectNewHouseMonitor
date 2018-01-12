@@ -56,6 +56,7 @@ spider_settings = {
         'HouseCrawler.SpiderMiddleWares.SpiderMiddleWaresZQ.HouseInfoHandleMiddleware': 105,
         'HouseCrawler.SpiderMiddleWares.SpiderMiddleWaresZQ.CompanyInfoHandleMiddleware': 106,
         'HouseCrawler.SpiderMiddleWares.SpiderMiddleWaresZQ.PreSellInfoHandleMiddleware': 107,
+        'HouseCrawler.SpiderMiddleWares.SpiderMiddleWaresZQ.ProjectIndexHandleMiddleware': 108,
     },
     'RETRY_ENABLE': True,
     'CLOSESPIDER_TIMEOUT': 3600 * 5.5,

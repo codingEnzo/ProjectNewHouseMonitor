@@ -3,6 +3,7 @@ import re
 import sys
 import uuid
 import copy
+import datetime
 from scrapy import Request
 from HouseNew.models import *
 from HouseCrawler.Items.ItemsZQ import *
@@ -20,6 +21,55 @@ headers = {'Host': 'www.zqjs.gov.cn',
            'Referer': 'http://www.zqjs.gov.cn/',
            'Accept-Encoding': 'gzip, deflate',
            'Accept-Language': 'zh-CN,zh;q=0.9'}
+
+
+class ProjectIndexHandleMiddleware(object):
+    """docstring for ProjectIndexHandleMiddleware"""
+
+    def __init__(self, settings):
+        self.settings = settings
+
+    @classmethod
+    def from_crawler(cls, crawler):
+        # This method is used by Scrapy to create your spiders.
+        return cls(crawler.settings)
+
+    def process_spider_output(self, response, result, spider):
+        result = list(result)
+        if not(200 <= response.status < 300):  # common case
+            if result:
+                return result
+            return []
+        if response.meta.get('PageType') not in ('ProjectBaseUse',):
+            if result:
+                return result
+            return []
+        print('ProjectIndexHandleMiddleware')
+
+        index_info = IndexInfoItem()
+        index_info['District'] = response.xpath(
+            '//span[@id="townentry"]/a[@style="font-weight:bold"]/text()').extract_first(default='').strip()
+        index_info['Date'] = str(datetime.datetime.now().date())
+        index_info['HouseSaleInfo'] = {'成交套数（套）': response.xpath('//table[@id="indextable1"]/tr[2]/td[2]/text()').extract_first('0').replace('--', '0').strip(),
+                                       '成交面积（m2）': response.xpath('//table[@id="indextable1"]/tr[3]/td[2]/text()').extract_first('0.0').replace('--', '0.0').strip(),
+                                       '成交均价（元/m2）': response.xpath('//table[@id="indextable1"]/tr[4]/td[2]/text()').extract_first('0.0').replace('--', '0.0').strip(),
+                                       '成交总额（元）': response.xpath('//table[@id="indextable1"]/tr[5]/td[2]/text()').extract_first('0').replace('--', '0').strip()}
+        index_info['OfficeSaleInfo'] = {'成交套数（套）': response.xpath('//table[@id="indextable1"]/tr[2]/td[3]/text()').extract_first('0').replace('--', '0').strip(),
+                                        '成交面积（m2）': response.xpath('//table[@id="indextable1"]/tr[3]/td[3]/text()').extract_first('0.0').replace('--', '0.0').strip(),
+                                        '成交均价（元/m2）': response.xpath('//table[@id="indextable1"]/tr[4]/td[3]/text()').extract_first('0.0').replace('--', '0.0').strip(),
+                                        '成交总额（元）': response.xpath('//table[@id="indextable1"]/tr[5]/td[3]/text()').extract_first('0').replace('--', '0').strip()}
+        index_info['BussinessSaleInfo'] = {'成交套数（套）': response.xpath('//table[@id="indextable1"]/tr[2]/td[4]/text()').extract_first('0').replace('--', '0').strip(),
+                                           '成交面积（m2）': response.xpath('//table[@id="indextable1"]/tr[3]/td[4]/text()').extract_first('0.0').replace('--', '0.0').strip(),
+                                           '成交均价（元/m2）': response.xpath('//table[@id="indextable1"]/tr[4]/td[4]/text()').extract_first('0.0').replace('--', '0.0').strip(),
+                                           '成交总额（元）': response.xpath('//table[@id="indextable1"]/tr[5]/td[4]/text()').extract_first('0').replace('--', '0').strip()}
+        index_info['OtherSaleInfo'] = {'成交套数（套）': response.xpath('//table[@id="indextable1"]/tr[2]/td[5]/text()').extract_first('0').replace('--', '0').strip(),
+                                       '成交面积（m2）': response.xpath('//table[@id="indextable1"]/tr[3]/td[5]/text()').extract_first('0.0').replace('--', '0.0').strip(),
+                                       '成交均价（元/m2）': response.xpath('//table[@id="indextable1"]/tr[4]/td[5]/text()').extract_first('0.0').replace('--', '0.0').strip(),
+                                       '成交总额（元）': response.xpath('//table[@id="indextable1"]/tr[5]/td[5]/text()').extract_first('0').replace('--', '0').strip()}
+        index_info['AllSaleInfo'] = {'成交套数（套）': response.xpath('//table[@id="indextable1"]/tr[2]/td[6]/text()').extract_first('0').replace('--', '0').strip(),
+                                     '成交面积（m2）': response.xpath('//table[@id="indextable1"]/tr[3]/td[6]/text()').extract_first('0.0').replace('--', '0.0').strip(),
+                                     '成交均价（元/m2）': response.xpath('//table[@id="indextable1"]/tr[4]/td[6]/text()').extract_first('0.0').replace('--', '0.0').strip(),
+                                     '成交总额（元）': response.xpath('//table[@id="indextable1"]/tr[5]/td[6]/text()').extract_first('0').replace('--', '0').strip()}
 
 
 class ProjectBaseHandleMiddleware(object):
@@ -50,7 +100,7 @@ class ProjectBaseHandleMiddleware(object):
 
         if response.meta.get('PageType') == "ProjectBase":
             result.append(Request(url=response.url,
-                                      headers=headers, meta={'PageType': 'ProjectBaseUse'}))
+                                  headers=headers, meta={'PageType': 'ProjectBaseUse'}))
         elif response.meta.get('PageType') == "ProjectBaseUse":
             p_page_base_url = response.xpath(
                 '//div[@id="frame"]/iframe/@src').extract_first()
@@ -126,7 +176,7 @@ class ProjectInfoHandleMiddleware(object):
 
         if response.meta.get('PageType') == 'ProjectInfo':
             result.append(Request(url=response.url,
-                                    headers=headers, meta={'PageType': 'ProjectInfoUse'}))
+                                  headers=headers, meta={'PageType': 'ProjectInfoUse'}))
         elif response.meta.get('PageType') == 'ProjectInfoUse':
             pinfo = ProjectInfoItem()
             pinfo['ProjectName'] = response.xpath(
@@ -415,8 +465,8 @@ class PreSellInfoHandleMiddleware(object):
                 '//table[@id="banktable"]/tr[@bgcolor="#f5f5f5"]')
             for bank in bank_list:
                 preinfo['PreBankList'].append({'BankName': bank.xpath('./td[1]/text()').extract_first() or '',
-                                  'BankAcount': bank.xpath('./td[2]/text()').extract_first() or '',
-                                  'BankPhone': bank.xpath('./td[3]/text()').extract_first() or ''})
+                                               'BankAcount': bank.xpath('./td[2]/text()').extract_first() or '',
+                                               'BankPhone': bank.xpath('./td[3]/text()').extract_first() or ''})
             preinfo_url = urlparse.urljoin(response.url, response.xpath(
                 '//td[@id="bookid"]/a/@href').extract_first() or '')
             result.append(Request(url=preinfo_url, headers=headers, meta={
@@ -495,7 +545,7 @@ class HouseInfoHandleMiddleware(object):
             meta = copy.deepcopy(response.meta)
             meta['PageType'] = 'HouseInfoUse'
             result.append(Request(url=response.url,
-                                    headers=headers, meta=meta))
+                                  headers=headers, meta=meta))
         if response.meta.get('PageType') == 'HouseInfoUse':
             if (not response.meta.get('ProjectName')) or (not response.meta.get('BuildingName'))\
                     or (not response.meta.get('ProjectUUID')) or (not response.meta.get('BuildingUUID')):
