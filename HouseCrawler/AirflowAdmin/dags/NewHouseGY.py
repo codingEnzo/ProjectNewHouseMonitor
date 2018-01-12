@@ -104,39 +104,36 @@ t2 = PythonOperator(
                'urlList': project_info_list},
     dag=dag)
 
+builfing_info_list = []
+cur = BuildingInfoGuiyang.objects.aggregate(*[{"$sort": {"CurTimeStamp": 1}},
+                                              {'$group':
+                                               {'_id': "$BuildingUUID",
+                                                'ProjectName': {'$first': '$ProjectName'},
+                                                'ProjectUUID': {'$first': '$ProjectUUID'},
+                                                'BuildingName': {'$first': '$BuildingName'},
+                                                'BuildingUUID': {'$first': '$BuildingUUID'},
+                                                'BuildingURL': {'$first': '$BuildingURL'},
+                                                }
+                                               }])
 
-def get_builfing_info():
-    cur = BuildingInfoGuiyang.objects.aggregate(*[{"$sort": {"CurTimeStamp": 1}},
-                                                  {'$group':
-                                                   {'_id': "$BuildingUUID",
-                                                    'ProjectName': {'$first': '$ProjectName'},
-                                                    'ProjectUUID': {'$first': '$ProjectUUID'},
-                                                    'BuildingName': {'$first': '$BuildingName'},
-                                                    'BuildingUUID': {'$first': '$BuildingUUID'},
-                                                    'BuildingURL': {'$first': '$BuildingURL'},
-                                                    }
-                                                   }])
-
-    for item in cur:
-        try:
-            if item['BuildingURL']:
-                if True:
-                    builfing_info = {'source_url': item['BuildingURL'],
-                                     'meta': {'PageType': 'HouseInfo',
-                                              'ProjectName': item['ProjectName'],
-                                              'BuildingName': item['BuildingName'],
-                                              'ProjectUUID': str(item['ProjectUUID']),
-                                              'BuildingUUID': str(item['BuildingUUID'])}}
-                    yield builfing_info
-        except Exception:
-            import traceback
-            traceback.print_exc()
-
-
+for item in cur:
+    try:
+        if item['BuildingURL']:
+            if True:
+                builfing_info = {'source_url': item['BuildingURL'],
+                                 'meta': {'PageType': 'HouseInfo',
+                                          'ProjectName': item['ProjectName'],
+                                          'BuildingName': item['BuildingName'],
+                                          'ProjectUUID': str(item['ProjectUUID']),
+                                          'BuildingUUID': str(item['BuildingUUID'])}}
+                builfing_info_list.append(builfing_info)
+    except Exception:
+        import traceback
+        traceback.print_exc()
 t3 = PythonOperator(
     task_id='LoadBuildingInfoGY',
     python_callable=spider_call,
     op_kwargs={'spiderName': 'DefaultCrawler',
                'settings': spider_settings,
-               'urlList': get_builfing_info()},
+               'urlList': builfing_info_list},
     dag=dag)
