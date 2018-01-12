@@ -93,6 +93,8 @@ class PipelineXuzhou(object):
         elif isinstance(item, PresellInfoItem):
             res_object = q_object.filter(PresellUUID = item['PresellUUID']).latest(field_name = 'CurTimeStamp')
             for key in item:
+                if key == 'LssueDate':
+                    continue
                 if not hasattr(res_object, key):
                     diff_flag = True
                     break
