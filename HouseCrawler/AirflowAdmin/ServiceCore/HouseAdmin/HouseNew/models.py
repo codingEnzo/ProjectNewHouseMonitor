@@ -19,3 +19,4 @@ from HouseNew.HouseNewModels.FuzhouModels import *
 from HouseNew.HouseNewModels.GuangzhouModels import *
 from HouseNew.HouseNewModels.QingdaoModels import *
 from HouseNew.HouseNewModels.WulumuqiModels import *
+from HouseNew.HouseNewModels.NanjingModels import *
