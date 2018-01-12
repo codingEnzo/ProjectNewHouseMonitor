@@ -424,7 +424,9 @@ class HouseListHandleMiddleware(object):
                 houseInfoItem['PresellUUID'] = PresellUUID
                 houseInfoItem['BuildingUUID'] = BuildingUUID
                 # 可能出现楼栋名和户号一样的,这里采用 当前页码+所在行数+BuildingUUID+户号 生成HouseUUID
-                houseInfoItem['HouseUUID'] = uuid.uuid3(uuid.NAMESPACE_DNS, page + str(idnex) + BuildingUUID + houseNO)
+                # houseInfoItem['HouseUUID'] = uuid.uuid3(uuid.NAMESPACE_DNS, page + str(idnex) + BuildingUUID + houseNO)
+                houseInfoItem['HouseUUID'] = uuid.uuid3(uuid.NAMESPACE_DNS,
+                                                        page + str(idnex) + BuildingUUID + buildingName + houseNO)
                 houseInfoItem['BuildingName'] = buildingName  # 栋号
                 houseInfoItem['HouseNO'] = houseNO  # 房号
                 houseInfoItem['UnitName'] = unitName  # 单元
