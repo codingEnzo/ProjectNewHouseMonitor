@@ -471,6 +471,7 @@ class PreSellInfoHandleMiddleware(object):
                                                'BankPhone': bank.xpath('./td[3]/text()').extract_first() or ''})
             preinfo_url = urlparse.urljoin(response.url, response.xpath(
                 '//td[@id="bookid"]/a/@href').extract_first() or '')
+            print(preinfo_url)
             result.append(Request(url=preinfo_url, headers=headers, meta={
                           'PageType': 'PreSellInfo', 'item': preinfo}))
         elif response.meta.get('PageType') == 'PreSellInfo':
@@ -484,7 +485,7 @@ class PreSellInfoHandleMiddleware(object):
                     'Area': get_presell_num2(response.xpath('//font[@id="businesshouse"]/text()').extract_first() or '')[0],
                     'Num': get_presell_num2(response.xpath('//font[@id="businesshouse"]/text()').extract_first() or '')[1]
                 },
-                    'Buisiness': {
+                    'Office': {
                     'Area': get_presell_num2(response.xpath('//font[@id="Officestatistics"]/text()').extract_first() or '')[0],
                     'Num': get_presell_num2(response.xpath('//font[@id="Officestatistics"]/text()').extract_first() or '')[1]
                 },
@@ -492,6 +493,7 @@ class PreSellInfoHandleMiddleware(object):
                     'Area': get_presell_num2(response.xpath('//font[@id="others"]/text()').extract_first() or '')[0],
                     'Num': get_presell_num2(response.xpath('//font[@id="others"]/text()').extract_first() or '')[1]
                 }}
+                print(preinfo)
                 result.append(preinfo)
         return result
 
