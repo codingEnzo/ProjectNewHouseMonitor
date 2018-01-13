@@ -378,17 +378,18 @@ class BuildingListHandleMiddleware(object):
             b_sell_list = response.xpath('//table[@id="donglist"]/tr')
             binfo = response.meta.get('item')
             if binfo:
-                binfo['BuildingName'] = (b.xpath('./td[2]/text()').extract_first() or '') + (
-                    b.xpath('./td[3]/text()').extract_first() or '')
-                binfo['BuildingRegName'] = response.xpath(
-                    '//td[@id="bookid"]/a/text()').extract_first() or ''
-                binfo['BuildingRegUUID'] = uuid.uuid3(
-                    uuid.NAMESPACE_DNS, binfo['BuildingRegName'])
-                binfo['BuildingURL'] = urlparse.urljoin(
-                    response.url, b.xpath('./td[5]/a/@href').extract_first() or '')
-                binfo['BuildingUUID'] = uuid.uuid3(uuid.NAMESPACE_DNS, binfo[
-                                                   'BuildingName'] + binfo['BuildingURL'])
-                result.append(binfo)
+                for b in b_sell_list:
+                    binfo['BuildingName'] = (b.xpath('./td[2]/text()').extract_first() or '') + (
+                        b.xpath('./td[3]/text()').extract_first() or '')
+                    binfo['BuildingRegName'] = response.xpath(
+                        '//td[@id="bookid"]/a/text()').extract_first() or ''
+                    binfo['BuildingRegUUID'] = uuid.uuid3(
+                        uuid.NAMESPACE_DNS, binfo['BuildingRegName'])
+                    binfo['BuildingURL'] = urlparse.urljoin(
+                        response.url, b.xpath('./td[5]/a/@href').extract_first() or '')
+                    binfo['BuildingUUID'] = uuid.uuid3(uuid.NAMESPACE_DNS, binfo[
+                                                       'BuildingName'] + binfo['BuildingURL'])
+                    result.append(binfo)
         return result
 
     def process_spider_exception(self, response, exception, spider):
