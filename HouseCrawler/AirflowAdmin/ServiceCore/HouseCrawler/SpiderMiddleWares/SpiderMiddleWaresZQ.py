@@ -376,7 +376,7 @@ class BuildingListHandleMiddleware(object):
                               'PageType': 'BuildingPreSell', 'item': binfo}))
         elif response.meta.get('PageType') == 'BuildingPreSell':
             b_sell_list = response.xpath('//table[@id="donglist"]/tr')
-            binfo = response.method.get('item')
+            binfo = response.meta.get('item')
             if binfo:
                 binfo['BuildingName'] = (b.xpath('./td[2]/text()').extract_first() or '') + (
                     b.xpath('./td[3]/text()').extract_first() or '')
