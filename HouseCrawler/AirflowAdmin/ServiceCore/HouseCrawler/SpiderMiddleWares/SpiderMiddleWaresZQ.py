@@ -344,9 +344,9 @@ class BuildingListHandleMiddleware(object):
 
         if response.meta.get('PageType') == 'ProjectInfoUse':
             b_sell_list = response.xpath(
-                '//table[@id="selltable1"]/tr[position()>1]')
+                '//table[@id="selltable1" or @id="selltable2"]/tr[position()>1]')
             b_presell_list = response.xpath(
-                '//table[@id="preselltable2"]/tr[position()>1]')
+                '//table[contains(@id, "preselltable")]/tr[position()>1]')
             for b in b_sell_list:
                 binfo = BuildingInfoItem()
                 binfo['ProjectName'] = response.xpath(
