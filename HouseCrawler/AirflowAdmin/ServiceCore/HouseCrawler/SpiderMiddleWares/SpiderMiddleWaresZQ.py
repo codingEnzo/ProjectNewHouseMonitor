@@ -494,7 +494,6 @@ class PreSellInfoHandleMiddleware(object):
                     'Area': get_presell_num2(response.xpath('//font[@id="others"]/text()').extract_first() or '')[0],
                     'Num': get_presell_num2(response.xpath('//font[@id="others"]/text()').extract_first() or '')[1]
                 }}
-                print(preinfo)
                 result.append(preinfo)
         return result
 
