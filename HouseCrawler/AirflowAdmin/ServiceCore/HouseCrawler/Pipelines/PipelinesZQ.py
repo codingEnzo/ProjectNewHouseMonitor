@@ -62,6 +62,9 @@ class ZQPipeline(object):
                 exist_flag = True
         elif isinstance(item, BuildingInfoItem):
             if q_object.filter(BuildingUUID=item['BuildingUUID']).latest(field_name='CurTimeStamp'):
+                b_object = q_object.filter(BuildingUUID=item['BuildingUUID']).latest(field_name='CurTimeStamp')
+                b_object.BuildingURL = item.get('item') or ''
+                b_object.save()
                 exist_flag = True
         elif isinstance(item, HouseInfoItem):
             if q_object.filter(HouseUUID=item['HouseUUID']).latest(field_name='CurTimeStamp'):
