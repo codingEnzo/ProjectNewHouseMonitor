@@ -146,7 +146,7 @@ t3 = PythonOperator(
     dag=dag)
 
 builfing_info_list = list(map(lambda x: json.loads(
-    x), dj_settings.REDIS_CACHE.smembers(REDIS_CACHE_KEY)))
+    x.decode()), dj_settings.REDIS_CACHE.smembers(REDIS_CACHE_KEY)))
 t4 = PythonOperator(
     task_id='LoadBuildingInfoGY',
     python_callable=spider_call,
