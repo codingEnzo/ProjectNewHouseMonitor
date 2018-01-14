@@ -151,13 +151,14 @@ class ProjectInfoHandleMiddleware(object):
         if response.meta.get('PageType') == 'ProjectInfo':
             iframe_src = urlparse.urljoin(response.url,
                                 Selector(response).xpath('//div[@id="content_3"]/div/iframe/@src').extract_first() or '')
-            req = Request(url=iframe_src, meta={'PageType': 'ProjectDetailInfo', 'CurURL': response.url}, method='GET', dont_filter=True)
+            pinfo = ProjectInfoItem()
+            pinfo['ProjectOpenDate'] = (info_sel.xpath('//td[contains(text(),"开盘时间")]/following-sibling::td[1]/text()').extract_first() or '').strip()
+            req = Request(url=iframe_src, meta={'PageType': 'ProjectDetailInfo', 'CurURL': response.url, 'item': pinfo}, method='GET', dont_filter=True)
             result.append(req)
         elif response.meta.get('PageType') == 'ProjectDetailInfo':
             info_sel = Selector(response)
-            pinfo = ProjectInfoItem()
+            pinfo = response.meta.get('item')
             pinfo['ProjectName'] = info_sel.xpath('//span[@id="Projectname1"]/text()').extract_first() or ''
-            pinfo['ProjectOpenDate'] = (info_sel.xpath('//td[contains(text(),"开盘时间")]/following-sibling::td[1]/text()').extract_first() or '').strip()
             pinfo['ProjectAlias'] = info_sel.xpath('//span[@id="Projectname"]/text()').extract_first() or ''
             pinfo['ProjectAddress'] = info_sel.xpath('//span[@id="Address"]/text()').extract_first() or ''
             pinfo['ProjectUsage'] = info_sel.xpath('//span[@id="yongtu"]/text()').extract_first() or ''

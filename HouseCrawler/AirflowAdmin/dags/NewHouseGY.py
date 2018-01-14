@@ -1,6 +1,7 @@
 # -*-coding=utf-8-*-
 import os
 import sys
+import json
 import django
 import datetime
 import functools
@@ -28,6 +29,9 @@ django.setup()
 
 from HouseNew.models import *
 from services.spider_service import spider_call
+from django.conf import settings as dj_settings
+
+REDIS_CACHE_KEY = "NewHouseGY"
 
 
 def just_one_instance(func):
@@ -104,36 +108,50 @@ t2 = PythonOperator(
                'urlList': project_info_list},
     dag=dag)
 
-builfing_info_list = []
-cur = BuildingInfoGuiyang.objects.aggregate(*[{"$sort": {"CurTimeStamp": 1}},
-                                              {'$group':
-                                               {'_id': "$BuildingUUID",
-                                                'ProjectName': {'$first': '$ProjectName'},
-                                                'ProjectUUID': {'$first': '$ProjectUUID'},
-                                                'BuildingName': {'$first': '$BuildingName'},
-                                                'BuildingUUID': {'$first': '$BuildingUUID'},
-                                                'BuildingURL': {'$first': '$BuildingURL'},
-                                                }
-                                               }])
 
-for item in cur:
-    try:
-        if item['BuildingURL']:
-            if True:
-                builfing_info = {'source_url': item['BuildingURL'],
-                                 'meta': {'PageType': 'HouseInfo',
-                                          'ProjectName': item['ProjectName'],
-                                          'BuildingName': item['BuildingName'],
-                                          'ProjectUUID': str(item['ProjectUUID']),
-                                          'BuildingUUID': str(item['BuildingUUID'])}}
-                builfing_info_list.append(builfing_info)
-    except Exception:
-        import traceback
-        traceback.print_exc()
+def cacheLoader(key=REDIS_CACHE_KEY):
+    r = dj_settings.REDIS_CACHE
+    cur = BuildingInfoGuiyang.objects.aggregate(*[{"$sort": {"CurTimeStamp": 1}},
+                                                  {'$group':
+                                                   {'_id': "$BuildingUUID",
+                                                    'ProjectName': {'$first': '$ProjectName'},
+                                                    'ProjectUUID': {'$first': '$ProjectUUID'},
+                                                    'BuildingName': {'$first': '$BuildingName'},
+                                                    'BuildingUUID': {'$first': '$BuildingUUID'},
+                                                    'BuildingURL': {'$first': '$BuildingURL'},
+                                                    }
+                                                   }])
+
+    for item in cur:
+        try:
+            if item['BuildingURL']:
+                if True:
+                    builfing_info = {'source_url': item['BuildingURL'],
+                                     'meta': {'PageType': 'HouseInfo',
+                                              'ProjectName': item['ProjectName'],
+                                              'BuildingName': item['BuildingName'],
+                                              'ProjectUUID': str(item['ProjectUUID']),
+                                              'BuildingUUID': str(item['BuildingUUID'])}}
+                    r.sadd(key, json.dumps(builfing_info))
+        except Exception:
+            import traceback
+            traceback.print_exc()
+    r.expire(key, 300)
+
+
 t3 = PythonOperator(
+    task_id='LoadBuildingInfoCache',
+    python_callable=cacheLoader,
+    op_kwargs={'key': REDIS_CACHE_KEY},
+    dag=dag)
+
+builfing_info_list = list(map(lambda x: json.loads(
+    x), REDIS_CACHE.smembers(REDIS_CACHE_KEY)))
+t4 = PythonOperator(
     task_id='LoadBuildingInfoGY',
     python_callable=spider_call,
     op_kwargs={'spiderName': 'DefaultCrawler',
                'settings': spider_settings,
                'urlList': builfing_info_list},
     dag=dag)
+t4.set_upstream(t3)
