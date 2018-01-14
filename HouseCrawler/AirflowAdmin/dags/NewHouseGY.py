@@ -136,7 +136,7 @@ def cacheLoader(key=REDIS_CACHE_KEY):
         except Exception:
             import traceback
             traceback.print_exc()
-    r.expire(key, 300)
+    r.expire(key, 3600)
 
 
 t3 = PythonOperator(
