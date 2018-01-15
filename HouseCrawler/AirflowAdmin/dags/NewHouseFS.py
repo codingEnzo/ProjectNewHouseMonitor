@@ -183,7 +183,7 @@ t3 = PythonOperator(
 )
 
 
-house_detail_list = map(lambda x: json.loads(x), dj_settings.REDIS_CACHE.smembers('NewHouseFS'))
+house_detail_list = map(lambda x: pickle.loads(x), dj_settings.REDIS_CACHE.smembers('NewHouseFS'))
 t4 = PythonOperator(
     task_id='LoadHouseDetailFS',
     python_callable=spider_call,
