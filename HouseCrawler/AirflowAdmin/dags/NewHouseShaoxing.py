@@ -122,7 +122,7 @@ building_cur = BuildingInfoShaoxing.objects.all()
 houseList_list = []
 for building in building_cur:
     houseList = {
-        'BuildingURL': building['SourceUrl'],
+        'BuildingURL': building['BuildingURL'],
         'dont_filter':False,
         'meta':{
             'PageType': 'HouseList',
