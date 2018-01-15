@@ -3,8 +3,10 @@ import datetime
 import functools
 import os
 import sys
+import pickle
 
 import django
+import json
 import math
 from airflow import DAG
 from airflow.operators.python_operator import PythonOperator
@@ -26,6 +28,7 @@ django.setup()
 
 from HouseNew.models import *
 from services.spider_service import spider_call
+from django.conf import settings as dj_settings
 
 
 def just_one_instance(func):
@@ -153,22 +156,35 @@ for cur, index in enumerate(list(range(0, len(building_detail_list), index_skip)
         dag=dag
     )
 
-house_detail_list = []
-cur = HouseDetailFoshan.objects.filter(ComplateTag=0)
-for item in cur:
-    item2 = {i: str(item[i]) for i in item}
-    source_url = item2['HouseUrl']
-    house_detail = {
-        'source_url': source_url,
-        'method': 'GET',
-        'meta': {
-            'PageType': 'hd_url2',
-            'Item': item2
+
+def cache_query():
+    cur = HouseDetailFoshan.objects.filter(ComplateTag=0)
+    r = dj_settings.REDIS_CACHE
+    for item in cur:
+        item2 = {i: str(item[i]) for i in item}
+        source_url = item2['HouseUrl']
+        house_detail = {
+            'source_url': source_url,
+            'method': 'GET',
+            'meta': {
+                'PageType': 'hd_url2',
+                'Item': item2
+            }
         }
-    }
-    house_detail_list.append(house_detail)
+        result = pickle.dumps(house_detail) 
+        r.sadd('NewHouseFS', result)
+    r.expire('NewHouseFS', 3600)
+
 
 t3 = PythonOperator(
+    task_id='LoadHouseDetailFSCache',
+    python_callable=cache_query,
+    dag=dag
+)
+
+
+house_detail_list = map(lambda x: json.loads(x), dj_settings.REDIS_CACHE.smembers('NewHouseFS'))
+t4 = PythonOperator(
     task_id='LoadHouseDetailFS',
     python_callable=spider_call,
     op_kwargs={
@@ -178,8 +194,10 @@ t3 = PythonOperator(
     },
     dag=dag
 )
+t4.set_upstream(t3)
 
-t4 = PythonOperator(
+
+t5 = PythonOperator(
     task_id='LoadMonitorFS',
     python_callable=spider_call,
     op_kwargs={
