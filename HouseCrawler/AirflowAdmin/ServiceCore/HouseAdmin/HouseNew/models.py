@@ -3665,3 +3665,145 @@ class HouseInfoShaoxing(Document):
             'SourceUrl',
         ]
     }
+
+
+
+
+class ProjectBaseWenzhou(Document):
+    RecordID = fields.UUIDField(default = uuid.uuid1(),
+                                binary = True, primary_key = True, null = False)
+    CurTimeStamp = fields.StringField(default = str(datetime.datetime.now()), index = True)
+
+    ProjectNo = fields.StringField(default = '', max_length = 255, )
+    ProjectUrl = fields.URLField(default = None, blank = True)
+    PresalePermitNumber = fields.StringField(default = '', max_length = 255, )
+    ProjectName = fields.StringField(default = '', max_length = 255, )
+
+    ProjectAddress = fields.StringField(default = '', max_length = 255, )
+    OpeningDate = fields.StringField(default = '', max_length = 255, )
+    RegionName = fields.StringField(default = '', max_length = 255, )
+    DeveloperInfoUrl = fields.URLField(default = None, blank = True)
+    DeveloperName = fields.StringField(default = '', max_length = 255, )
+
+    LssueDate = fields.StringField(default = '', max_length = 255, )
+
+    Samplearea = fields.StringField(default = '', max_length = 255, )
+    TotalBuidlingArea = fields.StringField(default = '', max_length = 255)
+
+    StartDate = fields.StringField(default = '', max_length = 255, )
+    ProjectSaleAddress = fields.StringField(default = '', max_length = 255, )
+    ProjectSalePhone = fields.StringField(default = '', max_length = 255, )
+    typePriceInfo = fields.DictField(default = {'0': '0'})
+    TotalHouseNum = fields.StringField(default = '', max_length = 255)
+    TotalHouseAreas = fields.StringField(default = '', max_length = 255, )
+    SalingHouseNum = fields.StringField(default = '', max_length = 255, )
+    SalingHouseAreas = fields.StringField(default = '', max_length = 255, )
+    SalingDwellingNum = fields.StringField(default = '', max_length = 255, )
+    SalingDwellingAreas = fields.StringField(default = '', max_length = 255, )
+    SubscribedNum = fields.StringField(default = '', max_length = 255, )
+    SubscribedAreas = fields.StringField(default = '', max_length = 255, )
+    SoldNum = fields.StringField(default = '', max_length = 255, )
+    SoldAreas = fields.StringField(default = '', max_length = 255, )
+    RegisteredNum = fields.StringField(default = '', max_length = 255, )
+    RegisteredAreas = fields.StringField(default = '', max_length = 255, )
+    PlacementofhousingNum = fields.StringField(default = '', max_length = 255, )
+    PlacementofhousingAreas = fields.StringField(default = '', max_length = 255, )
+    RestrictedpropertyNum = fields.StringField(default = '', max_length = 255, )
+    RestrictedpropertyAreas = fields.StringField(default = '', max_length = 255, )
+    NonsalesNum = fields.StringField(default = '', max_length = 255, )
+    NonsalesAreas = fields.StringField(default = '', max_length = 255, )
+    meta = {
+        'indexes': [
+            'CurTimeStamp',
+            'ProjectNo',
+        ]
+    }
+
+
+class DeveloperBaseWenzhou(Document):
+    RecordID = fields.UUIDField(default = uuid.uuid1(),
+                                binary = True, primary_key = True, null = False)
+    CurTimeStamp = fields.StringField(default = str(datetime.datetime.now()), index = True)
+
+    DeveloperNo = fields.StringField(default = '', max_length = 255, )
+    DeveloperName = fields.StringField(default = '', max_length = 255, )
+    ProjectName = fields.StringField(default = '', max_length = 255, )
+    ProjectNo = fields.StringField(default = '', max_length = 255, )
+    LegalRepresentative = fields.StringField(default = '', max_length = 255, )
+    BusinessLicenseNumber = fields.StringField(default = '', max_length = 255, )
+    DeveloperComAddress = fields.StringField(default = '', max_length = 255, )
+    RegisteredCapital = fields.StringField(default = '', max_length = 255, )
+    DeveloperPhoneNumber = fields.StringField(default = '', max_length = 255, )
+    QualificationGrade = fields.StringField(default = '', max_length = 255, )
+    CertificateNumber = fields.StringField(default = '', max_length = 255, )
+    Fax = fields.StringField(default = '', max_length = 255, )
+    ZipCode = fields.StringField(default = '', max_length = 255, )
+    Email = fields.StringField(default = '', max_length = 255, )
+    Web = fields.StringField(default = '', max_length = 255, )
+    Remarks = fields.StringField(default = '', max_length = 255, )
+    Registrar = fields.StringField(default = '', max_length = 255, )
+    DeveloperUrl = fields.URLField(default = None, blank = True)
+    meta = {
+        'indexes': [
+            'CurTimeStamp',
+            'DeveloperNo',
+        ]
+    }
+
+
+class BuildingBaseWenzhou(Document):
+    RecordID = fields.UUIDField(default = uuid.uuid1(),
+                                binary = True, primary_key = True, null = False)
+    CurTimeStamp = fields.StringField(default = str(datetime.datetime.now()), index = True)
+    ProjectNo = fields.StringField(default = '', max_length = 255, )
+    BuildingNo = fields.StringField(default = '', max_length = 255, )
+    BuildingId = fields.StringField(default = '', max_length = 255, )
+    ProjectName = fields.StringField(default = '', max_length = 255, )
+    BuildingName = fields.StringField(default = '', max_length = 255, )
+
+    BuildingInfo = fields.StringField(default = '', max_length = 255, )
+    BuildingAddress = fields.StringField(default = '', max_length = 255, )
+    BuildingTotalFloor = fields.StringField(default = '', max_length = 255, )
+    BuildingHouseNum = fields.StringField(default = '', max_length = 255, )
+    BuildingAreas = fields.StringField(default = '', max_length = 255, )
+    BuildingStructure = fields.StringField(default = '', max_length = 255, )
+    BuildingPreAreas = fields.StringField(default = '', max_length = 255, )
+
+    meta = {
+        'indexes': [
+            'CurTimeStamp',
+            'BuildingNo',
+        ]
+    }
+
+
+class HouseBaseWenzhou(Document):
+    RecordID = fields.UUIDField(default = uuid.uuid1(),
+                                binary = True, primary_key = True, null = False)
+    CurTimeStamp = fields.StringField(default = str(datetime.datetime.now()), index = True)
+    ProjectNo = fields.StringField(default = '', max_length = 255, )
+    BuildingNo = fields.StringField(default = '', max_length = 255, )
+    HouseNo = fields.StringField(default = '', max_length = 255, )
+    ProjectName = fields.StringField(default = '', max_length = 255, )
+    BuildingName = fields.StringField(default = '', max_length = 255, )
+    HouseRealFloor = fields.StringField(default = '', max_length = 255, )
+    HouseId = fields.StringField(default = '', max_length = 255, )
+    HouseAreas = fields.StringField(default = '', max_length = 255, )
+    HouseNum = fields.StringField(default = '', max_length = 255, )
+    HouseClass = fields.StringField(default = '', max_length = 255, )
+    HouseSts = fields.StringField(default = '', max_length = 255, )
+    HouseStsLatest = fields.StringField(default = '', max_length = 255, )
+
+    meta = {
+        'indexes': [
+            'CurTimeStamp',
+            'ProjectNo',
+            'BuildingNo',
+            'HouseNo',
+            'ProjectName',
+            'BuildingName',
+            'HouseId',
+            'HouseSts',
+            'HouseStsLatest',
+        ]
+    }
