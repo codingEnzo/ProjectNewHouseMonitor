@@ -6,7 +6,6 @@ import sys
 import pickle
 
 import django
-import json
 import math
 from airflow import DAG
 from airflow.operators.python_operator import PythonOperator
@@ -161,18 +160,22 @@ def cache_query():
     cur = HouseDetailFoshan.objects.filter(ComplateTag=0)
     r = dj_settings.REDIS_CACHE
     for item in cur:
-        item2 = {i: str(item[i]) for i in item}
-        source_url = item2['HouseUrl']
-        house_detail = {
-            'source_url': source_url,
-            'method': 'GET',
-            'meta': {
-                'PageType': 'hd_url2',
-                'Item': item2
+        try:
+            item2 = {i: str(item[i]) for i in item}
+            source_url = item2['HouseUrl']
+            house_detail = {
+                'source_url': source_url,
+                'method': 'GET',
+                'meta': {
+                    'PageType': 'hd_url2',
+                    'Item': item2
+                }
             }
-        }
-        result = pickle.dumps(house_detail) 
-        r.sadd('NewHouseFS', result)
+            result = pickle.dumps(house_detail) 
+            r.sadd('NewHouseFS', result)
+        except Exception:
+            import traceback
+            traceback.print_exc()
     r.expire('NewHouseFS', 3600)
 
 
