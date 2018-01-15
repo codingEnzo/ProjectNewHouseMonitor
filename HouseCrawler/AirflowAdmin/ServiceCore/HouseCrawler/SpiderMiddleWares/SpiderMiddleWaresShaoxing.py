@@ -315,6 +315,8 @@ class HouseListHandleMiddleware(object):
                     t = regex.search(
                         r"showRoom\('(?<houseNO>.+)','0','1','(?<BuildingStructure>.+)','(?<ActualFloor>.+)','(?<FloorName>.+)','(?<HouseUseType>.+)','(?<MeasuredBuildingArea>.+)','(?<MeasuredInsideOfBuildingArea>.+)','(?<MeasuredSharedPublicArea>.+)','(?<HouseSalePrice>.+)','(?<HouseSalePriceUpdateTime>.+)'\)",
                         href)
+                    if t is None:
+                        return result
                     houseInfoItem['HouseNO'] = t.group(1)
                     houseInfoItem['BuildingStructure'] = t.group(2)
                     houseInfoItem['ActualFloor'] = t.group(3)
