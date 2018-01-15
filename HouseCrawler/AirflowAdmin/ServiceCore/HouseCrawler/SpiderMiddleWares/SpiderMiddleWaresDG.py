@@ -152,7 +152,7 @@ class ProjectInfoHandleMiddleware(object):
             iframe_src = urlparse.urljoin(response.url,
                                 Selector(response).xpath('//div[@id="content_3"]/div/iframe/@src').extract_first() or '')
             pinfo = ProjectInfoItem()
-            pinfo['ProjectOpenDate'] = (info_sel.xpath('//td[contains(text(),"开盘时间")]/following-sibling::td[1]/text()').extract_first() or '').strip()
+            pinfo['ProjectOpenDate'] = (response.xpath('//td[contains(text(),"开盘时间")]/following-sibling::td[1]/text()').extract_first() or '').strip()
             req = Request(url=iframe_src, meta={'PageType': 'ProjectDetailInfo', 'CurURL': response.url, 'item': pinfo}, method='GET', dont_filter=True)
             result.append(req)
         elif response.meta.get('PageType') == 'ProjectDetailInfo':
