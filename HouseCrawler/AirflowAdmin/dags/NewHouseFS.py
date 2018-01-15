@@ -161,14 +161,14 @@ def cache_query():
     r = dj_settings.REDIS_CACHE
     for item in cur:
         try:
-            item2 = {i: str(item[i]) for i in item}
-            source_url = item2['HouseUrl']
+            # item2 = {i: str(item[i]) for i in item}
+            source_url = item.HouseUrl
             house_detail = {
                 'source_url': source_url,
                 'method': 'GET',
                 'meta': {
                     'PageType': 'hd_url2',
-                    'Item': item2
+                    'Item': item
                 }
             }
             result = pickle.dumps(house_detail) 
