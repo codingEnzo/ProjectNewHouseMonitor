@@ -91,7 +91,7 @@ headers = {
 cur = ProjectBaseWenzhou.objects.aggregate(*[{"$sort": {"CurTimeStamp": 1}},
                                       {'$group':
                                            {'_id': "$ProjectNo",
-                                            'Projectname': {'$last': '$Projectname'},
+                                            'ProjectName': {'$last': '$ProjectName'},
                                             'ProjectNo':{'$last': '$ProjectNo'},
                                             'DeveloperInfoUrl':{'$last': '$DeveloperInfoUrl'}
                                             }
@@ -99,16 +99,19 @@ cur = ProjectBaseWenzhou.objects.aggregate(*[{"$sort": {"CurTimeStamp": 1}},
 
 for item in cur:
     if item['DeveloperInfoUrl']:
-        base = {
-            'source_url': item['DeveloperInfoUrl'],
-            'headers': headers,
-            'meta': {
-                'PageType': 'DeveloperInfo',
-                'ProjectName': item['ProjectName'],
-                'ProjectNo': item['ProjectNo']
+        try:
+            base = {
+                'source_url': item['DeveloperInfoUrl'],
+                'headers': headers,
+                'meta': {
+                    'PageType': 'DeveloperInfo',
+                    'ProjectName': item['ProjectName'],
+                    'ProjectNo': item['ProjectNo']
+                }
             }
-        }
-        DeveloperInfo_list.append(base)
+            DeveloperInfo_list.append(base)
+        except:
+            pass
 t2 = PythonOperator(
     task_id='LoadDeveloperInfoWenzhou',
     python_callable=spider_call,
