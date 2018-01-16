@@ -21,3 +21,4 @@ from HouseNew.HouseNewModels.QingdaoModels import *
 from HouseNew.HouseNewModels.WulumuqiModels import *
 from HouseNew.HouseNewModels.NanjingModels import *
 from HouseNew.HouseNewModels.MaomingModels import *
+from HouseNew.HouseNewModels.YangjiangModels import *
