@@ -213,7 +213,7 @@ class ProjectInfoHandleMiddleware(object):
                 '//td[text()="施工面积："]/following-sibling::td[1]/text()').extract_first() or ''
             pinfo['ProjectSaleInfo'] = {
                 '总套数': response.xpath(
-                    '//td[text()="总面积："]/following-sibling::td[1]/text()').extract_first() or '',
+                    '//td[text()="总套数："]/following-sibling::td[1]/text()').extract_first() or '',
                 '总面积': response.xpath(
                     '//td[text()="总面积："]/following-sibling::td[1]/text()').extract_first() or '',
                 '住宅套数': response.xpath(

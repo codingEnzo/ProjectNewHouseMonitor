@@ -25,7 +25,7 @@ sys.path.append(HOUSESERVICECORE_DIR)
 os.environ['DJANGO_SETTINGS_MODULE'] = 'HouseAdmin.settings'
 django.setup()
 
-from HouseNew.models import ProjectBaseMaoming, BuildingInfoMaoming
+from HouseNew.models import ProjectBaseYangjiang, BuildingInfoYangjiang
 from services.spider_service import spider_call
 
 STARTDATE = datetime.datetime.now() - datetime.timedelta(hours=8)
@@ -47,39 +47,39 @@ default_args = {
 
 spider_settings = {
     'ITEM_PIPELINES': {
-        'HouseCrawler.Pipelines.PipelinesMM.MMPipeline': 300,
+        'HouseCrawler.Pipelines.PipelinesYJ.YJPipeline': 300,
     },
     'SPIDER_MIDDLEWARES': {
-        'HouseCrawler.SpiderMiddleWares.SpiderMiddleWaresMM.ProjectBaseHandleMiddleware': 102,
-        'HouseCrawler.SpiderMiddleWares.SpiderMiddleWaresMM.ProjectInfoHandleMiddleware': 103,
-        'HouseCrawler.SpiderMiddleWares.SpiderMiddleWaresMM.BuildingListHandleMiddleware': 104,
-        'HouseCrawler.SpiderMiddleWares.SpiderMiddleWaresMM.HouseInfoHandleMiddleware': 105,
-        'HouseCrawler.SpiderMiddleWares.SpiderMiddleWaresMM.CompanyInfoHandleMiddleware': 106,
-        'HouseCrawler.SpiderMiddleWares.SpiderMiddleWaresMM.PreSellInfoHandleMiddleware': 107,
-        'HouseCrawler.SpiderMiddleWares.SpiderMiddleWaresMM.ProjectIndexHandleMiddleware': 108,
+        'HouseCrawler.SpiderMiddleWares.SpiderMiddleWaresYJ.ProjectBaseHandleMiddleware': 102,
+        'HouseCrawler.SpiderMiddleWares.SpiderMiddleWaresYJ.ProjectInfoHandleMiddleware': 103,
+        'HouseCrawler.SpiderMiddleWares.SpiderMiddleWaresYJ.BuildingListHandleMiddleware': 104,
+        'HouseCrawler.SpiderMiddleWares.SpiderMiddleWaresYJ.HouseInfoHandleMiddleware': 105,
+        'HouseCrawler.SpiderMiddleWares.SpiderMiddleWaresYJ.CompanyInfoHandleMiddleware': 106,
+        'HouseCrawler.SpiderMiddleWares.SpiderMiddleWaresYJ.PreSellInfoHandleMiddleware': 107,
+        'HouseCrawler.SpiderMiddleWares.SpiderMiddleWaresYJ.ProjectIndexHandleMiddleware': 108,
     },
     'RETRY_ENABLE': True,
-    'CLOSESPIDER_TIMEOUT': 3600 * 5.5,
+    'CLOSESPIDER_TIMEOUT': 3600 * 5.7,
     'CONCURRENT_REQUESTS': 8,
     'RETRY_TIMES': 30,
     'REDIRECT_ENABLED': True
 }
 
-dag = DAG('NewHouseMM', default_args=default_args,
+dag = DAG('NewHouseYJ', default_args=default_args,
           schedule_interval="15 */6 * * *")
 
-project_base_urls = ['http://fcjwq.maoming.gov.cn:7800/user_kfs.aspx?lid=84364c88-3187-4678-b990-06bee6412f8d',
-                     'http://fcjwq.maoming.gov.cn:7800/user_kfs.aspx?lid=f578dadb-8913-4f66-94b6-365ed1d1a132',
-                     'http://fcjwq.maoming.gov.cn:7800/user_kfs.aspx?lid=fd6fc8f4-f827-48da-a756-4d05d2fe1719',
-                     'http://fcjwq.maoming.gov.cn:7800/user_kfs.aspx?lid=c886108a-7503-4fb9-8c69-64282b375b3d',
-                     'http://fcjwq.maoming.gov.cn:7800/user_kfs.aspx?lid=72a71499-7440-4a43-948f-eebf3fdcf277']
+project_base_urls = ['http://219.129.189.12:8090/JHHouseWeb/user_kfs.aspx?lid=a88b3b89-472c-493b-9b4b-970f7848114f',
+                     'http://219.129.189.12:8090/JHHouseWeb/user_kfs.aspx?lid=c4407134-22b9-4a2e-9556-9df063088aca',
+                     'http://219.129.189.12:8090/JHHouseWeb/user_kfs.aspx?lid=caf441f1-a969-4682-8e63-4586ffe5caa8',
+                     'http://219.129.189.12:8090/JHHouseWeb/user_kfs.aspx?lid=fefe5706-0b08-42a1-bbe6-78c5d54d4dba',
+                     'http://219.129.189.12:8090/JHHouseWeb/user_kfs.aspx?lid=acf37d73-3bf0-4819-9f55-3a9279f54ab8']
 project_base_list = []
 for url in project_base_urls:
     project_base = {'source_url': url,
                     'meta': {'PageType': 'ProjectBase'}}
     project_base_list.append(project_base)
 t1 = PythonOperator(
-    task_id='LoadProjectBaseMM',
+    task_id='LoadProjectBaseYJ',
     python_callable=spider_call,
     op_kwargs={
         'spiderName': 'DefaultCrawler',
@@ -89,13 +89,13 @@ t1 = PythonOperator(
 )
 
 project_info_list = []
-cur = ProjectBaseMaoming.objects.all()
+cur = ProjectBaseYangjiang.objects.all()
 for item in cur:
     project_info = {'source_url': item.ProjectURL,
                     'meta': {'PageType': 'ProjectInfo'}}
     project_info_list.append(project_info)
 t2 = PythonOperator(
-    task_id='LoadProjectInfoMM',
+    task_id='LoadProjectInfoYJ',
     python_callable=spider_call,
     op_kwargs={'spiderName': 'DefaultCrawler',
                'settings': spider_settings,
@@ -105,7 +105,7 @@ t2 = PythonOperator(
 )
 
 building_info_list = []
-cur = BuildingInfoMaoming.objects.aggregate(*[{"$sort": {"CurTimeStamp": 1}},
+cur = BuildingInfoYangjiang.objects.aggregate(*[{"$sort": {"CurTimeStamp": 1}},
                                                {'$group': {
                                                    '_id': "$BuildingUUID",
                                                    'ProjectName': {'$first': '$ProjectName'},
@@ -128,7 +128,7 @@ for item in cur:
 index_skip = int(math.ceil(len(building_info_list) / float(4))) + 1
 for cur, index in enumerate(list(range(0, len(building_info_list), index_skip))):
     t3 = PythonOperator(
-        task_id='LoadBuildingInfoMM_%s' % cur,
+        task_id='LoadBuildingInfoYJ_%s' % cur,
         python_callable=spider_call,
         op_kwargs={'spiderName': 'DefaultCrawler',
                    'settings': spider_settings,

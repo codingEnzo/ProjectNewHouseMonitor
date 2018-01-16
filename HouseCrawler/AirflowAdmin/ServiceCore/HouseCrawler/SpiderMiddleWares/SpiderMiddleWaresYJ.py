@@ -6,18 +6,18 @@ import copy
 import datetime
 from scrapy import Request
 from HouseNew.models import *
-from HouseCrawler.Items.ItemsMM import *
+from HouseCrawler.Items.ItemsYJ import *
 if sys.version_info.major >= 3:
     import urllib.parse as urlparse
 else:
     import urlparse
 
 
-headers = {'Host': 'fcjwq.maoming.gov.cn:7800',
+headers = {'Host': '219.129.189.12:8090',
            'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
            'Accept-Language': 'en-US,en;q=0.5',
            'Accept-Encoding': 'gzip, deflate',
-           'Referer': 'http://fcjwq.maoming.gov.cn:7800/user_kfs.aspx',
+           'Referer': 'http://219.129.189.12:8090/JHHouseWeb/user_kfs.aspx',
            'Connection': 'keep-alive',
            'Upgrade-Insecure-Requests': 1
            }
@@ -336,13 +336,27 @@ class BuildingListHandleMiddleware(object):
             if result:
                 return result
             return []
-        if response.meta.get('PageType') not in ('ProjectInfoUse', 'BuildingPreSell'):
+        if response.meta.get('PageType') not in ('ProjectInfoUse', 'BuildingNext10Page', 'BuildingPage', 'BuildingPreSell'):
             if result:
                 return result
             return []
         print('BuildingListHandleMiddleware')
 
-        if response.meta.get('PageType') == 'ProjectInfoUse':
+        if response.meta.get('PageType') in ("ProjectInfoUse", "BuildingNext10Page"):
+            page_list = [urlparse.urljoin(response.url, path) for path in response.xpath(
+                '//td[@id="pagetd"]/a[not (@title)]/@href').extract()]
+            page_list.append(response.url)
+            for page_url in page_list:
+                result.append(Request(url=page_url,
+                                      headers=headers, meta={'PageType': 'BuildingPage'}))
+            page_10_next_path = response.xpath(
+                '//td[@id="pagetd"]/a[@title="下十页"]/@href').extract_first()
+            if page_10_next_path:
+                page_10_next_url = urlparse.urljoin(
+                    response.url, page_10_next_path)
+                result.append(Request(url=page_10_next_url,
+                                      headers=headers, meta={'PageType': 'BuildingNext10Page'}))
+        elif response.meta.get('PageType') == 'BuildingPage':
             b_sell_list = response.xpath(
                 '//table[@id="selltable1" or @id="selltable2"]/tr[position()>1]')
             b_presell_list = response.xpath(
@@ -578,7 +592,8 @@ class HouseInfoHandleMiddleware(object):
                         './table/tr/td/a/@href').extract_first() or '')
                     hinfo['HouseUUID'] = uuid.uuid3(uuid.NAMESPACE_DNS, hinfo[
                                                     'HouseName'] + hinfo_url)
-                    result.append(Request(url=hinfo_url, method='GET',
+                    if hinfo_url != "":
+                        result.append(Request(url=hinfo_url, method='GET',
                                           headers=headers, meta={'PageType': 'HouseInfoDetail', 'item': hinfo}))
         elif response.meta.get('PageType') == 'HouseInfoDetail':
             hinfo = response.meta.get('item')
