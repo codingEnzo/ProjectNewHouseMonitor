@@ -9,7 +9,9 @@ env.roledefs = {
         '10.30.1.51',
         '10.30.1.65',
         '10.30.1.66',
-        ]
+    ],
+    'test': ['10.30.1.69',
+             '10.30.1.70']
 }
 
 env.warn_only = True
@@ -97,6 +99,15 @@ def update():
         run('git fetch')
         run('git reset --hard origin/dev_airflow')
         run('git checkout dev_airflow')
+        run('.venv3/bin/pip3 install -r requirements/common.txt')
+
+
+@parallel
+def update_test():
+    with cd('/home/chiufung/work/ProjectNewHouseMonitor'):
+        run('git fetch')
+        run('git reset --hard origin/dev_airflow_test')
+        run('git checkout dev_airflow_test')
         run('.venv3/bin/pip3 install -r requirements/common.txt')
 
 
