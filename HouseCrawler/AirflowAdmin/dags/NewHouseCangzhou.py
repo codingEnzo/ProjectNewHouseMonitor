@@ -117,10 +117,27 @@ t2 = PythonOperator(
 )
 
 
-base_cur = ProjectBaseCangzhou.objects.all()
+cur = ProjectBaseCangzhou.objects.aggregate(*[{"$sort": {"CurTimeStamp": 1}},
+                                             {'$group':
+                                                 {'_id': "$ProjectNo",
+                                                  'CurTimeStamp':{'$last': '$CurTimeStamp'},
+                                                  'NewCurTimeStamp': {'$last': '$NewCurTimeStamp'},
+                                                  'change_data': {'$last': '$change_data'},
+                                                  'presellInfoCode':{'$last': '$presellInfoCode'},
+                                                  'buildInfoCode': {'$last': '$buildInfoCode'},
+                                                  'tdzInfoCode': {'$last': '$tdzInfoCode'},
+                                                  'sgxkzInfoCode': {'$last': '$sgxkzInfoCode'},
+                                                  'jsydghxkzInfoCode': {'$last': '$jsydghxkzInfoCode'},
+                                                  'ghxkzInfo': {'$last': '$ghxkzInfo'},
+                                                  'ProjectName': {'$last': '$ProjectName'},
+                                                  'ProjectNo': {'$last': '$ProjectNo'},
+                                                  'ProjectCode': {'$last': '$ProjectCode'},
+
+                                                 }
+                                             }],allowDiskUse=True)
 req_list = []
 
-for item in base_cur:
+for item in cur:
     buildInfoCode = item['buildInfoCode']
     ProjectName = item['ProjectName']
     ProjectNo = item['ProjectNo']
