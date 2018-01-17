@@ -3263,6 +3263,7 @@ class BuildingInfoYantai(Document):
     ProjectUUID = fields.UUIDField(default = uuid.uuid3(uuid.NAMESPACE_DNS, ''), binary = False, null = False)
     ProjectName = fields.StringField(default = '', max_length = 100, null = False)  # 项目名称
     BuildingUUID = fields.UUIDField(default = uuid.uuid3(uuid.NAMESPACE_DNS, ''), binary = False, null = False)
+    BuildingID = fields.StringField(default='', max_length=100, null=False)  # 楼栋ID
     BuildingName = fields.StringField(default = '', max_length = 100, null = False)  # 楼栋名
     SourceUrl = fields.URLField(default = None, null = True, blank = True)  # 楼栋销控表列表页url
     meta = {
@@ -3288,6 +3289,7 @@ class HouseInfoYantai(Document):
     HouseUUID = fields.UUIDField(default = uuid.uuid3(uuid.NAMESPACE_DNS, ''), binary = False, null = False)
     HouseNumber = fields.StringField(default = '', max_length = 255)  # 户号
     UnitName = fields.StringField(default = '', max_length = 255)  # 单元
+    ActualFloor = fields.StringField(default='', max_length=255)  # 楼层
     HouseState = fields.StringField(default = '', max_length = 255)  # 当前状态
     HouseStateLatest = fields.StringField(default = '', max_length = 255, null = False, blank = True)  # 上次状态
 
