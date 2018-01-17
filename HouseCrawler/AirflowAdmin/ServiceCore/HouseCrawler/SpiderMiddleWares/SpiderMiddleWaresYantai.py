@@ -3,6 +3,7 @@ import logging
 import sys
 import uuid
 
+import time
 from HouseCrawler.Items.ItemsYantai import *
 from HouseNew.models import *
 from scrapy import Request
@@ -228,6 +229,7 @@ class ProjectInfoHandleMiddleware(object):
         if buildingInfo_dict:
             for key, value in buildingInfo_dict.items():
                 if value:
+                    # 销控表的列表访问链接
                     url = 'http://www.ytfcjy.com/public/project/RoomList.aspx?code={code}&rsr=1001&rse=0&jzmj=&tnmj='.format(
                             code = value)
                     buildingInfoItem = BuildingInfoItem()
@@ -236,18 +238,32 @@ class ProjectInfoHandleMiddleware(object):
                     buildingInfoItem['ProjectName'] = projectInfoItem['ProjectName']
                     buildingInfoItem['BuildingUUID'] = uuid.uuid3(uuid.NAMESPACE_DNS, url)
                     buildingInfoItem['BuildingName'] = key[:key.index('(')]
+                    buildingInfoItem['BuildingID'] = value
                     result.append(buildingInfoItem)
 
-                    building_info_req = Request(url = url,
-                                                headers = self.settings.get('DEFAULT_REQUEST_HEADERS'),
-                                                dont_filter = True,
-                                                meta = {
-                                                    'PageType': 'HouseList',
-                                                    'ProjectUUID': str(projectInfoItem['ProjectUUID']),
-                                                    'ProjectName': projectInfoItem['ProjectName'],
-                                                    'BuildingName': buildingInfoItem['BuildingName'],
-                                                    'BuildingUUID': str(buildingInfoItem['BuildingUUID']),
-                                                })
+                    body = '%3C?xml%20version=%221.0%22%20encoding=%22utf-8%22%20standalone=%22yes%22?%3E%0A%3Cparam%20funname=%22SouthDigital.Wsba.CBuildTableEx.GetBuildHTMLEx%22%3E%0A%3Citem%3E{BuildingID}%3C/item%3E%0A%3Citem%3E1%3C/item%3E%0A%3Citem%3E1%3C/item%3E%0A%3Citem%3E80%3C/item%3E%0A%3Citem%3E720%3C/item%3E%0A%3Citem%3Eg_oBuildTable%3C/item%3E%0A%3Citem%3E%201=1%3C/item%3E%0A%3C/param%3E%0A'
+                    building_info_req = Request(
+                        url='http://www.ytfcjy.com/Common/Agents/ExeFunCommon.aspx?&req={time}'.format(
+                            time=round(time.time() * 1000)),
+                        headers={
+                            'Host': 'www.ytfcjy.com',
+                            'Connection': 'keep-alive',
+                            'Origin': 'http:/www.ytfcjy.com',
+                            'Content-Type': 'text/plain;charset=UTF-8',
+                            'Accept': '*/*',
+                            'Accept-Encoding': 'gzip, deflate',
+                            'Accept-Language': 'zh-CN,zh;q=0.9',
+                        },
+                        dont_filter=True,
+                        method='POST',
+                        body=body.format(BuildingID=value),
+                        meta={
+                            'PageType': 'HouseList',
+                            'ProjectUUID': str(projectInfoItem['ProjectUUID']),
+                            'ProjectName': projectInfoItem['ProjectName'],
+                            'BuildingName': buildingInfoItem['BuildingName'],
+                            'BuildingUUID': str(buildingInfoItem['BuildingUUID']),
+                        })
                     result.append(building_info_req)
         return result
 
