@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #!/usr/bin/python
 from scrapy_djangoitem import DjangoItem
-from NewCangzhou.HouseCrawler.HouseAdmin.HouseNew.models import *
+from HouseNew.models import *
 
 class ProjectBaseItem(DjangoItem):
     django_model = ProjectBaseCangzhou
