@@ -111,7 +111,7 @@ t1_index = PythonOperator(
         'spiderName': 'DefaultCrawler',
         'settings': spider_index_settings,
         'urlList': project_base_list},
-    dag=dag
+    dag=dag_index
 )
 
 project_info_list = []
