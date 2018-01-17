@@ -61,7 +61,15 @@ spider_settings = {
     'CLOSESPIDER_TIMEOUT': 3600 * 5.7,
     'CONCURRENT_REQUESTS': 8,
     'RETRY_TIMES': 30,
-    'REDIRECT_ENABLED': True
+    'REDIRECT_ENABLED': True,
+    'DEFAULT_REQUEST_HEADERS': {'Host': 'www.yfci.gov.cn:8080',
+                                'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+                                'Accept-Language': 'en-US,en;q=0.5',
+                                'Accept-Encoding': 'gzip, deflate',
+                                'Referer': 'http://www.yfci.gov.cn:8080/HousePresell/user_kfs_old.aspx',
+                                'Connection': 'keep-alive',
+                                'Upgrade-Insecure-Requests': 1
+                                }
 }
 
 spider_index_settings = {
@@ -75,25 +83,32 @@ spider_index_settings = {
     'CLOSESPIDER_TIMEOUT': 3600 * 5.7,
     'CONCURRENT_REQUESTS': 8,
     'RETRY_TIMES': 30,
-    'REDIRECT_ENABLED': True
+    'REDIRECT_ENABLED': True,
+    'DEFAULT_REQUEST_HEADERS': {'Host': 'www.yfci.gov.cn:8080',
+                                'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+                                'Accept-Language': 'en-US,en;q=0.5',
+                                'Accept-Encoding': 'gzip, deflate',
+                                'Referer': 'http://www.yfci.gov.cn:8080/HousePresell/user_kfs_old.aspx',
+                                'Connection': 'keep-alive',
+                                'Upgrade-Insecure-Requests': 1
+                                }
 }
 
 dag = DAG('NewHouseYF', default_args=default_args,
           schedule_interval="15 */6 * * *")
 
 dag_index = DAG('NewHouseYF_Index', default_args=default_args,
-          schedule_interval="15 23 * * *")
+                schedule_interval="15 23 * * *")
 
 project_base_urls = ['http://www.yfci.gov.cn:8080/HousePresell/user_kfs_old.aspx?lid=4940be08-edc0-4792-a0b5-1ee518530651&page=1',
                      'http://www.yfci.gov.cn:8080/HousePresell/user_kfs_old.aspx?lid=b2fe0e00-f601-4748-9b9e-1475a3ef0085&page=1',
                      'http://www.yfci.gov.cn:8080/HousePresell/user_kfs_old.aspx?lid=71ffcc09-ac55-4960-be3c-56a7bbe06804&page=1',
                      'http://www.yfci.gov.cn:8080/HousePresell/user_kfs_old.aspx?lid=ded72eac-dd4f-4675-a044-301bf2b337a5&page=1',
                      'http://www.yfci.gov.cn:8080/HousePresell/user_kfs_old.aspx?lid=bfb9bd7b-6468-469e-b3e7-e8498d6a2ecc&page=1']
-project_base_list = []
-for url in project_base_urls:
-    project_base = {'source_url': url,
-                    'meta': {'PageType': 'ProjectBase'}}
-    project_base_list.append(project_base)
+project_base_list = [{'source_url': url,
+                    'meta': {'PageType': 'ProjectBase'}} for url in project_base_urls]
+project_index_list = [{'source_url': url,
+                    'meta': {'PageType': 'ProjectBaseUse'}} for url in project_base_urls]
 t1 = PythonOperator(
     task_id='LoadProjectBaseYF',
     python_callable=spider_call,
@@ -110,7 +125,7 @@ t1_index = PythonOperator(
     op_kwargs={
         'spiderName': 'DefaultCrawler',
         'settings': spider_index_settings,
-        'urlList': project_base_list},
+        'urlList': project_index_list},
     dag=dag_index
 )
 
@@ -132,14 +147,14 @@ t2 = PythonOperator(
 
 building_info_list = []
 cur = BuildingInfoYunfu.objects.aggregate(*[{"$sort": {"CurTimeStamp": 1}},
-                                               {'$group': {
-                                                   '_id': "$BuildingUUID",
-                                                   'ProjectName': {'$first': '$ProjectName'},
-                                                   'ProjectUUID': {'$first': '$ProjectUUID'},
-                                                   'BuildingName': {'$first': '$BuildingName'},
-                                                   'BuildingUUID': {'$first': '$BuildingUUID'},
-                                                   'BuildingURL': {'$first': '$BuildingURL'}
-                                               }}])
+                                            {'$group': {
+                                                '_id': "$BuildingUUID",
+                                                'ProjectName': {'$first': '$ProjectName'},
+                                                'ProjectUUID': {'$first': '$ProjectUUID'},
+                                                'BuildingName': {'$first': '$BuildingName'},
+                                                'BuildingUUID': {'$first': '$BuildingUUID'},
+                                                'BuildingURL': {'$first': '$BuildingURL'}
+                                            }}])
 for item in cur:
     if item['BuildingURL']:
         if True:
