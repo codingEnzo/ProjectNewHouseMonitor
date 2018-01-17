@@ -11,7 +11,7 @@ from scrapy import Request
 from scrapy import Selector
 from HouseNew.models import *
 from HouseCrawler.Items.ItemsCangzhou import *
-from collections import OrderedDict
+
 
 if sys.version_info.major >= 3:
     import urllib.parse as urlparse

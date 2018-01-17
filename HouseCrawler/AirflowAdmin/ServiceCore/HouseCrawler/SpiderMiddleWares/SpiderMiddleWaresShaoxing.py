@@ -1,11 +1,10 @@
 # coding = utf-8
-import json
 import logging
 import sys
 import uuid
 import regex
 import time
-from redis import Redis
+
 from HouseCrawler.Items.ItemsShaoxing import *
 from scrapy import Request
 
