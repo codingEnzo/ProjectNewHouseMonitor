@@ -70,7 +70,7 @@ def install_project():
         run('git clone http://10.30.4.20/ProjectNewHouse/ProjectNewHouseMonitor.git')
 
     with cd('/home/chiufung/work/ProjectNewHouseMonitor'):
-        run('virtualenv .venv3 -p python3')
+        run('virtualenv .venv3 -p python34')
 
 
 @parallel

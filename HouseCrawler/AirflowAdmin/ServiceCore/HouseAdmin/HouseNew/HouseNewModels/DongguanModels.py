@@ -138,6 +138,7 @@ class HouseInfoDongguan(Document):
                                  binary=False, null=False)
     HouseName = fields.StringField(default='', max_length=1024, null=False)
     HouseFloor = fields.StringField(default='', max_length=1024, null=False)
+    HouseFloorCross = fields.StringField(default='', max_length=1024, null=False)
     HouseSaleState = fields.StringField(
         default='', max_length=1024, null=False)
     HouseSaleStateLatest = fields.StringField(
