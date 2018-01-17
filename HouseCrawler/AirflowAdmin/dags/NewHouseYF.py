@@ -56,59 +56,28 @@ spider_settings = {
         'HouseCrawler.SpiderMiddleWares.SpiderMiddleWaresYF.HouseInfoHandleMiddleware': 105,
         'HouseCrawler.SpiderMiddleWares.SpiderMiddleWaresYF.CompanyInfoHandleMiddleware': 106,
         'HouseCrawler.SpiderMiddleWares.SpiderMiddleWaresYF.PreSellInfoHandleMiddleware': 107,
-    },
-    'RETRY_ENABLE': True,
-    'CLOSESPIDER_TIMEOUT': 3600 * 5.7,
-    'CONCURRENT_REQUESTS': 8,
-    'RETRY_TIMES': 30,
-    'REDIRECT_ENABLED': True,
-    'DEFAULT_REQUEST_HEADERS': {'Host': 'www.yfci.gov.cn:8080',
-                                'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
-                                'Accept-Language': 'en-US,en;q=0.5',
-                                'Accept-Encoding': 'gzip, deflate',
-                                'Referer': 'http://www.yfci.gov.cn:8080/HousePresell/user_kfs_old.aspx',
-                                'Connection': 'keep-alive',
-                                'Upgrade-Insecure-Requests': 1
-                                }
-}
-
-spider_index_settings = {
-    'ITEM_PIPELINES': {
-        'HouseCrawler.Pipelines.PipelinesYF.YFPipeline': 300,
-    },
-    'SPIDER_MIDDLEWARES': {
         'HouseCrawler.SpiderMiddleWares.SpiderMiddleWaresYF.ProjectIndexHandleMiddleware': 108,
     },
     'RETRY_ENABLE': True,
     'CLOSESPIDER_TIMEOUT': 3600 * 5.7,
     'CONCURRENT_REQUESTS': 8,
     'RETRY_TIMES': 30,
-    'REDIRECT_ENABLED': True,
-    'DEFAULT_REQUEST_HEADERS': {'Host': 'www.yfci.gov.cn:8080',
-                                'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
-                                'Accept-Language': 'en-US,en;q=0.5',
-                                'Accept-Encoding': 'gzip, deflate',
-                                'Referer': 'http://www.yfci.gov.cn:8080/HousePresell/user_kfs_old.aspx',
-                                'Connection': 'keep-alive',
-                                'Upgrade-Insecure-Requests': 1
-                                }
+    'REDIRECT_ENABLED': True
 }
 
 dag = DAG('NewHouseYF', default_args=default_args,
           schedule_interval="15 */6 * * *")
 
-dag_index = DAG('NewHouseYF_Index', default_args=default_args,
-                schedule_interval="15 23 * * *")
-
-project_base_urls = ['http://www.yfci.gov.cn:8080/HousePresell/user_kfs_old.aspx?lid=4940be08-edc0-4792-a0b5-1ee518530651&page=1',
-                     'http://www.yfci.gov.cn:8080/HousePresell/user_kfs_old.aspx?lid=b2fe0e00-f601-4748-9b9e-1475a3ef0085&page=1',
-                     'http://www.yfci.gov.cn:8080/HousePresell/user_kfs_old.aspx?lid=71ffcc09-ac55-4960-be3c-56a7bbe06804&page=1',
-                     'http://www.yfci.gov.cn:8080/HousePresell/user_kfs_old.aspx?lid=ded72eac-dd4f-4675-a044-301bf2b337a5&page=1',
-                     'http://www.yfci.gov.cn:8080/HousePresell/user_kfs_old.aspx?lid=bfb9bd7b-6468-469e-b3e7-e8498d6a2ecc&page=1']
-project_base_list = [{'source_url': url,
-                    'meta': {'PageType': 'ProjectBase'}} for url in project_base_urls]
-project_index_list = [{'source_url': url,
-                    'meta': {'PageType': 'ProjectBaseUse'}} for url in project_base_urls]
+project_base_urls = ['http://219.129.189.12:8090/JHHouseWeb/user_kfs.aspx?lid=a88b3b89-472c-493b-9b4b-970f7848114f',
+                     'http://219.129.189.12:8090/JHHouseWeb/user_kfs.aspx?lid=c4407134-22b9-4a2e-9556-9df063088aca',
+                     'http://219.129.189.12:8090/JHHouseWeb/user_kfs.aspx?lid=caf441f1-a969-4682-8e63-4586ffe5caa8',
+                     'http://219.129.189.12:8090/JHHouseWeb/user_kfs.aspx?lid=fefe5706-0b08-42a1-bbe6-78c5d54d4dba',
+                     'http://219.129.189.12:8090/JHHouseWeb/user_kfs.aspx?lid=acf37d73-3bf0-4819-9f55-3a9279f54ab8']
+project_base_list = []
+for url in project_base_urls:
+    project_base = {'source_url': url,
+                    'meta': {'PageType': 'ProjectBase'}}
+    project_base_list.append(project_base)
 t1 = PythonOperator(
     task_id='LoadProjectBaseYF',
     python_callable=spider_call,
@@ -117,16 +86,6 @@ t1 = PythonOperator(
         'settings': spider_settings,
         'urlList': project_base_list},
     dag=dag
-)
-
-t1_index = PythonOperator(
-    task_id='LoadProjectBaseYF_index',
-    python_callable=spider_call,
-    op_kwargs={
-        'spiderName': 'DefaultCrawler',
-        'settings': spider_index_settings,
-        'urlList': project_index_list},
-    dag=dag_index
 )
 
 project_info_list = []
@@ -147,14 +106,14 @@ t2 = PythonOperator(
 
 building_info_list = []
 cur = BuildingInfoYunfu.objects.aggregate(*[{"$sort": {"CurTimeStamp": 1}},
-                                            {'$group': {
-                                                '_id': "$BuildingUUID",
-                                                'ProjectName': {'$first': '$ProjectName'},
-                                                'ProjectUUID': {'$first': '$ProjectUUID'},
-                                                'BuildingName': {'$first': '$BuildingName'},
-                                                'BuildingUUID': {'$first': '$BuildingUUID'},
-                                                'BuildingURL': {'$first': '$BuildingURL'}
-                                            }}])
+                                               {'$group': {
+                                                   '_id': "$BuildingUUID",
+                                                   'ProjectName': {'$first': '$ProjectName'},
+                                                   'ProjectUUID': {'$first': '$ProjectUUID'},
+                                                   'BuildingName': {'$first': '$BuildingName'},
+                                                   'BuildingUUID': {'$first': '$BuildingUUID'},
+                                                   'BuildingURL': {'$first': '$BuildingURL'}
+                                               }}])
 for item in cur:
     if item['BuildingURL']:
         if True:
