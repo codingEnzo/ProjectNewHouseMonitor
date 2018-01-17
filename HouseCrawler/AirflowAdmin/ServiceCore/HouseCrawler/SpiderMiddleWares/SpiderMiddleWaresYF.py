@@ -104,7 +104,7 @@ class ProjectBaseHandleMiddleware(object):
             if result:
                 return result
             return []
-        if response.meta.get('PageType') not in ('ProjectBase', 'ProjectBaseUse', 'ProjectPage', 'ProjectList'):
+        if response.meta.get('PageType') not in ('ProjectBase', 'ProjectPage', 'ProjectList'):
             if result:
                 return result
             return []
@@ -112,13 +112,7 @@ class ProjectBaseHandleMiddleware(object):
 
         if response.meta.get('PageType') == "ProjectBase":
             result.append(Request(url=response.url,
-                                  headers=headers, meta={'PageType': 'ProjectBaseUse'}))
-        elif response.meta.get('PageType') == "ProjectBaseUse":
-            p_page_base_url = response.xpath(
-                '//div[@id="frame"]/iframe/@src').extract_first()
-            if p_page_base_url:
-                result.append(Request(url=urlparse.urljoin(response.url, p_page_base_url),
-                                      headers=headers, meta={'PageType': 'ProjectPage'}))
+                                  headers=headers, meta={'PageType': 'ProjectPage'}))
         elif response.meta.get('PageType') == "ProjectPage":
             page_list = [urlparse.urljoin(response.url, path) for path in response.xpath(
                 '//td[@id="pagetd"]/a[not (@title)]/@href').extract()]
