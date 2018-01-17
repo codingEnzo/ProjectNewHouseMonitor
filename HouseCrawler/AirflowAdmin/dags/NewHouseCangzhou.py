@@ -6,6 +6,10 @@ import sys
 import django
 from airflow import DAG
 from airflow.operators.python_operator import PythonOperator
+if sys.version_info.major >= 3:
+    import urllib.parse as urlparse
+else:
+    import urlparse
 
 BASE_DIR = os.path.abspath(os.environ.get('AIRFLOW_HOME'))
 HOUSESERVICECORE_DIR = os.path.abspath(os.path.join(BASE_DIR, 'ServiceCore'))
@@ -24,17 +28,14 @@ django.setup()
 
 from HouseNew.models import *
 from services.spider_service import spider_call
-if sys.version_info.major >= 3:
-    import urllib.parse as urlparse
-else:
-    import urlparse
+
 
 STARTDATE = datetime.datetime.now() - datetime.timedelta(hours=9)
 
 default_args = {
     'owner': 'airflow',
     'start_date': STARTDATE,
-    'email': ['jiajia.sun@yunfangdata.com'],
+    'email': ['1012137875@qq.com'],
     'email_on_failure': False,
     'email_on_retry': False,
     'depends_on_past': False,
@@ -63,7 +64,6 @@ spider_settings = {
     'RETRY_ENABLE': True,
     'CLOSESPIDER_TIMEOUT': 3600 * 7.5,
     'CONCURRENT_REQUESTS': 64,
-
     'USER_AGENTS':[
         "Mozilla/5.0 (Windows NT 6.0) AppleWebKit/536.5 (KHTML, like Gecko) Chrome/19.0.1084.36 Safari/536.5",
         "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/536.3 (KHTML, like Gecko) Chrome/19.0.1063.0 Safari/536.3",
@@ -134,7 +134,7 @@ cur = ProjectBaseCangzhou.objects.aggregate(*[{"$sort": {"CurTimeStamp": 1}},
                                                   'ProjectCode': {'$last': '$ProjectCode'},
 
                                                  }
-                                             }],allowDiskUse=True)
+                                             }])
 req_list = []
 
 for item in cur:
