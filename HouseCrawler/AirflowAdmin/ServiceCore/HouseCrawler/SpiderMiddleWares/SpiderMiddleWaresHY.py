@@ -66,7 +66,7 @@ class ProjectBaseHandleMiddleware(object):
                 pb['ProjectCompany'] = p.get('KFQYMC', '')
                 pb['ProjectCompanyUUID'] = uuid.uuid3(
                     uuid.NAMESPACE_DNS, pb['ProjectCompany'])
-                pb['ProjectURL'] = "http://183.63.60.194:8808/public/web/ysxm?ysxmid=%s" % pb['ProjectID']
+                pb['ProjectURL'] = "http://183.63.60.194:8808/public/web/ysxm?ysxmid=%s" % pb['SubProjectID']
                 pb['SubProjectProjectUUID'] = uuid.uuid3(
                     uuid.NAMESPACE_DNS, pb['ProjectName'] + pb['SubProjectName'])
                 if pb['SubProjectID'] != '':
