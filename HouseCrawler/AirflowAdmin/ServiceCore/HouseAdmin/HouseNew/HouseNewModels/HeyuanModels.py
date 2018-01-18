@@ -95,7 +95,8 @@ class BuildingInfoHeyuan(Document):
         default='', max_length=255, null=False)
     BuildingFloorNum = fields.StringField(
         default='', max_length=255, null=False)
-    BuildingURL = fields.URLField(default=None, null=True, blank=True)
+    BuildingURL = fields.StringField(
+        default='', max_length=255, null=False)
     BuildingUUID = fields.UUIDField(default=uuid.uuid3(uuid.NAMESPACE_DNS, ''),
                                     binary=False, null=False)
     meta = {
