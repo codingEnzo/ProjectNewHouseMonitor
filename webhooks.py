@@ -22,7 +22,7 @@ class S(BaseHTTPRequestHandler):
             # 提取 branch 名字
             branch = post_data.get('ref').split('/')[-1]
             if branch == 'dev_airflow':
-                os.system('fab -R worker update')
+                os.system('fab -R worker update_code')
                 print('Done.')
         self.wfile.write("POST request for {}".format(
             self.path).encode('utf-8'))

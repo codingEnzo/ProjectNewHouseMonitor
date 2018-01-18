@@ -94,12 +94,20 @@ def remove_leptonica():
 
 
 @parallel
-def update():
+def update_all():
     with cd('/home/chiufung/work/ProjectNewHouseMonitor'):
         run('git fetch')
         run('git reset --hard origin/dev_airflow')
         run('git checkout dev_airflow')
         run('.venv3/bin/pip3 install -r requirements/common.txt')
+
+
+@parallel
+def update_code():
+    with cd('/home/chiufung/work/ProjectNewHouseMonitor'):
+        run('git fetch')
+        run('git reset --hard origin/dev_airflow')
+        run('git checkout dev_airflow')
 
 
 @parallel
