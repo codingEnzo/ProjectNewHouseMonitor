@@ -51,7 +51,7 @@ class ProjectBaseHandleMiddleware(object):
         if response.meta.get('PageType') == "ProjectBase":
             project_list = json.loads(response.body_as_unicode()).get('Data')
             for p in project_list:
-                pb = {}
+                pb = ProjectBaseItem()
                 pb['SubProjectName'] = p.get('YSXMMC', '')
                 pb['SubProjectID'] = p.get('YSXMID', '')
                 pb['ProjectName'] = p.get('KFXMMC', '')

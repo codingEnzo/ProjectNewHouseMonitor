@@ -25,7 +25,6 @@ sys.path.append(HOUSESERVICECORE_DIR)
 os.environ['DJANGO_SETTINGS_MODULE'] = 'HouseAdmin.settings'
 django.setup()
 
-
 from HouseNew.models import ProjectBaseHeyuan, BuildingInfoHeyuan
 from services.spider_service import spider_call
 
