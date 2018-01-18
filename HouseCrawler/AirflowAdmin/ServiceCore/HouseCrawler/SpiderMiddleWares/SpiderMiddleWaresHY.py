@@ -76,7 +76,8 @@ class ProjectBaseHandleMiddleware(object):
                 company_url = "http://183.63.60.194:8808/public/web/KfxmList?kfsid=%s" % p.get(
                     'KFQYBM', '')
                 result.append(Request(url=company_url,
-                                      headers=headers, meta={'PageType': 'CompanyPage'}))
+                                      headers=headers,
+                                      meta={'PageType': 'CompanyPage'}))
         return result
 
     def process_spider_exception(self, response, exception, spider):
