@@ -51,7 +51,7 @@ class ProjectBaseHandleMiddleware(object):
         if response.meta.get('PageType') == "ProjectBase":
             project_list = json.loads(response.body_as_unicode()).get('Data')
             for p in project_list:
-                pb = ProjectBaseItem()
+                pb = {}
                 pb['SubProjectName'] = p.get('YSXMMC', '')
                 pb['SubProjectID'] = p.get('YSXMID', '')
                 pb['ProjectName'] = p.get('KFXMMC', '')
@@ -61,11 +61,13 @@ class ProjectBaseHandleMiddleware(object):
                 pb['ProjectOpenDate'] = p.get('KPSJ', '')
                 pb['ProjectRegDate'] = p.get('FZSJ', '')
                 pb['ProjectRegName'] = p.get('XKZH', '')
-                pb['ProjectRegUUID'] = uuid.uuid3(
-                    uuid.NAMESPACE_DNS, pb['ProjectRegName'])
+                if pb['ProjectRegName']:
+                    pb['ProjectRegUUID'] = uuid.uuid3(
+                        uuid.NAMESPACE_DNS, pb['ProjectRegName'])
                 pb['ProjectCompany'] = p.get('KFQYMC', '')
-                pb['ProjectCompanyUUID'] = uuid.uuid3(
-                    uuid.NAMESPACE_DNS, pb['ProjectCompany'])
+                if pb['ProjectCompany']:
+                    pb['ProjectCompanyUUID'] = uuid.uuid3(
+                        uuid.NAMESPACE_DNS, pb['ProjectCompany'])
                 pb['ProjectURL'] = "http://183.63.60.194:8808/public/web/ysxm?ysxmid=%s" % pb['SubProjectID']
                 pb['SubProjectProjectUUID'] = uuid.uuid3(
                     uuid.NAMESPACE_DNS, pb['ProjectName'] + pb['SubProjectName'])
