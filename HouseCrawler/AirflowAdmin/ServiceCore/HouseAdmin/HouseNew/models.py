@@ -4218,9 +4218,7 @@ class House_DetailHuizhou(Document):
     HouseUUID = fields.UUIDField(default=uuid.uuid3(uuid.NAMESPACE_DNS, ''),binary=False, null=False)  # 户uuid
     RealEstateProjectID = fields.StringField(default = '')  # 房地产项目ID
     HouseID = fields.StringField(default = '')  # 户id
-    BuildingID = fields.StringField(default = '')  # 楼栋id
     HouseUrl = fields.StringField(default = '')  # 户url
-    SourceUrl = fields.StringField(default = '')  # 来源url
     BuildingNumber = fields.StringField(default = '')  # 楼栋号码
     ProjectName = fields.StringField(default = '')  # 项目名称
     BuildingName = fields.StringField(default = '')  # 楼栋名称
@@ -4260,7 +4258,6 @@ class House_DetailHuizhou(Document):
             "BuildingUUID",
             "HouseUUID",
             "HouseID",
-            "BuildingID",
             'HouseUrl',
             'RecordTime',
             'HouseSaleStateLatest',
