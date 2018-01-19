@@ -349,6 +349,8 @@ class HouseListHandleMiddleware(object):
                         houseInfoItem['MeasuredInsideOfBuildingArea'] = t.group(2)
                         houseInfoItem['MeasuredSharedPublicArea'] = t.group(3)
                     houseInfoItem['HouseNO'] = HouseNO
+                if houseInfoItem['HouseNO'] is None:
+                    return result
                 houseInfoItem['HouseUUID'] = uuid.uuid3(uuid.NAMESPACE_DNS,
                                                         BuildingUUID + houseInfoItem['ActualFloor'] + houseInfoItem[
                                                             'HouseNO'])
