@@ -27,7 +27,6 @@ django.setup()
 
 from HouseNew.models import *
 from services.spider_service import spider_call
-from django.conf import settings as dj_settings
 
 
 def just_one_instance(func):
@@ -130,6 +129,16 @@ for item in cur:
         }
         building_detail_list.append(building_detail)
 
+t2 = PythonOperator(
+    task_id='LoadBuildinglHuizhou',
+    python_callable=spider_call,
+    op_kwargs={
+        'spiderName': 'DefaultCrawler',
+        'settings': spider_settings,
+        'urlList': building_detail_list
+    },
+    dag=dag
+)
 
 
 house_detail_list = []
@@ -147,7 +156,7 @@ cur = Building_DetailHuizhou.objects.aggregate(*[{'$sort': {'CheackTimeLatest': 
                                               ])
 for item in cur:
     if item['BuildingUrl']:
-        house_detail = {'source_url': sourceurl,
+        house_detail = {'source_url': item['BuildingUrl'],
                             'method': 'GET',
                             'meta': {
                                 'PageType': 'hd_url',
