@@ -345,7 +345,7 @@ class BuildingDetailMiddleware(object):
 
                     BuildingItem['PresalePermitNumber'] = item_cd['PresalePermitNumber']
                     if item_cd['PresalePermitNumber'] !='':
-                        item_cd['PresalePermitNumberUUID'] = uuid.uuid3(uuid.NAMESPACE_DNS, item_cd['PresalePermitNumber'])
+                        item_cd['PresalePermitNumberUUID'] = str(uuid.uuid3(uuid.NAMESPACE_DNS, item_cd['PresalePermitNumber']))
                         BuildingItem['PresalePermitNumberUUID'] = item_cd['PresalePermitNumberUUID']
 
                     BuildingItem['BuildingName'] = clean_rule1(i.xpath('./td[2]/span/text()').extract_first())
