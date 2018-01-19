@@ -97,105 +97,105 @@ t1 = PythonOperator(
     dag=dag
 )
 
-building_detail_list = []
-cur = Project_DetailHuizhou.objects.aggregate(*[
-        {
-            '$sort':{'RecordTime':-1}
-        },
-        {
-            '$group':{'_id':'$ProjectUUID',
-                      'ProjectUUID':{'$first':'$ProjectUUID'},
-                      'ProjectName':{'$first':'$ProjectName'},
-                      'ProjectID':{'$first':'$ProjectID'},
-                      'RegionName':{'$first':'$RegionName'},
-                      'RealEstateProjectID':{'$first':'$RealEstateProjectID'},
-            }
-        }
-    ])
-
-for item in cur:
-    if item['RealEstateProjectID']:
-        building_detail = {
-            'source_url': 'http://newhouse.fz0752.com/project/selist.shtml?num={0}'.format(item['RealEstateProjectID']),
-            'method': 'GET',
-            'meta': {
-                'PageType': 'bd_url',
-                'Record_Data': {
-                    "ProjectUUID": str(item['ProjectUUID']),
-                    "ProjectName": item['ProjectName'],
-                    "ProjectID": item['ProjectID'],
-                    "RegionName": item['RegionName'],
-                }
-            }
-        }
-        building_detail_list.append(building_detail)
-
-t2 = PythonOperator(
-    task_id='LoadBuildinglHuizhou',
-    python_callable=spider_call,
-    op_kwargs={
-        'spiderName': 'DefaultCrawler',
-        'settings': spider_settings,
-        'urlList': building_detail_list
-    },
-    dag=dag
-)
-
-def cache_query():
-    r = dj_settings.REDIS_CACHE
-    cur = Building_DetailHuizhou.objects.aggregate(*[{'$sort': {'CheackTimeLatest': -1}},
-                                                     {'$group': {'_id': '$BuildingUUID',
-                                                                 'ProjectUUID': {'$first': '$ProjectUUID'},
-                                                                 'BuildingUUID': {'$first': '$BuildingUUID'},
-                                                                 'PresalePermitNumberUUID': {
-                                                                     '$first': '$PresalePermitNumberUUID'},
-                                                                 'ProjectName': {'$first': '$ProjectName'},
-                                                                 'BuildingName': {'$first': '$BuildingName'},
-                                                                 'BuildingNumber': {'$first': '$BuildingNumber'},
-                                                                 'CheackTimeLatest': {'$first': '$CheackTimeLatest'},
-                                                                 'BuildingUrl': {'$first': '$BuildingUrl'}}}
-                                                     ])
-    for item in cur:
-        try:
-            if item['BuildingUrl']:
-                house_detail = {'source_url': item['BuildingUrl'],
-                                'method': 'GET',
-                                'meta': {
-                                    'PageType': 'hd_url',
-                                    'Record_Data': {
-                                        "ProjectUUID": str(item['ProjectUUID']),
-                                        "BuildingUUID": str(item['BuildingUUID']),
-                                        "PresalePermitNumberUUID": str(item['PresalePermitNumberUUID']),
-                                        "ProjectName": item['ProjectName'],
-                                        "BuildingName": item['BuildingName'],
-                                        'BuildingNumber': item['BuildingNumber'],
-                                        'Fidfailtime': 0
-                                    }
-                                }
-                                }
-                result = pickle.dumps(house_detail)
-                r.sadd('NewHouseHuizhou', result)
-        except Exception:
-            import traceback
-            traceback.print_exc()
-    r.expire('NewHouseHuizhou', 3600)
-
-t3 = PythonOperator(
-    task_id='LoadHouseDetailHuizhouCache',
-    python_callable=cache_query,
-    dag=dag
-)
-
-
-house_detail_list = map(lambda x: pickle.loads(x), dj_settings.REDIS_CACHE.smembers('NewHouseHuizhou'))
-t4 = PythonOperator(
-    task_id='LoadHouseDetailHuizhou',
-    python_callable=spider_call,
-    op_kwargs={
-        'spiderName': 'DefaultCrawler',
-        'settings': spider_settings,
-        'urlList': house_detail_list
-    },
-    dag=dag
-)
-t4.set_upstream(t3)
+# building_detail_list = []
+# cur = Project_DetailHuizhou.objects.aggregate(*[
+#         {
+#             '$sort':{'RecordTime':-1}
+#         },
+#         {
+#             '$group':{'_id':'$ProjectUUID',
+#                       'ProjectUUID':{'$first':'$ProjectUUID'},
+#                       'ProjectName':{'$first':'$ProjectName'},
+#                       'ProjectID':{'$first':'$ProjectID'},
+#                       'RegionName':{'$first':'$RegionName'},
+#                       'RealEstateProjectID':{'$first':'$RealEstateProjectID'},
+#             }
+#         }
+#     ])
+#
+# for item in cur:
+#     if item['RealEstateProjectID']:
+#         building_detail = {
+#             'source_url': 'http://newhouse.fz0752.com/project/selist.shtml?num={0}'.format(item['RealEstateProjectID']),
+#             'method': 'GET',
+#             'meta': {
+#                 'PageType': 'bd_url',
+#                 'Record_Data': {
+#                     "ProjectUUID": str(item['ProjectUUID']),
+#                     "ProjectName": item['ProjectName'],
+#                     "ProjectID": item['ProjectID'],
+#                     "RegionName": item['RegionName'],
+#                 }
+#             }
+#         }
+#         building_detail_list.append(building_detail)
+#
+# t2 = PythonOperator(
+#     task_id='LoadBuildinglHuizhou',
+#     python_callable=spider_call,
+#     op_kwargs={
+#         'spiderName': 'DefaultCrawler',
+#         'settings': spider_settings,
+#         'urlList': building_detail_list
+#     },
+#     dag=dag
+# )
+#
+# def cache_query():
+#     r = dj_settings.REDIS_CACHE
+#     cur = Building_DetailHuizhou.objects.aggregate(*[{'$sort': {'CheackTimeLatest': -1}},
+#                                                      {'$group': {'_id': '$BuildingUUID',
+#                                                                  'ProjectUUID': {'$first': '$ProjectUUID'},
+#                                                                  'BuildingUUID': {'$first': '$BuildingUUID'},
+#                                                                  'PresalePermitNumberUUID': {
+#                                                                      '$first': '$PresalePermitNumberUUID'},
+#                                                                  'ProjectName': {'$first': '$ProjectName'},
+#                                                                  'BuildingName': {'$first': '$BuildingName'},
+#                                                                  'BuildingNumber': {'$first': '$BuildingNumber'},
+#                                                                  'CheackTimeLatest': {'$first': '$CheackTimeLatest'},
+#                                                                  'BuildingUrl': {'$first': '$BuildingUrl'}}}
+#                                                      ])
+#     for item in cur:
+#         try:
+#             if item['BuildingUrl']:
+#                 house_detail = {'source_url': item['BuildingUrl'],
+#                                 'method': 'GET',
+#                                 'meta': {
+#                                     'PageType': 'hd_url',
+#                                     'Record_Data': {
+#                                         "ProjectUUID": str(item['ProjectUUID']),
+#                                         "BuildingUUID": str(item['BuildingUUID']),
+#                                         "PresalePermitNumberUUID": str(item['PresalePermitNumberUUID']),
+#                                         "ProjectName": item['ProjectName'],
+#                                         "BuildingName": item['BuildingName'],
+#                                         'BuildingNumber': item['BuildingNumber'],
+#                                         'Fidfailtime': 0
+#                                     }
+#                                 }
+#                                 }
+#                 result = pickle.dumps(house_detail)
+#                 r.sadd('NewHouseHuizhou', result)
+#         except Exception:
+#             import traceback
+#             traceback.print_exc()
+#     r.expire('NewHouseHuizhou', 3600)
+#
+# t3 = PythonOperator(
+#     task_id='LoadHouseDetailHuizhouCache',
+#     python_callable=cache_query,
+#     dag=dag
+# )
+#
+#
+# house_detail_list = map(lambda x: pickle.loads(x), dj_settings.REDIS_CACHE.smembers('NewHouseHuizhou'))
+# t4 = PythonOperator(
+#     task_id='LoadHouseDetailHuizhou',
+#     python_callable=spider_call,
+#     op_kwargs={
+#         'spiderName': 'DefaultCrawler',
+#         'settings': spider_settings,
+#         'urlList': house_detail_list
+#     },
+#     dag=dag
+# )
+# t4.set_upstream(t3)
