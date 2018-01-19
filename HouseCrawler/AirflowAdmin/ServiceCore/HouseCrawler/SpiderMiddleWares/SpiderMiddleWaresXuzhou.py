@@ -185,10 +185,12 @@ class ProjectInfoHandleMiddleware(object):
                 result.append(req)
             return result
 
-        # 部分项目信息页面的信息为空,如果为空则保存从列表带过来的信息
-        page_ProjectName = response.xpath(
+            # 部分项目信息页面的信息为空,如果为空则保存从列表带过来的信息
+            page_ProjectName = response.xpath(
                 '//span[text()="项目名称:"]/../following-sibling::td[1]/strong/text()').extract_first()
+
         if page_ProjectName:  # 网页有内容才爬
+            projectInfoItem['PageProjectName'] = page_ProjectName
             projectInfoItem['PromotionName'] = response.xpath(
                     '//span[text()="推广名称:"]/../following-sibling::td[1]/strong/text()').extract_first()
             projectInfoItem['Developer'] = response.xpath(

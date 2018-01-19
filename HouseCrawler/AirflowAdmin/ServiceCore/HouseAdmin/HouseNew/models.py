@@ -3349,7 +3349,8 @@ class ProjectInfoXuzhou(Document):
     ProjectUUID = fields.UUIDField(default = uuid.uuid3(uuid.NAMESPACE_DNS, ''), binary = False, null = False)
     ProjectID = fields.StringField(default = '', null = False, max_length = 255)
     DistrictName = fields.StringField(default = '', max_length = 255)  # 行政区
-    ProjectName = fields.StringField(default = '', max_length = 255)  # 项目名称
+    ProjectName = fields.StringField(default='', max_length=255)  # 从列表带过来的项目名称
+    PageProjectName = fields.StringField(default='', max_length=255)  # 项目信息页的项目名称
     RegionName = fields.StringField(default = '', max_length = 255)  # 片区
     PromotionName = fields.StringField(default = '', max_length = 255)  # 推广名
     Developer = fields.StringField(default = '', max_length = 255)  # 开发商

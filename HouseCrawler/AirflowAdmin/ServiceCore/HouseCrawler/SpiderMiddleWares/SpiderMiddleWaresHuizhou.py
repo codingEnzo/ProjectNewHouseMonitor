@@ -60,6 +60,7 @@ class ProjectListMiddleware(object):
                 now_page = int(response.xpath('//*[@id="searchResult"]/dt[2]/h2/div/text()').extract_first())
 
                 crawler_page = response.xpath('//*[@id="searchResult"]/dt[2]/h2/a[10]/text()').re(r'\d+')[0]
+                crawler_page = int(crawler_page)
 
                 # 判断是否第一页,第一页进行翻页
                 if now_page==1:
