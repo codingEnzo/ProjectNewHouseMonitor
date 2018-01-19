@@ -4156,7 +4156,7 @@ class Certificate_DetailHuizhou(Document):
     RecordID = fields.UUIDField(default = uuid.uuid1(),binary = True, primary_key = True, null = False)  # 记录id
     RecordTime = fields.StringField(default=str(datetime.datetime.now()), index=True)  # 记录时间
     ProjectUUID = fields.UUIDField(default=uuid.uuid3(uuid.NAMESPACE_DNS, ''),binary=False, null=False)  # 项目uuid
-    PresalePermitNumberUUID = fields.UUIDField(default=uuid.uuid3(uuid.NAMESPACE_DNS, ''),binary=False, null=False)  # 预售证uuid
+    PresalePermitNumberUUID = fields.StringField(default = '')  # 预售证uuid
     RealEstateProjectID = fields.StringField(default = '')  # 项目id
     PresalePermitUrl = fields.StringField(default = '')  # 预售证url
     SourceUrl = fields.StringField(default = '')  # 来源url
