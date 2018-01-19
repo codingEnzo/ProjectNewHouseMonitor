@@ -130,6 +130,16 @@ for item in cur:
         }
         building_detail_list.append(building_detail)
 
+t3 = PythonOperator(
+    task_id='LoadBuildinglHuizhou',
+    python_callable=spider_call,
+    op_kwargs={
+        'spiderName': 'DefaultCrawler',
+        'settings': spider_settings,
+        'urlList': building_detail_list
+    },
+    dag=dag
+)
 
 
 house_detail_list = []
