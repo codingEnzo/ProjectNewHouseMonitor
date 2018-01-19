@@ -4193,9 +4193,8 @@ class Building_DetailHuizhou(Document):
     ProjectUUID = fields.UUIDField(default=uuid.uuid3(uuid.NAMESPACE_DNS, ''),binary=False, null=False)  # 项目uuid
     PresalePermitNumberUUID = fields.StringField(default = '')  # 预售证uuid
     BuildingUUID = fields.UUIDField(default=uuid.uuid3(uuid.NAMESPACE_DNS, ''),binary=False, null=False)  # 楼栋uuid
-    BuildingID = fields.StringField(default = '')  # 楼栋id
     PresalePermitNumber = fields.StringField(default = '')  # 预售证编号
-    BuildingUrl = fields.URLField(default=None, null=True, blank=True)  # 楼栋url
+    BuildingUrl = fields.StringField(default = '')  # 楼栋url
     SourceUrl = fields.URLField(default=None, null=True, blank=True)  # 来源url
     ProjectName = fields.StringField(default = '')  # 项目名称
     BuildingName = fields.StringField(default = '')  # 楼栋名称
