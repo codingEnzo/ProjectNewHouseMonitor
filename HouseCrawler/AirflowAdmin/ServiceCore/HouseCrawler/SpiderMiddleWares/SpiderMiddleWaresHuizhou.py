@@ -599,7 +599,6 @@ class HouseDetailMiddleware(object):
 
                 item_hd["PresalePermitNumberUUID"] = record_dict["PresalePermitNumberUUID"]
 
-                item_hd['SourceUrl'] = response.url
 
                 item_hd['HouseName'] = i.xpath('./td[not(@rowspan)][1]/text()').extract_first()
 
