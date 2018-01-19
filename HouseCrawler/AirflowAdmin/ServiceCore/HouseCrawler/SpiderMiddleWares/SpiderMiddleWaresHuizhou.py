@@ -353,10 +353,6 @@ class BuildingDetailMiddleware(object):
                     BuildingItem['BuildingNumber'] = clean_rule1(i.xpath('./td[3]/text()').extract_first())
 
                     BuildingItem['BuildingUrl'] = clean_rule1(i.xpath('./td[8]/a/@href').extract_first())
-                    try:
-                        BuildingItem['BuildingID'] = re.findall(r'bnum\=(.+?)\&', BuildingItem['BuildingUrl'])[0]
-                    except Exception as e:
-                        BuildingItem['BuildingID'] = re.findall(r'num\=(.+)?', BuildingItem['BuildingUrl'])[0]
 
                     BuildingItem['BuildingUUID'] = uuid.uuid3(uuid.NAMESPACE_DNS,
                                                          BuildingItem['ProjectName'] + BuildingItem['BuildingName'] + BuildingItem[
