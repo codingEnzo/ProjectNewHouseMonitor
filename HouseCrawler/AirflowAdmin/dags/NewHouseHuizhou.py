@@ -65,12 +65,12 @@ default_args = {
 
 spider_settings = {
     'SPIDER_MIDDLEWARES': {
-        "HouseCrawler.SpiderMiddleWares.SpiderMiddleWaresHuizhou.ProjectListMiddleware": 102,
-        "HouseCrawler.SpiderMiddleWares.SpiderMiddleWaresHuizhou.ProjectDetailMiddleware": 103,
-        "HouseCrawler.SpiderMiddleWares.SpiderMiddleWaresHuizhou.BuildingDetailMiddleware": 104,
-        "HouseCrawler.SpiderMiddleWares.SpiderMiddleWaresHuizhou.CertificateDetailMiddleware": 105,
-        "HouseCrawler.SpiderMiddleWares.SpiderMiddleWaresHuizhou.HouseDetailMiddleware": 106,
-        "HouseCrawler.SpiderMiddleWares.SpiderMiddleWaresHuizhou.MonitorMiddleware": 107,
+        # "HouseCrawler.SpiderMiddleWares.SpiderMiddleWaresHuizhou.ProjectListMiddleware": 102,
+        # "HouseCrawler.SpiderMiddleWares.SpiderMiddleWaresHuizhou.ProjectDetailMiddleware": 103,
+        # "HouseCrawler.SpiderMiddleWares.SpiderMiddleWaresHuizhou.BuildingDetailMiddleware": 104,
+        # "HouseCrawler.SpiderMiddleWares.SpiderMiddleWaresHuizhou.CertificateDetailMiddleware": 105,
+        # "HouseCrawler.SpiderMiddleWares.SpiderMiddleWaresHuizhou.HouseDetailMiddleware": 106,
+        # "HouseCrawler.SpiderMiddleWares.SpiderMiddleWaresHuizhou.MonitorMiddleware": 107,
     },
     'ITEM_PIPELINES': {
         'HouseCrawler.Pipelines.PipelinesHuizhou.PipelineHuizhou': 300,
