@@ -113,7 +113,7 @@ cur = BuildingInfoYangjiang.objects.aggregate(*[{"$sort": {"CurTimeStamp": 1}},
                                                    'BuildingName': {'$first': '$BuildingName'},
                                                    'BuildingUUID': {'$first': '$BuildingUUID'},
                                                    'BuildingURL': {'$first': '$BuildingURL'}
-                                               }}])
+                                               }}], allowDiskUse=True)
 for item in cur:
     if item['BuildingURL']:
         if True:
