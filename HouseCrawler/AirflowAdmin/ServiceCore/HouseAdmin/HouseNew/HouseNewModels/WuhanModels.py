@@ -31,7 +31,6 @@ class ProjectBaseWuhan(Document):
             'Home_sale',
             'NoHome_have_sale',
             'NoHome_sale',
-            'change_data',
         ]
     }
 
@@ -124,7 +123,6 @@ class BuildingInfoWuhan(Document):
     Layer_number = fields.StringField(default='', max_length=255, null=False)
     Set_number = fields.StringField(default='', max_length=255, null=False)
     BuildingURL = fields.URLField(default=None, null=True, blank=True)
-    change_data = fields.StringField(default='', max_length=1023, null=False)
     meta = {
         'indexes': [
             'BuildingUUID',
@@ -135,7 +133,6 @@ class BuildingInfoWuhan(Document):
             'Building_structure',
             'Layer_number',
             'Set_number',
-            'change_data',
         ]
     }
 
@@ -165,7 +162,6 @@ class HouseInfoWuhan(Document):
     Measured_area = fields.StringField(default='', max_length=255, null=False)
     Record_unit_price = fields.StringField(
         default='', max_length=255, null=False)
-    change_data = fields.StringField(default='', max_length=1023, null=False)
     StateLatest = fields.StringField(default='', max_length=1023, null=False)
     NewCurTimeStamp = fields.StringField(
         default=str(datetime.datetime.now()), index=True)
@@ -187,7 +183,6 @@ class HouseInfoWuhan(Document):
             'Predicted_area',
             'Measured_area',
             'Record_unit_price',
-            'change_data',
         ]
     }
 
