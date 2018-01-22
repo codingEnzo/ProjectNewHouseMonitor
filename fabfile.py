@@ -43,7 +43,7 @@ def install_env():
     run('yum install -y python-devel')
     run('yum install -y zlib-devel')
     run('yum install -y openssl-devel')
-    run('yum install libxslt-devel  libxslt libxml2 libxml2-devel -y')
+    run('yum install libxslt-devel libxslt libxml2 libxml2-devel -y')
     run('pip3 install ipython -i https://pypi.douban.com/simple/')
     run('pip3 install virtualenv -i https://pypi.douban.com/simple/')
     run('pip install supervisor')

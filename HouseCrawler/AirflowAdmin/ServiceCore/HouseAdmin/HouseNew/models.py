@@ -25,3 +25,4 @@ from HouseNew.HouseNewModels.YangjiangModels import *
 from HouseNew.HouseNewModels.YunfuModels import *
 from HouseNew.HouseNewModels.QingyuanModels import *
 from HouseNew.HouseNewModels.HeyuanModels import *
+from HouseNew.HouseNewModels.WuhanModels import *
