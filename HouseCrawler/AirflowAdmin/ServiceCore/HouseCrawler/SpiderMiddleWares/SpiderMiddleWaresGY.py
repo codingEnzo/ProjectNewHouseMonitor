@@ -14,14 +14,6 @@ else:
     import urlparse
 
 
-def get_url_lpid(strUrl):
-    res_id = '0'
-    match_res = re.search(r'lpid=(\d+)', str(strUrl))
-    if match_res:
-        res_id = match_res.group(1)
-    return res_id
-
-
 def get_url_sid(strUrl):
     res_id = '0'
     match_res = re.search(r'sid=(\d+)', str(strUrl))
@@ -126,7 +118,7 @@ class ProjectBaseHandleMiddleware(object):
                 pb['ProjectRegName'] = p_regname
                 pb['ProjectURL'] = p_url
                 pb['ProjectUUID'] = uuid.uuid3(uuid.NAMESPACE_DNS,
-                                               p_name + p_regname + get_url_lpid(response.url))
+                                               p_name + p_regname)
                 result.append(pb)
         return result
 
@@ -173,7 +165,7 @@ class ProjectInfoHandleMiddleware(object):
             pinfo['ProjectRegName'] = (sel.xpath(
                 '//td[text()="预(销)售证号： "]/following-sibling::td[1]/text()').extract_first() or '').strip()
             pinfo['ProjectUUID'] = uuid.uuid3(uuid.NAMESPACE_DNS,
-                                              pinfo['ProjectName'] + pinfo['ProjectRegName'] + get_url_lpid(response.url))
+                                              pinfo['ProjectName'] + pinfo['ProjectRegName'])
             pinfo['ProjectAddress'] = (sel.xpath(
                 '//td[text()="座落： "]/following-sibling::td[1]/text()').extract_first() or '').strip()
             pinfo['ProjectUsage'] = (sel.xpath(
@@ -255,7 +247,7 @@ class BuildingListHandleMiddleware(object):
                 b_info['ProjectName'] = p_name
                 b_info['ProjectRegName'] = p_regname
                 b_info['ProjectUUID'] = uuid.uuid3(uuid.NAMESPACE_DNS,
-                                                   p_name + p_regname + get_url_lpid(response.url))
+                                                   p_name + p_regname)
                 result.append(Request(url=building_base_url, dont_filter=True,
                                       meta={'PageType': 'BuildingInfo', 'item': copy.deepcopy(b_info)}))
         elif response.meta.get('PageType') == 'BuildingInfo':
