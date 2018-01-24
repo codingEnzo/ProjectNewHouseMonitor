@@ -29,8 +29,6 @@ django.setup()
 from HouseNew.models import *
 from services.spider_service import spider_call
 
-REDIS_CACHE_KEY = "NewHouseCZ"
-
 
 def just_one_instance(func):
     @functools.wraps(func)
@@ -80,7 +78,7 @@ dag = DAG('NewHouseXA', default_args=default_args,
           schedule_interval="15 */4 * * *")
 
 t1 = PythonOperator(
-    task_id='LoadProjectBaseCZ',
+    task_id='LoadProjectBaseXA',
     python_callable=spider_call,
     op_kwargs={'spiderName': 'DefaultCrawler',
                'settings': spider_settings,
