@@ -4433,6 +4433,8 @@ class BuildingInfoXian(Document):
 
 
 class HouseInfoXian(Document):
+    RecordID = fields.UUIDField(default=uuid.uuid1(),
+                                binary=True, primary_key=True, null=False)
     CurTimeStamp = fields.StringField(default=str(datetime.datetime.now()), index=True)
     ProjectUUID = fields.UUIDField(default=uuid.uuid3(uuid.NAMESPACE_DNS, ''),
                                    binary=False, null=False)
