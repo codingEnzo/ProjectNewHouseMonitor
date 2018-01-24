@@ -51,6 +51,9 @@ class XAPipeline(object):
             if q_object.filter(ProjectUUID=item['ProjectUUID']).latest(field_name='CurTimeStamp'):
                 exist_flag = True
             print(q_object.filter(ProjectUUID=item['ProjectUUID']).latest(field_name='CurTimeStamp'))
+        elif isinstance(item, PresaleLicenseInfoItem):
+            if q_object.filter(PresaleUUID=item['PresaleUUID']).latest(field_name='CurTimeStamp'):
+                exist_flag = True
         elif isinstance(item, BuildingInfoItem):
             if q_object.filter(BuildingUUID=item['BuildingUUID']).latest(field_name='CurTimeStamp'):
                 exist_flag = True
@@ -75,6 +78,15 @@ class XAPipeline(object):
                     break
         elif isinstance(item, ProjectInfoItem):
             res_object = q_object.filter(ProjectUUID=item['ProjectUUID']).latest(field_name='CurTimeStamp')
+            for key in item:
+                if not hasattr(res_object, key):
+                    diff_flag = True
+                    break
+                if self.sum_value_hash(item.get(key)) != self.sum_value_hash(getattr(res_object, key)):
+                    diff_flag = True
+                    break
+        elif isinstance(item, PresaleLicenseInfoItem):
+            res_object = q_object.filter(PresaleUUID=item['PresaleUUID']).latest(field_name='CurTimeStamp')
             for key in item:
                 if not hasattr(res_object, key):
                     diff_flag = True

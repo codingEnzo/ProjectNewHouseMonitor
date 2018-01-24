@@ -11,7 +11,7 @@ class ProjectInfoItem(DjangoItem):
     django_model = ProjectInfoXian
 
 
-class PresaleInfoItem(DjangoItem):
+class PresaleLicenseInfoItem(DjangoItem):
     django_model = PresaleInfoXian
 
 

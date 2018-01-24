@@ -4,7 +4,7 @@ import urllib.parse as urlparse
 import uuid
 
 import regex
-from HouseCrawler.Items.ItemsXIAN import *
+from HouseCrawler.Items.ItemsXA import *
 from scrapy import Request
 
 
