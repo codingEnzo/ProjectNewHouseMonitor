@@ -145,7 +145,7 @@ def cacheLoader(key=REDIS_CACHE_KEY):
         except Exception:
             import traceback
             traceback.print_exc()
-        r.expire(key, spider_settings.get('CLOSESPIDER_TIMEOUT'))
+        r.expire(key, int(spider_settings.get('CLOSESPIDER_TIMEOUT')))
 
 
 t3 = PythonOperator(
