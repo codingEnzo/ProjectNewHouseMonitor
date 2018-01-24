@@ -1,21 +1,17 @@
 # coding = utf-8
-try:
-    import datetime
-    import logging
-    import os
-    import sys
-    import uuid
+import datetime
+import logging
+import os
+import sys
+import uuid
 
-    from HouseCrawler.Items.ItemsXA import *
+from HouseCrawler.Items.ItemsXA import *
 
-    sys.path.append(os.path.abspath('.'))
-    sys.path.append(os.path.abspath('..'))
-    sys.path.append(os.path.abspath('../..'))
+sys.path.append(os.path.abspath('.'))
+sys.path.append(os.path.abspath('..'))
+sys.path.append(os.path.abspath('../..'))
 
-    logger = logging.getLogger(__name__)
-except Exception as e:
-    import traceback
-    traceback.print_exc()
+logger = logging.getLogger(__name__)
 
 
 class XAPipeline(object):

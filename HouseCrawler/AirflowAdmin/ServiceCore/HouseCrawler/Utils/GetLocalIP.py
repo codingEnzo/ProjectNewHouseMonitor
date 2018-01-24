@@ -14,9 +14,4 @@ def get_ip_address(ifname):
     )[20:24])
 
 
-LOCALIP = '192.168.6.208'
-try:
-    LOCALIP = get_ip_address(b'eth0')
-except:
-    LOCALIP = '192.168.6.208'
-
+LOCALIP = '10.30.1.69'
