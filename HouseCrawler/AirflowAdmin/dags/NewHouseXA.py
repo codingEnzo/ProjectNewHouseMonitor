@@ -1,6 +1,5 @@
 # -*-coding=utf-8-*-
 import datetime
-import functools
 import os
 import sys
 
@@ -29,24 +28,6 @@ django.setup()
 from HouseNew.models import *
 from services.spider_service import spider_call
 
-
-def just_one_instance(func):
-    @functools.wraps(func)
-    def f(*args, **kwargs):
-        import socket
-        try:
-            global s
-            s = socket.socket()
-            host = socket.gethostname()
-            s.bind((host, 60223))
-        except Exception as e:
-            print('{}\nAlready has an instance'.format(e))
-            return None
-        return func(*args, **kwargs)
-
-    return f
-
-
 STARTDATE = datetime.datetime.now() - datetime.timedelta(hours=6)
 
 default_args = {
@@ -64,12 +45,12 @@ spider_settings = {
     'ITEM_PIPELINES': {
         'HouseCrawler.Pipelines.PipelinesXA.XAPipeline': 300,
     },
-    'SPIDER_MIDDLEWARES': {
-        # 'HouseCrawler.SpiderMiddleWares.SpiderMiddleWaresXA.ProjectBaseHandleMiddleware': 102,
-        # 'HouseCrawler.SpiderMiddleWares.SpiderMiddleWaresXA.ProjectInfoHandleMiddleware': 103,
-        # 'HouseCrawler.SpiderMiddleWares.SpiderMiddleWaresXA.PresaleLicenceHandleMiddleware': 104,
-        # 'HouseCrawler.SpiderMiddleWares.SpiderMiddleWaresXA.HouseInfoHandleMiddleware': 105,
-    },
+    # 'SPIDER_MIDDLEWARES': {
+    # 'HouseCrawler.SpiderMiddleWares.SpiderMiddleWaresXA.ProjectBaseHandleMiddleware': 102,
+    # 'HouseCrawler.SpiderMiddleWares.SpiderMiddleWaresXA.ProjectInfoHandleMiddleware': 103,
+    # 'HouseCrawler.SpiderMiddleWares.SpiderMiddleWaresXA.PresaleLicenceHandleMiddleware': 104,
+    # 'HouseCrawler.SpiderMiddleWares.SpiderMiddleWaresXA.HouseInfoHandleMiddleware': 105,
+    # },
     'RETRY_ENABLE': True,
     'CLOSESPIDER_TIMEOUT': 3600 * 3.5
 }
