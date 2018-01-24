@@ -1,23 +1,25 @@
 # coding = utf-8
-import datetime
-import logging
-import os
-import sys
-import uuid
+try:
+    import datetime
+    import logging
+    import os
+    import sys
+    import uuid
 
-from HouseCrawler.Items.ItemsXA import *
+    from HouseCrawler.Items.ItemsXA import *
 
-sys.path.append(os.path.abspath('.'))
-sys.path.append(os.path.abspath('..'))
-sys.path.append(os.path.abspath('../..'))
+    sys.path.append(os.path.abspath('.'))
+    sys.path.append(os.path.abspath('..'))
+    sys.path.append(os.path.abspath('../..'))
 
-logger = logging.getLogger(__name__)
+    logger = logging.getLogger(__name__)
+except Exception as e:
+    import traceback
+    traceback.print_exc()
 
 
 class XAPipeline(object):
-
     def sum_value_hash(self, value):
-
         def safe_format_value(val):
             if not val:
                 val = ''
@@ -79,6 +81,7 @@ class XAPipeline(object):
                 if self.sum_value_hash(item.get(key)) != self.sum_value_hash(getattr(res_object, key)):
                     diff_flag = True
                     break
+
         elif isinstance(item, PresaleLicenseInfoItem):
             res_object = q_object.filter(PresaleUUID=item['PresaleUUID']).latest(field_name='CurTimeStamp')
             for key in item:
@@ -88,6 +91,7 @@ class XAPipeline(object):
                 if self.sum_value_hash(item.get(key)) != self.sum_value_hash(getattr(res_object, key)):
                     diff_flag = True
                     break
+
         elif isinstance(item, BuildingInfoItem):
             res_object = q_object.filter(BuildingUUID=item['BuildingUUID']).latest(field_name='CurTimeStamp')
             for key in item:
@@ -134,4 +138,5 @@ class XAPipeline(object):
                 logger.debug("item: %(item)s met first",
                              {'item': item})
                 self.storage_item(item)
-            return item
+
+        return item
