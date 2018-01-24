@@ -240,6 +240,9 @@ class HouseBaseFuzhou(Document):
         default='', max_length=255, null=False)
     house_area_real_dx = fields.StringField(
         default='', max_length=255, null=False)
+    house_price = fields.StringField(default='', max_length=255, null=False)
+    house_total_price = fields.StringField(
+        default='', max_length=255, null=False)
     house_sts = fields.StringField(default='', max_length=255, null=False)
     change_data = fields.StringField(default='', max_length=1023, null=False)
 

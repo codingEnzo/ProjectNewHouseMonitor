@@ -1,11 +1,22 @@
+#!/usr/python3
 # -*- coding: utf-8 -*-
+import sys
 import uuid
 import re
 import copy
+import json
+import random
+import redis
 from scrapy import Request
+from scrapy import Selector
 
 from HouseNew.models import *
-from HouseCrawler.Items.ItemsFZ import *
+from HouseCrawler.Items.ItemsFuzhou import *
+from HouseCrawler.settings import USER_AGENTS
+if sys.version_info.major >= 3:
+    import urllib.parse as urlparse
+else:
+    import urlparse
 '''
 获取所有项目链接信息
 '''
@@ -32,6 +43,7 @@ class GetProjectPageBaseHandleMiddleware(object):
     def __init__(self, settings):
         self.settings = settings
         self.shprojectmain_url = 'http://222.77.178.63:7002/'
+        self.r = redis.Redis(host='10.30.1.18', port=6379)
 
     @classmethod
     def from_crawler(cls, crawler):
@@ -56,7 +68,7 @@ class GetProjectPageBaseHandleMiddleware(object):
                 pageresults = pageresults.replace('\r', ''). \
                     replace('\n', '').replace('\t', ''). \
                     replace(' ', '').replace(u' ', '')
-                getnum = re.search(r'/共(\d+)页.+查到记录共(\d+)条', pageresults)
+                getnum = re.search(r'/共(\d+)页查到记录共(\d+)条', pageresults)
                 if getnum:
                     for i in range(1, int(getnum.group(1)) + 1):
                         nexturl = 'http://222.77.178.63:7002/result_new.asp?' \
@@ -69,8 +81,16 @@ class GetProjectPageBaseHandleMiddleware(object):
                         #     }
                         # )
                         # result.append(req)
-                        result.append(Request(url=nexturl, meta={
-                                      'PageType': 'ProjectBase'}))
+
+                        project_base = {
+                            'source_url': nexturl,
+                            'meta': {'PageType': 'ProjectBase',
+                                     }}
+                        project_base_json = json.dumps(
+                            project_base, sort_keys=True)
+                        self.r.sadd('FuzhouCrawler:start_urls',
+                                    project_base_json)
+
         return result
 
     def process_spider_exception(self, response, exception, spider):
@@ -129,19 +149,9 @@ class GetProjectBaseHandleMiddleware(object):
                     get_result = get_result.replace('\r', ''). \
                         replace('\n', '').replace('\t', ''). \
                         replace(' ', '').replace(u' ', '')
-                    # projectitem = SearchProjectBaseItem()
                     myItems = re.findall(
                         ':#FFFFFF">(.*?)</td>', get_result, re.S)
                     Presalelicensenumber = myItems[0]
-                    # Presalelicensenumber
-                    # projectitem['Presalelicensenumber'] = myItems[0]
-                    # projectitem['Permittedarea'] = myItems[2]
-                    # projectitem['Presalebuildingno'] = myItems[3]
-                    # projectitem['Approvaldate'] = myItems[4]
-                    # projectitem['Planenddate'] = myItems[5]
-                    # SearchProjectuuid = uuid.uuid3(uuid.NAMESPACE_DNS,
-                    #                                str(myItems[0] + myItems[4])).hex
-                    # projectitem['SearchProjectuuid'] = SearchProjectuuid
                     Projecturl = re.search(r'href="(.*?)"', myItems[1])
                     ProjectName = re.search(
                         r'target="_blank">(.*?)<', myItems[1])
@@ -156,8 +166,6 @@ class GetProjectBaseHandleMiddleware(object):
                                               },
                                               dont_filter=False))
         if response.meta.get('PageType') == 'SubProject':
-            # SubProject_base = response.meta.get('item')
-            # projectitem = copy.deepcopy(SubProject_base)
             Presalelicensenumber = response.meta.get('Presalelicensenumber')
             projectinfobaseitem = ProjectinfoBaseItem()
             results = re.findall(
@@ -169,9 +177,8 @@ class GetProjectBaseHandleMiddleware(object):
                 project_com_name = re.search(
                     '"_blank">(.*?)</a>', results[4][1], re.S).group(1)
                 projectinfobaseitem['projectcomname'] = project_com_name
-            except Exception:
+            except:
                 Projectname = response.meta.get('lastname')
-            # projectitem['Projectname'] = Projectname
             projectinfobaseitem['Projectname'] = Projectname
 
             # result.append(projectitem)
@@ -304,10 +311,6 @@ class OpenningunitBaseHandleMiddleware(object):
                 return result
             return []
         if response.meta.get('PageType') == 'openingunit':
-            res_object = ProjectinfoBase.objects.filter(projectuuid=response.meta['projectuuid']).latest(field_name='CurTimeStamp')
-            if res_object:
-                res_object.change_data = "last"
-                res_object.save()
             projectno = response.meta['projectuuid']
             projectname = response.meta['Projectname']
             responsetext = response.body.decode('gbk', 'ignore').replace('\r', ''). \
@@ -654,6 +657,14 @@ class HouseBaseHandleMiddleware(object):
                 '//*[@id="Table1"]/tr/td/table/tbody/tr[13]/td[2]/text()').extract_first()
             if house_area_real_dx:
                 houseitem['house_area_real_dx'] = house_area_real_dx
+            house_price = response.xpath(
+                '//*[@id="Table1"]/tr/td/table/tbody/tr[15]/td[2]/text()').extract_first()
+            if house_price:
+                houseitem['house_price'] = house_price
+            house_total_price = response.xpath(
+                '//*[@id="Table1"]/tr/td/table/tbody/tr[16]/td[2]/text()').extract_first()
+            if house_total_price:
+                houseitem['house_total_price'] = house_total_price
             result.append(houseitem)
         return result
 
