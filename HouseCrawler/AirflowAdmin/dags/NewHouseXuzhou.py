@@ -44,7 +44,7 @@ default_args = {
 
 spider_settings = {
     'ITEM_PIPELINES': {
-        'HouseCrawler.Pipelines.PipelinesXuzhou.ImageFilePipeline': 299,
+        # 'HouseCrawler.Pipelines.PipelinesXuzhou.ImageFilePipeline': 299,
         'HouseCrawler.Pipelines.PipelinesXuzhou.PipelineXuzhou': 300,
     },
     'SPIDER_MIDDLEWARES': {

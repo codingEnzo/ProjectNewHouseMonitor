@@ -3482,6 +3482,7 @@ class HouseInfoXuzhou(Document):
     ContractRecordNumber = fields.StringField(default = '', max_length = 255)  # 合同备案号
     ContractRecordDate = fields.StringField(default = '', max_length = 255)  # 备案日期
     SourceUrl = fields.URLField(default = None, null = True, blank = True)  # 户详细URL
+    ImageUrls = fields.ListField(default=[], null=False)  # 户型图下载地址
     meta = {
         'indexes': [
             'CurTimeStamp',
