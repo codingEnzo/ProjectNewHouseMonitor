@@ -151,6 +151,6 @@ t3 = PythonOperator(
     python_callable=spider_call,
     op_kwargs={'spiderName': 'DefaultCrawler',
                'settings': spider_settings,
-               'urlList': builfing_info_list},
+               'urlList': building_info_list},
     dag=dag)
 t3.set_upstream(t2)
