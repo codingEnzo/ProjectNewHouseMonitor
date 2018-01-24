@@ -84,8 +84,7 @@ t1 = PythonOperator(
     python_callable=spider_call,
     op_kwargs={'spiderName': 'DefaultCrawler',
                'settings': spider_settings,
-               'urlList': [{'source_url': 'http://gs.czfdc.com.cn/newxgs/Pages/Code/Xjfas.ashx?'
-                                          'kfs=&lpmc=&method=GetYszData&page=1&ysxkz=',
+               'urlList': [{'source_url': 'http://www.fang99.com/buycenter/buildingsearch.aspx?page=1',
                             'meta': {'PageType': 'ProjectInitial'}}]},
     dag=dag
 )
