@@ -5,7 +5,12 @@ import os
 import sys
 import uuid
 
-from HouseCrawler.Items.ItemsXA import *
+try:
+    from HouseCrawler.Items.ItemsXA import *
+except Exception:
+    import traceback
+
+    traceback.print_exc()
 
 sys.path.append(os.path.abspath('.'))
 sys.path.append(os.path.abspath('..'))
