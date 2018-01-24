@@ -2,6 +2,7 @@
 import os
 import sys
 import django
+import json
 import datetime
 import functools
 from airflow import DAG
@@ -28,6 +29,9 @@ django.setup()
 
 from HouseNew.models import *
 from services.spider_service import spider_call
+from django.conf import settings as dj_settings
+
+REDIS_CACHE_KEY = "NewHouseFZ"
 
 
 def just_one_instance(func):
@@ -101,37 +105,52 @@ t1 = PythonOperator(
                             'meta': {'PageType': 'GetProjectBase'}}]},
     dag=dag)
 
-builfing_info_list = []
-cur = ProjectinfoBaseFuzhou.objects.aggregate(*[{"$sort": {"CurTimeStamp": 1}},
-                                                {'$group':
-                                                 {'_id': "$projectuuid",
-                                                  'CurTimeStamp': {'$last': '$CurTimeStamp'},
-                                                  'NewCurTimeStamp': {'$last': '$NewCurTimeStamp'},
-                                                  'change_data': {'$last': '$change_data'},
-                                                  'Projectname': {'$last': '$Projectname'},
-                                                  'ApprovalUrl': {'$last': '$ApprovalUrl'}
-                                                  }
-                                                 }], allowDiskUse=True)
-for item in cur:
-    try:
-        if item['change_data'] != 'last':
-            project_base = {
-                'source_url': item['ApprovalUrl'],
-                'headers': headers,
-                'meta': {
-                    'PageType': 'openingunit',
-                    'projectuuid': item['_id'],
-                    'Projectname': item['Projectname']
+
+def cacheLoader(key=REDIS_CACHE_KEY):
+    r = dj_settings.REDIS_CACHE
+    cur = ProjectinfoBaseFuzhou.objects.aggregate(*[{"$sort": {"CurTimeStamp": 1}},
+                                                    {'$group':
+                                                     {'_id': "$projectuuid",
+                                                      'CurTimeStamp': {'$last': '$CurTimeStamp'},
+                                                      'NewCurTimeStamp': {'$last': '$NewCurTimeStamp'},
+                                                      'change_data': {'$last': '$change_data'},
+                                                      'Projectname': {'$last': '$Projectname'},
+                                                      'ApprovalUrl': {'$last': '$ApprovalUrl'}
+                                                      }
+                                                     }], allowDiskUse=True)
+    for item in cur:
+        try:
+            if item['change_data'] != 'last':
+                project_base = {
+                    'source_url': item['ApprovalUrl'],
+                    'headers': headers,
+                    'meta': {
+                        'PageType': 'openingunit',
+                        'projectuuid': item['_id'],
+                        'Projectname': item['Projectname']
+                    }
                 }
-            }
-            builfing_info_list.append(project_base)
-    except Exception:
-        import traceback
-        traceback.print_exc()
+                r.sadd(key, json.dumps(project_base))
+        except Exception:
+            import traceback
+            traceback.print_exc()
+        r.expire(key, int(spider_settings.get('CLOSESPIDER_TIMEOUT')))
+
+
 t2 = PythonOperator(
+    task_id='LoadBuildingInfoCache',
+    python_callable=cacheLoader,
+    op_kwargs={'key': REDIS_CACHE_KEY},
+    dag=dag)
+
+
+building_info_list = list(map(lambda x: json.loads(
+    x.decode()), dj_settings.REDIS_CACHE.smembers(REDIS_CACHE_KEY)))
+t3 = PythonOperator(
     task_id='LoadOpeningUnitFZ',
     python_callable=spider_call,
     op_kwargs={'spiderName': 'DefaultCrawler',
                'settings': spider_settings,
                'urlList': builfing_info_list},
     dag=dag)
+t3.set_upstream(t2)

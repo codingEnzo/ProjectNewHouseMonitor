@@ -2,16 +2,20 @@
 import datetime
 import os
 import sys
-
+import json
+import math
 import django
 from airflow import DAG
 from airflow.operators.python_operator import PythonOperator
 
 BASE_DIR = os.path.abspath(os.environ.get('AIRFLOW_HOME'))
 HOUSESERVICECORE_DIR = os.path.abspath(os.path.join(BASE_DIR, 'ServiceCore'))
-HOUSEADMIN_DIR = os.path.abspath(os.path.join(BASE_DIR, 'ServiceCore/HouseAdmin'))
-HOUSECRAWLER_DIR = os.path.abspath(os.path.join(BASE_DIR, 'ServiceCore/HouseCrawler'))
-HOUSESERVICE_DIR = os.path.abspath(os.path.join(BASE_DIR, 'ServiceCore/SpiderService'))
+HOUSEADMIN_DIR = os.path.abspath(
+    os.path.join(BASE_DIR, 'ServiceCore/HouseAdmin'))
+HOUSECRAWLER_DIR = os.path.abspath(
+    os.path.join(BASE_DIR, 'ServiceCore/HouseCrawler'))
+HOUSESERVICE_DIR = os.path.abspath(
+    os.path.join(BASE_DIR, 'ServiceCore/SpiderService'))
 
 sys.path.append(BASE_DIR)
 sys.path.append(HOUSEADMIN_DIR)
@@ -24,6 +28,9 @@ django.setup()
 
 from HouseNew.models import *
 from services.spider_service import spider_call
+from django.conf import settings as dj_settings
+
+REDIS_CACHE_KEY = "NewHouseCS"
 
 STARTDATE = datetime.datetime.now() - datetime.timedelta(hours=6)
 
@@ -57,7 +64,8 @@ spider_settings = {
     'CONCURRENT_REQUESTS': 64,
 }
 
-dag = DAG('NewHouseCS', default_args=default_args, schedule_interval="15 */4 * * *")
+dag = DAG('NewHouseCS', default_args=default_args,
+          schedule_interval="15 */4 * * *")
 
 t1 = PythonOperator(
     task_id='LoadProjectBaseCS',
@@ -89,32 +97,49 @@ t2 = PythonOperator(
     dag=dag
 )
 
-building_info_list = []
-cur = BuildingInfoChangsha.objects.aggregate(*[{"$sort": {"CurTimeStamp": 1}},
-                                               {'$group': {
-                                                   '_id': "$BuildingUUID",
-                                                   'ProjectName': {'$first': '$ProjectName'},
-                                                   'ProjectUUID': {'$first': '$ProjectUUID'},
-                                                   'BuildingName': {'$first': '$BuildingName'},
-                                                   'BuildingUUID': {'$first': '$BuildingUUID'},
-                                                   'BuildingURL': {'$first': '$BuildingURL'},
-                                                   'BuildingURLCurTimeStamp': {'$first': '$BuildingURLCurTimeStamp'}
-                                               }}])
-for item in cur:
-    if item['BuildingURL']:
-        if item['BuildingURLCurTimeStamp'] >= str(datetime.datetime.now().date()):
-            building_info = {'source_url': item['BuildingURL'],
-                             'meta': {'PageType': 'HouseInfo',
-                                      'ProjectName': item['ProjectName'],
-                                      'BuildingName': item['BuildingName'],
-                                      'ProjectUUID': str(item['ProjectUUID']),
-                                      'BuildingUUID': str(item['BuildingUUID'])}}
-            building_info_list.append(building_info)
+
+def cacheLoader(key=REDIS_CACHE_KEY):
+    r = dj_settings.REDIS_CACHE
+    cur = BuildingInfoChangsha.objects.aggregate(*[{"$sort": {"CurTimeStamp": -1}},
+                                                   {'$group': {
+                                                    '_id': "$BuildingUUID",
+                                                    'ProjectName': {'$first': '$ProjectName'},
+                                                    'ProjectUUID': {'$first': '$ProjectUUID'},
+                                                    'BuildingName': {'$first': '$BuildingName'},
+                                                    'BuildingUUID': {'$first': '$BuildingUUID'},
+                                                    'BuildingURL': {'$first': '$BuildingURL'},
+                                                    }}])
+    for item in cur:
+        try:
+            if item['BuildingURL']:
+                if True:
+                    building_info = {'source_url': item['BuildingURL'],
+                                     'meta': {'PageType': 'HouseInfo',
+                                              'ProjectName': item['ProjectName'],
+                                              'BuildingName': item['BuildingName'],
+                                              'ProjectUUID': str(item['ProjectUUID']),
+                                              'BuildingUUID': str(item['BuildingUUID'])}}
+                    r.sadd(key, json.dumps(building_info))
+        except Exception:
+            import traceback
+            traceback.print_exc()
+        r.expire(key, int(spider_settings.get('CLOSESPIDER_TIMEOUT')))
+
 
 t3 = PythonOperator(
+    task_id='LoadBuildingInfoCache',
+    python_callable=cacheLoader,
+    op_kwargs={'key': REDIS_CACHE_KEY},
+    dag=dag)
+
+
+building_info_list = list(map(lambda x: json.loads(
+    x.decode()), dj_settings.REDIS_CACHE.smembers(REDIS_CACHE_KEY)))
+t4 = PythonOperator(
     task_id='LoadBuildingInfoCS',
     python_callable=spider_call,
     op_kwargs={'spiderName': 'DefaultCrawler',
                'settings': spider_settings,
                'urlList': building_info_list},
     dag=dag)
+t4.set_upstream(t3)

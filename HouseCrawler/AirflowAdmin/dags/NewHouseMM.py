@@ -106,14 +106,14 @@ t2 = PythonOperator(
 
 building_info_list = []
 cur = BuildingInfoMaoming.objects.aggregate(*[{"$sort": {"CurTimeStamp": 1}},
-                                               {'$group': {
-                                                   '_id': "$BuildingUUID",
-                                                   'ProjectName': {'$first': '$ProjectName'},
-                                                   'ProjectUUID': {'$first': '$ProjectUUID'},
-                                                   'BuildingName': {'$first': '$BuildingName'},
-                                                   'BuildingUUID': {'$first': '$BuildingUUID'},
-                                                   'BuildingURL': {'$first': '$BuildingURL'}
-                                               }}])
+                                              {'$group': {
+                                                  '_id': "$BuildingUUID",
+                                                  'ProjectName': {'$first': '$ProjectName'},
+                                                  'ProjectUUID': {'$first': '$ProjectUUID'},
+                                                  'BuildingName': {'$first': '$BuildingName'},
+                                                  'BuildingUUID': {'$first': '$BuildingUUID'},
+                                                  'BuildingURL': {'$first': '$BuildingURL'}
+                                              }}])
 for item in cur:
     if item['BuildingURL']:
         if True:
