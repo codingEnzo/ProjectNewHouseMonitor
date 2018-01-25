@@ -348,6 +348,19 @@ class BuildingDetailMiddleware(object):
                         item_cd['PresalePermitNumberUUID'] = str(uuid.uuid3(uuid.NAMESPACE_DNS, item_cd['PresalePermitNumber']))
                         BuildingItem['PresalePermitNumberUUID'] = item_cd['PresalePermitNumberUUID']
 
+                        cheack_key2 = re.findall(r'ysz_id', item_cd['PresalePermitUrl'])
+                        if cheack_key2:
+
+                            item_cd['PresalePermitUrl'] = 'http://newhouse.fz0752.com' + item_cd['PresalePermitUrl']
+
+                            re_get2 = Request(url=item_cd['PresalePermitUrl'], method='GET', headers=self.headers,
+                                              meta={'PageType': 'cd_url', "item": item_cd}, dont_filter=True)
+
+                        else:
+                            re_get2 = Request(url=item_cd['PresalePermitUrl'], method='GET', headers=self.headers,
+                                              meta={'PageType': 'cd_url', "item": item_cd}, dont_filter=True)
+                        outcome_list.append(re_get2)
+
                     BuildingItem['BuildingName'] = clean_rule1(i.xpath('./td[2]/span/text()').extract_first())
 
                     BuildingItem['BuildingNumber'] = clean_rule1(i.xpath('./td[3]/text()').extract_first())
@@ -360,19 +373,7 @@ class BuildingDetailMiddleware(object):
                     BuildingItem['SourceUrl'] = response.url
                     outcome_list.append(BuildingItem)
 
-                    cheack_key2 = re.findall(r'ysz_id', item_cd['PresalePermitUrl'])
-                    if cheack_key2:
 
-                        item_cd['PresalePermitUrl'] = 'http://newhouse.fz0752.com' + item_cd['PresalePermitUrl']
-
-                        re_get2 = Request(url=item_cd['PresalePermitUrl'], method='GET', headers=self.headers,
-                                          meta={'PageType': 'cd_url', "item": item_cd}, dont_filter=True)
-
-                    else:
-                        re_get2 = Request(url=item_cd['PresalePermitUrl'], method='GET', headers=self.headers,
-                                          meta={'PageType': 'cd_url', "item": item_cd}, dont_filter=True)
-
-                    outcome_list.append(re_get2)
 
                 now_page = response.xpath('//*[@id="house"]/div[4]/div/span/text()').extract_first()
 
