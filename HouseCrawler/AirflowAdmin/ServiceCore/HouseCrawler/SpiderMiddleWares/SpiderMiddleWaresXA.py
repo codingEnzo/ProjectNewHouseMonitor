@@ -53,8 +53,7 @@ class ProjectBaseHandleMiddleware(BaseMiddleware):
         """
         total_page = 0
         try:
-            search_list = response.xpath(
-                '//*[@id="pager_buildingSearch"]/a/text()').extract()
+            search_list = response.xpath('//*[@id="pager_buildingSearch"]/a/text()').extract()
             search_result = search_list[-2]
             if search_result:
                 total_page = int(search_result)
@@ -104,40 +103,31 @@ class ProjectBaseHandleMiddleware(BaseMiddleware):
             req_list = []
             if page_count:
                 for i in range(1, page_count + 1):
-                    page_url = "http://www.fang99.com/buycenter/buildingsearch.aspx?page={}".format(
-                        i)
-                    req_list.append(Request(url=page_url, method='GET', headers=self.headers, meta={
-                        'PageType': 'ProjectBase'}))
+                    page_url = "http://www.fang99.com/buycenter/buildingsearch.aspx?page={}".format(i)
+                    req_list.append(
+                        Request(url=page_url, method='GET', headers=self.headers, meta={'PageType': 'ProjectBase'}))
             result.extend(req_list)
 
         elif response.meta.get('PageType') == 'ProjectBase':
             print('ProjectBaseHandleMiddleware')
             pro_list = response.xpath('//div[@class="sf_xf_prodiv"]')
             for div in pro_list:
-                p_name = div.xpath(
-                    'div[@class="sf_xf_projj ztys2"]/a[1]/text()').extract_first()
-                room_type = div.xpath(
-                    'div[@class="sf_xf_projj ztys2"]/font/@title').extract_first()
-                hot_house = div.xpath(
-                    'div[@class="sf_xf_projj ztys2"]/text()[3]').extract_first()
-                project_address = div.xpath(
-                    'div[@class="sf_xf_projj ztys2"]/text()[4]').extract_first()
-                development_enterprise = div.xpath(
-                    'div[@class="sf_xf_projj ztys2"]/div/a/text()').extract_first()
-                telephone = div.xpath(
-                    'div[@class="sf_xf_tel"]/text()').extract_first(default="")
-                price = div.xpath(
-                    'div[@class="sf_xf_tel"]/font/text()').extract_first()
-                pb_href = div.xpath(
-                    'div[@class="sf_xf_protp"]/a[1]/@href').extract_first()
+                p_name = div.xpath('div[@class="sf_xf_projj ztys2"]/a[1]/text()').extract_first()
+                room_type = div.xpath('div[@class="sf_xf_projj ztys2"]/font/@title').extract_first(default="")
+                hot_house = div.xpath('div[@class="sf_xf_projj ztys2"]/text()[3]').extract_first(default="")
+                project_address = div.xpath('div[@class="sf_xf_projj ztys2"]/text()[4]').extract_first()
+                development_enterprise = div.xpath('div[@class="sf_xf_projj ztys2"]/div/a/text()').extract_first()
+                telephone = div.xpath('div[@class="sf_xf_tel"]/text()').extract_first(default="")
+                price = div.xpath('div[@class="sf_xf_tel"]/font/text()').extract_first()
+                pb_href = div.xpath('div[@class="sf_xf_protp"]/a[1]/@href').extract_first()
                 pb_url = 'http://www.fang99.com/buycenter/' + pb_href
                 pj_id = self.get_building_id(pb_href)
                 pjuuid = uuid.uuid3(uuid.NAMESPACE_DNS, p_name + str(pj_id))
                 pb = ProjectBaseItem()
                 pb['ProjectUUID'] = pjuuid
                 pb['ProjectName'] = p_name
-                pb['ProjectRoomType'] = room_type
-                pb['ProjectHotSales'] = hot_house
+                pb['ProjectRoomType'] = room_type.replace("热销户型：", "")
+                pb['ProjectHotSales'] = hot_house.replace("项目地址：", "")
                 pb['ProjectAddress'] = project_address
                 pb['ProjectCompany'] = development_enterprise
                 pb['ProjectPhoneNum'] = telephone
@@ -206,87 +196,52 @@ class ProjectInfoHandleMiddleware(BaseMiddleware):
         elif response.meta.get('PageType') == 'ProjectInfo':
             item = response.meta.get('item')
             # 基本信息
-            item['ProjectAddress'] = response.xpath(
-                '//*[@id="Label_ProjectAdress"]/text()').extract_first()
-            item['ProjectSalesAddress'] = response.xpath(
-                '//*[@id="lbl_SLDZ"]/text()').extract_first()
-            item['ProjectCityArea'] = response.xpath(
-                '//*[@id="Label_CityArea"/text()]').extract_first()
-            item['ProjectTradeCircle'] = response.xpath(
-                '//*[@id="Label_SQ"/text()]').extract_first()
-            item['PropertyType'] = response.xpath(
-                '//*[@id="Label_Propertytypename"/text()]').extract_first()
+            item['ProjectAddress'] = response.xpath('//*[@id="Label_ProjectAdress"]/text()').extract_first()
+            item['ProjectSalesAddress'] = response.xpath('//*[@id="lbl_SLDZ"]/text()').extract_first()
+            item['ProjectCityArea'] = response.xpath('//*[@id="Label_CityArea"/text()]').extract_first()
+            item['ProjectTradeCircle'] = response.xpath('//*[@id="Label_SQ"/text()]').extract_first()
+            item['PropertyType'] = response.xpath('//*[@id="Label_Propertytypename"/text()]').extract_first()
             item['ProjectFirstDueDate'] = response.xpath(
                 '//*[@id="bc_body"]/div/div/table/tr/td/table/tr/td[@class="sf_xq_jfsj"]/text()').extract_first(
                 default='').strip()
-            item['ProjectMainRoomType'] = response.xpath(
-                '//*[@id="Lable_Mainapirl"]/text()').extract_first()
-            item['ProjectDekoration'] = response.xpath(
-                '//*[@id="Lable_Dekoration"]/text()').extract_first()
-            item['ProjectBuildType'] = response.xpath(
-                '//*[@id="Lable_ConstructionType"]/text()').extract_first()
+            item['ProjectMainRoomType'] = response.xpath('//*[@id="Lable_Mainapirl"]/text()').extract_first()
+            item['ProjectDekoration'] = response.xpath('//*[@id="Lable_Dekoration"]/text()').extract_first()
+            item['ProjectBuildType'] = response.xpath('//*[@id="Lable_ConstructionType"]/text()').extract_first()
             # 项目简介
-            item['ProjectBrief'] = response.xpath(
-                '//*[@id="lbl_Introduction"]/p/text()').extract_first()
+            item['ProjectBrief'] = response.xpath('//*[@id="lbl_Introduction"]/p/text()').extract_first()
             # 详细资料
-            item['ProjectTotalFlat'] = response.xpath(
-                '//*[@id="lbl_ZTS"]/text()').extract_first()
-            item['PropertyCost'] = response.xpath(
-                '//*[@id="lbl_WYF"]/text()').extract_first()
-            item['ProjectSupplyType'] = response.xpath(
-                '//*[@id=""lbl_XFQF]/text()').extract_first()
-            item['ProjectContainRoomType'] = response.xpath(
-                '//*[@id="lbl_BHHX"]/text()').extract_first()
-            item['ProjectLoopLine'] = response.xpath(
-                '//*[@id="lbl_HXWZ"]/text()').extract_first()
-            item['ProjectParkingSpace'] = response.xpath(
-                '//*[@id="lbl_TCW"]/text()').extract_first()
-            item['LandUseLife'] = response.xpath(
-                '//*[@id="lbl_TDSYNX"]/text()').extract_first()
+            item['ProjectTotalFlat'] = response.xpath('//*[@id="lbl_ZTS"]/text()').extract_first()
+            item['PropertyCost'] = response.xpath('//*[@id="lbl_WYF"]/text()').extract_first()
+            item['ProjectSupplyType'] = response.xpath('//*[@id=""lbl_XFQF]/text()').extract_first()
+            item['ProjectContainRoomType'] = response.xpath('//*[@id="lbl_BHHX"]/text()').extract_first()
+            item['ProjectLoopLine'] = response.xpath('//*[@id="lbl_HXWZ"]/text()').extract_first()
+            item['ProjectParkingSpace'] = response.xpath('//*[@id="lbl_TCW"]/text()').extract_first()
+            item['LandUseLife'] = response.xpath('//*[@id="lbl_TDSYNX"]/text()').extract_first()
             # 周边配套
             # 单字段有多个属性
-            education = response.xpath(
-                '//*[@id="lbl_School"]').extract_first(default='')
-            commerce = response.xpath(
-                '//*[@id="lbl_Shop"]').extract_first(default='')
-            bank = response.xpath(
-                '//*[@id="lbl_Bank"]').extract_first(default='')
-            hospital = response.xpath(
-                '//*[@id="lbl_Hospital"]').extract_first(default='')
-            traffic = response.xpath(
-                '//*[@id="lbl_Traffic"]').extract_first(default='')
-            restaurant = response.xpath(
-                '//*[@id="lbl_CY"]').extract_first(default='')
-            others = response.xpath(
-                '//*[@id="lbl_Others"]').extract_first(default='')
-            item['PeripheryEducation'] = self.remove_html_tags_and_extract(
-                education)
-            item['PeripheryCommerce'] = self.remove_html_tags_and_extract(
-                commerce)
+            education = response.xpath('//*[@id="lbl_School"]').extract_first(default='')
+            commerce = response.xpath('//*[@id="lbl_Shop"]').extract_first(default='')
+            bank = response.xpath('//*[@id="lbl_Bank"]').extract_first(default='')
+            hospital = response.xpath('//*[@id="lbl_Hospital"]').extract_first(default='')
+            traffic = response.xpath('//*[@id="lbl_Traffic"]').extract_first(default='')
+            restaurant = response.xpath('//*[@id="lbl_CY"]').extract_first(default='')
+            others = response.xpath('//*[@id="lbl_Others"]').extract_first(default='')
+            item['PeripheryEducation'] = self.remove_html_tags_and_extract(education)
+            item['PeripheryCommerce'] = self.remove_html_tags_and_extract(commerce)
             item['PeripheryBank'] = self.remove_html_tags_and_extract(bank)
-            item['PeripheryHospital'] = self.remove_html_tags_and_extract(
-                hospital)
-            item['PeripheryTraffic'] = self.remove_html_tags_and_extract(
-                traffic)
-            item['PeripheryRestaurant'] = self.remove_html_tags_and_extract(
-                restaurant)
+            item['PeripheryHospital'] = self.remove_html_tags_and_extract(hospital)
+            item['PeripheryTraffic'] = self.remove_html_tags_and_extract(traffic)
+            item['PeripheryRestaurant'] = self.remove_html_tags_and_extract(restaurant)
             item['PeripheryOthers'] = self.remove_html_tags_and_extract(others)
             # 建筑形式
-            item['BuildingStructure'] = response.xpath(
-                '//*[@id="lbl_JZJG"]/text()').extract_first()
-            item['BuildingArea'] = response.xpath(
-                '//*[@id="lbl_JZMJ"]/text()').extract_first()
-            item['BuildingFloorSpace'] = response.xpath(
-                '//*[@id="lbl_ZDMJ"]/text()').extract_first()
-            item['MaxBuildingFlats'] = response.xpath(
-                '//*[@id="lbl_ZDDJ"]/text()').extract_first()
-            item['MinBuildingFlats'] = response.xpath(
-                '//*[@id="lbl_ZXDJ"]/text()').extract_first()
+            item['BuildingStructure'] = response.xpath('//*[@id="lbl_JZJG"]/text()').extract_first()
+            item['BuildingArea'] = response.xpath('//*[@id="lbl_JZMJ"]/text()').extract_first()
+            item['BuildingFloorSpace'] = response.xpath('//*[@id="lbl_ZDMJ"]/text()').extract_first()
+            item['MaxBuildingFlats'] = response.xpath('//*[@id="lbl_ZDDJ"]/text()').extract_first()
+            item['MinBuildingFlats'] = response.xpath('//*[@id="lbl_ZXDJ"]/text()').extract_first()
             # 相关企业
-            item['ProjectDevCompany'] = response.xpath(
-                '//*[@id="Label_WorkCompany"]/text()').extract_first()
-            item['PropertyCompany'] = response.xpath(
-                '//*[@id="Label_PropertyCompany"]/text()').extract_first()
+            item['ProjectDevCompany'] = response.xpath('//*[@id="Label_WorkCompany"]/text()').extract_first()
+            item['PropertyCompany'] = response.xpath('//*[@id="Label_PropertyCompany"]/text()').extract_first()
             item['IsCompletion'] = '1'
             result.append(item)
         return result
@@ -332,10 +287,8 @@ class PresaleLicenceHandleMiddleware(BaseMiddleware):
             project_id = response.meta.get('ProjectUUID', '')
             project_name = response.meta.get('ProjectName', '')
             for i, table in enumerate(table_list):
-                _t1 = table.xpath(
-                    './tr/td[@bgcolor="#ffffff"][@class="fontYH"]/a/text()')
-                _t2 = table.xpath(
-                    './tr/td[@bgcolor="#ffffff"][@class="fontYH"]/text()')
+                _t1 = table.xpath('./tr/td[@bgcolor="#ffffff"][@class="fontYH"]/a/text()')
+                _t2 = table.xpath('./tr/td[@bgcolor="#ffffff"][@class="fontYH"]/text()')
                 item = PresaleLicenseInfoItem()
                 item['ProjectUUID'] = project_id
                 item['ProjectName'] = project_name
