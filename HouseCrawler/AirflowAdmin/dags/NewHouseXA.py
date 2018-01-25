@@ -57,7 +57,13 @@ spider_settings = {
     },
     'RETRY_ENABLE': True,
     'CLOSESPIDER_TIMEOUT': 3600 * 3.5,
-    'REDIRECT_ENABLED': False
+    'REDIRECT_ENABLED': False,
+    'DOWNLOADER_MIDDLEWARES': {
+        'HouseCrawler.DownloadMiddleWares.ProxyMiddleWares.RandomUserAgent': 1,
+        'HouseCrawler.DownloadMiddleWares.RetryMiddleWares.RetryMiddleware': 120,
+    },
+    'DOWNLOAD_DELAY': 1.75,
+    'RANDOMIZE_DOWNLOAD_DELAY': True
 }
 
 dag = DAG('NewHouseXA', default_args=default_args,
