@@ -56,7 +56,8 @@ spider_settings = {
         # 'HouseCrawler.SpiderMiddleWares.SpiderMiddleWaresXA.HouseInfoHandleMiddleware': 105,
     },
     'RETRY_ENABLE': True,
-    'CLOSESPIDER_TIMEOUT': 3600 * 3.5
+    'CLOSESPIDER_TIMEOUT': 3600 * 3.5,
+    'REDIRECT_ENABLED': False
 }
 
 dag = DAG('NewHouseXA', default_args=default_args,
