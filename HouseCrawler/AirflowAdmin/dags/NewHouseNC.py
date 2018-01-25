@@ -27,7 +27,7 @@ django.setup()
 
 from HouseNew.models import *
 from services.spider_service import spider_call
-from django.conf import settings as DJANGO_SETTINGS_MODULE
+from django.conf import settings as dj_settings
 
 REDIS_CACHE_KEY = "NewHouseNC"
 
