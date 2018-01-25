@@ -366,7 +366,7 @@ class BuildingDetailMiddleware(object):
                                               meta={'PageType': 'cd_url', "item": item_cd}, dont_filter=True)
                         outcome_list.append(re_get2)
                     else:
-                        BuildingItem['PresalePermitNumberUUID'] = item_cd['PresalePermitNumberUUID']
+                        BuildingItem['PresalePermitNumberUUID'] = ''
 
                     BuildingItem['BuildingName'] = clean_rule1(i.xpath('./td[2]/span/text()').extract_first())
 

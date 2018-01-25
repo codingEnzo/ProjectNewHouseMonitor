@@ -4232,8 +4232,7 @@ class Building_DetailHuizhou(Document):
     CheackTimeLatest = fields.StringField(default = str(datetime.datetime.now()), index = True)
     ProjectUUID = fields.UUIDField(default = uuid.uuid3(uuid.NAMESPACE_DNS, ''), binary = False, null = False,
                                    primary_key = False, choices = False)  # 项目uuid
-    PresalePermitNumberUUID = fields.UUIDField(default = uuid.uuid3(uuid.NAMESPACE_DNS, ''), binary = False,
-                                               null = False, primary_key = False, choices = False)  # 预售证uuid
+    PresalePermitNumberUUID = fields.StringField(default = '') # 预售证uuid
     BuildingUUID = fields.UUIDField(default = uuid.uuid3(uuid.NAMESPACE_DNS, ''), binary = False, null = False,
                                     primary_key = False, choices = False)  # 楼栋uuid
     BuildingID = fields.StringField(default = '', null = False, primary_key = False, choices = False)  # 楼栋id
@@ -4263,8 +4262,7 @@ class House_DetailHuizhou(Document):
 
     ProjectUUID = fields.UUIDField(default=uuid.uuid3(uuid.NAMESPACE_DNS, ''), binary=False, null=False,
                                    primary_key=False, choices=False)  # 项目uuid
-    PresalePermitNumberUUID = fields.UUIDField(default=uuid.uuid3(uuid.NAMESPACE_DNS, ''), binary=False,
-                                               null=False, primary_key=False, choices=False)  # 预售证uuid
+    PresalePermitNumberUUID = fields.StringField(default='')  # 预售证uuid
     BuildingUUID = fields.UUIDField(default=uuid.uuid3(uuid.NAMESPACE_DNS, ''), binary=False, null=False,
                                     primary_key=False, choices=False)  # 楼栋uuid
     HouseUUID = fields.UUIDField(default=uuid.uuid3(uuid.NAMESPACE_DNS, ''), binary=False, null=False,
