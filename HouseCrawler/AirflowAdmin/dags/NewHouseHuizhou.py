@@ -1,12 +1,12 @@
 # -*-coding=utf-8-*-
 import datetime
 import functools
+import json
 import os
 import sys
-import pickle
 
 import django
-import math
+
 from airflow import DAG
 from airflow.operators.python_operator import PythonOperator
 
@@ -173,7 +173,7 @@ def cache_query():
                                     }
                                 }
                                 }
-                result = pickle.dumps(house_detail)
+                result = json.dumps(house_detail)
                 r.sadd('NewHouseHuizhou', result)
         except Exception:
             import traceback
@@ -187,7 +187,7 @@ t3 = PythonOperator(
 )
 
 
-house_detail_list = map(lambda x: pickle.loads(x), dj_settings.REDIS_CACHE.smembers('NewHouseHuizhou'))
+house_detail_list = list(map(lambda x: json.loads(x), dj_settings.REDIS_CACHE.smembers('NewHouseHuizhou')))
 t4 = PythonOperator(
     task_id='LoadHouseDetailHuizhou',
     python_callable=spider_call,
