@@ -344,6 +344,11 @@ class BuildingDetailMiddleware(object):
                     item_cd['PresalePermitNumber'] = clean_rule1(i.xpath('./td[4]/a/text()').extract_first())
 
                     BuildingItem['PresalePermitNumber'] = item_cd['PresalePermitNumber']
+                    BuildingItem['SourceUrl'] = response.url
+
+
+
+
                     if item_cd['PresalePermitNumber'] !='':
                         item_cd['PresalePermitNumberUUID'] = str(uuid.uuid3(uuid.NAMESPACE_DNS, item_cd['PresalePermitNumber']))
                         BuildingItem['PresalePermitNumberUUID'] = item_cd['PresalePermitNumberUUID']
@@ -360,12 +365,18 @@ class BuildingDetailMiddleware(object):
                             re_get2 = Request(url=item_cd['PresalePermitUrl'], method='GET', headers=self.headers,
                                               meta={'PageType': 'cd_url', "item": item_cd}, dont_filter=True)
                         outcome_list.append(re_get2)
+                    else:
+                        BuildingItem['PresalePermitNumberUUID'] = item_cd['PresalePermitNumberUUID']
 
                     BuildingItem['BuildingName'] = clean_rule1(i.xpath('./td[2]/span/text()').extract_first())
 
                     BuildingItem['BuildingNumber'] = clean_rule1(i.xpath('./td[3]/text()').extract_first())
 
                     BuildingItem['BuildingUrl'] = clean_rule1(i.xpath('./td[8]/a/@href').extract_first())
+                    # 当备案的链接为空时，选用楼盘链接
+                    if BuildingItem['BuildingUrl']=='':
+                        BuildingItem['BuildingUrl'] = 'http://data.fz0752.com' + clean_rule1(
+                            i.xpath('./td[7]/a/@href').extract_first())
 
                     BuildingItem['BuildingUUID'] = uuid.uuid3(uuid.NAMESPACE_DNS,
                                                          BuildingItem['ProjectName'] + BuildingItem['BuildingName'] + BuildingItem[
