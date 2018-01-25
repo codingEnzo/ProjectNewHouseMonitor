@@ -112,14 +112,14 @@ t2 = PythonOperator(
 def cacheLoader(key=REDIS_CACHE_KEY):
     r = dj_settings.REDIS_CACHE
     cur = BuildingInfoHeyuan.objects.aggregate(*[{"$sort": {"CurTimeStamp": -1}},
-                                                {'$group': {
-                                                    '_id': "$BuildingUUID",
-                                                    'ProjectName': {'$first': '$ProjectName'},
-                                                    'ProjectUUID': {'$first': '$ProjectUUID'},
-                                                    'BuildingName': {'$first': '$BuildingName'},
-                                                    'BuildingUUID': {'$first': '$BuildingUUID'},
-                                                    'BuildingURL': {'$first': '$BuildingURL'},
-                                                }}])
+                                                 {'$group': {
+                                                     '_id': "$BuildingUUID",
+                                                     'ProjectName': {'$first': '$ProjectName'},
+                                                     'ProjectUUID': {'$first': '$ProjectUUID'},
+                                                     'BuildingName': {'$first': '$BuildingName'},
+                                                     'BuildingUUID': {'$first': '$BuildingUUID'},
+                                                     'BuildingURL': {'$first': '$BuildingURL'},
+                                                 }}], allowDiskUse=True)
     for item in cur:
         try:
             if item['BuildingURL']:
