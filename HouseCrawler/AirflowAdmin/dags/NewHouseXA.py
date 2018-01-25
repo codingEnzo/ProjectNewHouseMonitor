@@ -47,7 +47,7 @@ spider_settings = {
     },
     'SPIDER_MIDDLEWARES': {
         'HouseCrawler.SpiderMiddleWares.SpiderMiddleWaresXA.ProjectBaseHandleMiddleware': 102,
-        # 'HouseCrawler.SpiderMiddleWares.SpiderMiddleWaresXA.ProjectInfoHandleMiddleware': 103,
+        'HouseCrawler.SpiderMiddleWares.SpiderMiddleWaresXA.ProjectInfoHandleMiddleware': 103,
         # 'HouseCrawler.SpiderMiddleWares.SpiderMiddleWaresXA.PresaleLicenceHandleMiddleware': 104,
         # 'HouseCrawler.SpiderMiddleWares.SpiderMiddleWaresXA.HouseInfoHandleMiddleware': 105,
     },
