@@ -200,6 +200,7 @@ class ProjectInfoHandleMiddleware(BaseMiddleware):
             item['ProjectInfoURL'] = p_info_url
             item['ProjectCompanyURL'] = 'http://www.fang99.com/buycenter/' + company_href
             item['ProjectPresaleURL'] = presale_href
+            item['IsCompletion'] = '0'
             result.append(item)
 
         elif response.meta.get('PageType') == 'ProjectInfo':
@@ -286,6 +287,7 @@ class ProjectInfoHandleMiddleware(BaseMiddleware):
                 '//*[@id="Label_WorkCompany"]/text()').extract_first()
             item['PropertyCompany'] = response.xpath(
                 '//*[@id="Label_PropertyCompany"]/text()').extract_first()
+            item['IsCompletion'] = '1'
             result.append(item)
         return result
 
