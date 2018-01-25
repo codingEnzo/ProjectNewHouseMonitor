@@ -4226,47 +4226,69 @@ class Building_DetailHuizhou(Document):
 
 
 class House_DetailHuizhou(Document):
-    RecordID = fields.UUIDField(default=uuid.uuid1(), binary=True, primary_key=True, null=False)  # 记录id
+    RecordID = fields.UUIDField(default=uuid.uuid1(), binary=True, primary_key=True, null=False,
+                                choices=False)  # 记录id
     RecordTime = fields.StringField(default=str(datetime.datetime.now()), index=True)  # 记录时间
-    ProjectUUID = fields.UUIDField(default=uuid.uuid3(uuid.NAMESPACE_DNS, ''), binary=False, null=False)  # 项目uuid
-    PresalePermitNumberUUID = fields.StringField(default='')  # 预售证uuid
-    BuildingUUID = fields.UUIDField(default=uuid.uuid3(uuid.NAMESPACE_DNS, ''), binary=False, null=False)  # 楼栋uuid
-    HouseUUID = fields.UUIDField(default=uuid.uuid3(uuid.NAMESPACE_DNS, ''), binary=False, null=False)  # 户uuid
-    RealEstateProjectID = fields.StringField(default='')  # 房地产项目ID
-    HouseID = fields.StringField(default='')  # 户id
-    HouseUrl = fields.StringField(default='')  # 户url
-    BuildingNumber = fields.StringField(default='')  # 楼栋号码
-    ProjectName = fields.StringField(default='')  # 项目名称
-    BuildingName = fields.StringField(default='')  # 楼栋名称
-    FloorName = fields.StringField(default='')  # 层名
-    HouseName = fields.StringField(default='')  # 用途类型
-    HouseUseType = fields.StringField(default='')  # 用途
-    UnitShape = fields.StringField(default='')  # 户型
-    Toward = fields.StringField(default='')  # 朝向
-    HouseUse = fields.StringField(default='')  # 房屋功能
-    FloorHight = fields.StringField(default='')  # 层高
-    BuildingStructure = fields.StringField(default='')  # 建筑结构
-    SalePriceList = fields.StringField(default='')  # 商品房销售价目表
-    HouseSaleState = fields.StringField(default='')  # 销售状态
-    ForecastBuildingArea = fields.StringField(default='')  # 预测建筑面积
-    ForecastInsideOfBuildingArea = fields.StringField(default='')  # 预测套内面积
-    ForecastPublicArea = fields.StringField(default='')  # 预测公摊面积
-    MeasuredBuildingArea = fields.StringField(default='')  # 实测建筑面积
-    MeasuredInsideOfBuildingArea = fields.StringField(default='')  # 实测套内面积
-    MeasuredSharedPublicArea = fields.StringField(default='')  # 实测公摊面积
-    SalePriceByBuildingArea = fields.StringField(default='')  # 按建筑面积拟售单价
-    SalePriceByQuantiy = fields.StringField(default='')  # 备案价(元/套
-    IsMortgage = fields.StringField(default='')  # 是否抵押
-    IsAttachment = fields.StringField(default='')  # 是否查封
-    IsMoveBack = fields.StringField(default='')  # 是否回迁
-    IsPrivateUse = fields.StringField(default='')  # 是否自用
-    IsPublicMating = fields.StringField(default='')  # 是否公建配套
-    IsPermitSale = fields.StringField(default='')
-    Balconys = fields.StringField(default='')  # 封闭阳台数量
-    UnenclosedBalconys = fields.StringField(default='')  # 非封闭阳台
-    Kitchens = fields.StringField(default='')  # 厨房
-    Toilets = fields.StringField(default='')  # 卫生间数量
-    HouseSaleStateLatest = fields.StringField(default='')  # 上一次销售状态
+    CheackTimeLatest = fields.StringField(default=str(datetime.datetime.now()), index=True)  # 最新爬取时间
+
+    ProjectUUID = fields.UUIDField(default=uuid.uuid3(uuid.NAMESPACE_DNS, ''), binary=False, null=False,
+                                   primary_key=False, choices=False)  # 项目uuid
+    PresalePermitNumberUUID = fields.UUIDField(default=uuid.uuid3(uuid.NAMESPACE_DNS, ''), binary=False,
+                                               null=False, primary_key=False, choices=False)  # 预售证uuid
+    BuildingUUID = fields.UUIDField(default=uuid.uuid3(uuid.NAMESPACE_DNS, ''), binary=False, null=False,
+                                    primary_key=False, choices=False)  # 楼栋uuid
+    HouseUUID = fields.UUIDField(default=uuid.uuid3(uuid.NAMESPACE_DNS, ''), binary=False, null=False,
+                                 primary_key=False, choices=False)  # 户uuid
+
+    HouseID = fields.StringField(default='', null=False, primary_key=False, choices=False)  # 户id
+
+    HouseUrl = fields.StringField(default='', null=False, primary_key=False, choices=False)  # 户url
+    SourceUrl = fields.StringField(default='', null=False, primary_key=False, choices=False)  # 来源url
+
+    BuildingNumber = fields.StringField(default='', null=False, primary_key=False, choices=False)  # 楼栋号码
+    ProjectName = fields.StringField(default='', null=False, primary_key=False, choices=False)  # 项目名称
+    BuildingName = fields.StringField(default='', null=False, primary_key=False, choices=False)  # 楼栋名称
+    FloorName = fields.StringField(default='', null=False, primary_key=False, choices=False)  # 层名
+    HouseName = fields.StringField(default='', null=False, primary_key=False, choices=False)  # 用途类型
+    HouseUseType = fields.StringField(default='', null=False, primary_key=False, choices=False)  # 用途
+    UnitShape = fields.StringField(default='', null=False, primary_key=False, choices=False)  # 户型
+    Toward = fields.StringField(default='', null=False, primary_key=False, choices=False)  # 朝向
+    HouseUse = fields.StringField(default='', null=False, primary_key=False, choices=False)  # 房屋功能
+    FloorHight = fields.StringField(default='', null=False, primary_key=False, choices=False)  # 层高
+    BuildingStructure = fields.StringField(default='', null=False, primary_key=False, choices=False)  # 建筑结构
+    SalePriceList = fields.StringField(default='', null=False, primary_key=False, choices=False)  # 商品房销售价目表
+    HouseSaleState = fields.StringField(default='', null=False, primary_key=False, choices=False)  # 销售状态
+
+    ForecastBuildingArea = fields.StringField(default='', null=False, primary_key=False,
+                                              choices=False)  # 预测建筑面积
+    ForecastInsideOfBuildingArea = fields.StringField(default='', null=False, primary_key=False,
+                                                      choices=False)  # 预测套内面积
+    ForecastPublicArea = fields.StringField(default='', null=False, primary_key=False, choices=False)  # 预测公摊面积
+    MeasuredBuildingArea = fields.StringField(default='', null=False, primary_key=False,
+                                              choices=False)  # 实测建筑面积
+    MeasuredInsideOfBuildingArea = fields.StringField(default='', null=False, primary_key=False,
+                                                      choices=False)  # 实测套内面积
+    MeasuredSharedPublicArea = fields.StringField(default='', null=False, primary_key=False,
+                                                  choices=False)  # 实测公摊面积
+    SalePriceByBuildingArea = fields.StringField(default='', null=False, primary_key=False,
+                                                 choices=False)  # 按建筑面积拟售单价
+    SalePriceByQuantiy = fields.StringField(default='', null=False, primary_key=False, choices=False)  # 备案价(元/套
+
+    IsMortgage = fields.StringField(default='', null=False, primary_key=False, choices=False)  # 是否抵押
+    IsAttachment = fields.StringField(default='', null=False, primary_key=False, choices=False)  # 是否查封
+    IsMoveBack = fields.StringField(default='', null=False, primary_key=False, choices=False)  # 是否回迁
+    IsPrivateUse = fields.StringField(default='', null=False, primary_key=False, choices=False)  # 是否自用
+    IsPublicMating = fields.StringField(default='', null=False, primary_key=False, choices=False)  # 是否公建配套
+    IsPermitSale = fields.StringField(default='', null=False, primary_key=False, choices=False)
+
+    Balconys = fields.StringField(default='', null=False, primary_key=False, choices=False)  # 封闭阳台数量
+    UnenclosedBalconys = fields.StringField(default='', null=False, primary_key=False, choices=False)  # 非封闭阳台
+    Kitchens = fields.StringField(default='', null=False, primary_key=False, choices=False)  # 厨房
+    Toilets = fields.StringField(default='', null=False, primary_key=False, choices=False)  # 卫生间数量
+    Address = fields.StringField(default='', null=False, primary_key=False, choices=False)  # 地址
+    HouseSaleStateLatest = fields.StringField(default='', null=False, primary_key=False,
+                                              choices=False)  # 上一次销售状态
+    ComplateTag = fields.IntField(default=0, null=True, primary_key=False, choices=False)
     meta = {
         'indexes': [
             "ProjectUUID",
@@ -4276,6 +4298,7 @@ class House_DetailHuizhou(Document):
             "HouseID",
             'HouseUrl',
             'RecordTime',
+            'CheackTimeLatest',
             'HouseSaleStateLatest',
             'HouseSaleState'
         ]
