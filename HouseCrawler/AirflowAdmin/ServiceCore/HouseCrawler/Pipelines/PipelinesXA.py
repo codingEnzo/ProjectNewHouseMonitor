@@ -4,6 +4,8 @@ import logging
 import os
 import sys
 import uuid
+from scrapy import Request
+from scrapy.exceptions import DropItem
 
 try:
     from HouseCrawler.Items.ItemsXA import *
@@ -127,6 +129,11 @@ class XAPipeline(object):
 
     def process_item(self, item, spider):
         if item:
+            if isinstance(item, ProjectInfoItem) and item['IsCompletion'] == '0':
+                req = Request(item['ProjectInfoURL'], meta={'PageType': 'ProjectInfo', 'item': item})
+                spider.crawler.engine.crawl(req, spider)
+                raise DropItem("Transfer into ProjectInfo.")
+
             if self.check_item_exist(item):
                 logger.debug("item: %(item)s UUID existed",
                              {'item': item})
