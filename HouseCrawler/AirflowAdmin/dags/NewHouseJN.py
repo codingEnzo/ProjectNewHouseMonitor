@@ -52,7 +52,7 @@ def just_one_instance(func):
     return f
 
 
-STARTDATE = datetime.datetime.now() - datetime.timedelta(hours=6)
+STARTDATE = datetime.datetime.now() - datetime.timedelta(hours=10)
 
 default_args = {
     'owner': 'airflow',
@@ -81,14 +81,14 @@ spider_settings = {
         'HouseCrawler.SpiderMiddleWares.SpiderMiddleWaresJN.SignInfoHandleMiddleware': 106,
     },
     'RETRY_ENABLE': True,
-    'CLOSESPIDER_TIMEOUT': 3600 * 3.5,
+    'CLOSESPIDER_TIMEOUT': 3600 * 7.5,
     'PROXY_LEVEL': 'high',
     'PROXY_ENABLE': False,
     'RETRY_TIMES': 15
 }
 
 dag = DAG('NewHouseJN', default_args=default_args,
-          schedule_interval="0 */4 * * *")
+          schedule_interval="0 */8 * * *")
 
 t1 = PythonOperator(
     task_id='LoadProjectBaseJN',
@@ -157,7 +157,7 @@ t3 = PythonOperator(
 
 building_info_list = list(map(lambda x: json.loads(
     x.decode()), dj_settings.REDIS_CACHE.smembers(REDIS_CACHE_KEY)))
-index_skip = int(math.ceil(len(building_info_list) / float(4))) + 1
+index_skip = int(math.ceil(len(building_info_list) / float(3))) + 1
 for cur, index in enumerate(list(range(0, len(building_info_list), index_skip))):
     t4 = PythonOperator(
         task_id='LoadBuildingInfoJN_%s' % cur,

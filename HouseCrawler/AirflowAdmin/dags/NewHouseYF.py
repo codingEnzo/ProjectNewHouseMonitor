@@ -28,7 +28,7 @@ django.setup()
 from HouseNew.models import ProjectBaseYunfu, BuildingInfoYunfu
 from services.spider_service import spider_call
 
-STARTDATE = datetime.datetime.now() - datetime.timedelta(hours=8)
+STARTDATE = datetime.datetime.now() - datetime.timedelta(hours=10)
 
 default_args = {
     'owner': 'airflow',
@@ -59,14 +59,14 @@ spider_settings = {
         'HouseCrawler.SpiderMiddleWares.SpiderMiddleWaresYF.ProjectIndexHandleMiddleware': 108,
     },
     'RETRY_ENABLE': True,
-    'CLOSESPIDER_TIMEOUT': 3600 * 5.7,
+    'CLOSESPIDER_TIMEOUT': 3600 * 7.7,
     'CONCURRENT_REQUESTS': 8,
     'RETRY_TIMES': 30,
     'REDIRECT_ENABLED': True
 }
 
 dag = DAG('NewHouseYF', default_args=default_args,
-          schedule_interval="15 */6 * * *")
+          schedule_interval="15 */8 * * *")
 
 project_base_urls = ['http://219.129.189.12:8090/JHHouseWeb/user_kfs.aspx?lid=a88b3b89-472c-493b-9b4b-970f7848114f',
                      'http://219.129.189.12:8090/JHHouseWeb/user_kfs.aspx?lid=c4407134-22b9-4a2e-9556-9df063088aca',
@@ -125,7 +125,7 @@ for item in cur:
                                       'BuildingUUID': str(item['BuildingUUID'])}}
             building_info_list.append(building_info)
 
-index_skip = int(math.ceil(len(building_info_list) / float(4))) + 1
+index_skip = int(math.ceil(len(building_info_list) / float(3))) + 1
 for cur, index in enumerate(list(range(0, len(building_info_list), index_skip))):
     t3 = PythonOperator(
         task_id='LoadBuildingInfoYF_%s' % cur,

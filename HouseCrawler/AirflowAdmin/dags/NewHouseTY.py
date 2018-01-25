@@ -48,7 +48,7 @@ def just_one_instance(func):
     return f
 
 
-STARTDATE = datetime.datetime.now() - datetime.timedelta(hours=6)
+STARTDATE = datetime.datetime.now() - datetime.timedelta(hours=8)
 
 default_args = {
     'owner': 'airflow',
@@ -76,12 +76,12 @@ spider_settings = {
                 'HouseCrawler.SpiderMiddleWares.SpiderMiddleWaresTY.HouseInfoHandleMiddleware': 105,
                 },
             'RETRY_ENABLE': True,
-            'CLOSESPIDER_TIMEOUT': 3600 * 3.5
+            'CLOSESPIDER_TIMEOUT': 3600 * 5.5
             }
 
 
 dag = DAG('NewHouseTY', default_args=default_args,
-            schedule_interval="45 */4 * * *")
+            schedule_interval="45 */6 * * *")
 
 t1 = PythonOperator(
     task_id='LoadProjectBaseTY',
@@ -143,7 +143,7 @@ t3 = PythonOperator(
 
 building_info_list = list(map(lambda x: json.loads(
     x.decode()), dj_settings.REDIS_CACHE.smembers(REDIS_CACHE_KEY)))
-index_skip = int(math.ceil(len(building_info_list) / float(4))) + 1
+index_skip = int(math.ceil(len(building_info_list) / float(3))) + 1
 for cur, index in enumerate(list(range(0, len(building_info_list), index_skip))):
     t4 = PythonOperator(
         task_id='LoadBuildingInfoTY_%s' % cur,

@@ -28,7 +28,7 @@ django.setup()
 from HouseNew.models import ProjectBaseQingyuan, BuildingInfoQingyuan
 from services.spider_service import spider_call
 
-STARTDATE = datetime.datetime.now() - datetime.timedelta(hours=8)
+STARTDATE = datetime.datetime.now() - datetime.timedelta(hours=10)
 
 default_args = {
     'owner': 'airflow',
@@ -59,14 +59,14 @@ spider_settings = {
         'HouseCrawler.SpiderMiddleWares.SpiderMiddleWaresQY.ProjectIndexHandleMiddleware': 108,
     },
     'RETRY_ENABLE': True,
-    'CLOSESPIDER_TIMEOUT': 3600 * 5.5,
+    'CLOSESPIDER_TIMEOUT': 3600 * 7.5,
     'CONCURRENT_REQUESTS': 8,
     'RETRY_TIMES': 30,
     'REDIRECT_ENABLED': True
 }
 
 dag = DAG('NewHouseQY', default_args=default_args,
-          schedule_interval="15 */6 * * *")
+          schedule_interval="15 */8 * * *")
 
 project_base_urls = ['http://www.qyfgj.cn/newys/user_kfs.aspx?lid=6900fcbe-7a85-4447-a188-e9a056777415']
 project_base_list = []
@@ -121,7 +121,7 @@ for item in cur:
                                       'BuildingUUID': str(item['BuildingUUID'])}}
             building_info_list.append(building_info)
 
-index_skip = int(math.ceil(len(building_info_list) / float(4))) + 1
+index_skip = int(math.ceil(len(building_info_list) / float(3))) + 1
 for cur, index in enumerate(list(range(0, len(building_info_list), index_skip))):
     t3 = PythonOperator(
         task_id='LoadBuildingInfoQY_%s' % cur,

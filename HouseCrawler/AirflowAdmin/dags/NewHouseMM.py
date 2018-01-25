@@ -28,7 +28,7 @@ django.setup()
 from HouseNew.models import ProjectBaseMaoming, BuildingInfoMaoming
 from services.spider_service import spider_call
 
-STARTDATE = datetime.datetime.now() - datetime.timedelta(hours=8)
+STARTDATE = datetime.datetime.now() - datetime.timedelta(hours=10)
 
 default_args = {
     'owner': 'airflow',
@@ -59,14 +59,14 @@ spider_settings = {
         'HouseCrawler.SpiderMiddleWares.SpiderMiddleWaresMM.ProjectIndexHandleMiddleware': 108,
     },
     'RETRY_ENABLE': True,
-    'CLOSESPIDER_TIMEOUT': 3600 * 5.5,
+    'CLOSESPIDER_TIMEOUT': 3600 * 7.5,
     'CONCURRENT_REQUESTS': 8,
     'RETRY_TIMES': 30,
     'REDIRECT_ENABLED': True
 }
 
 dag = DAG('NewHouseMM', default_args=default_args,
-          schedule_interval="15 */6 * * *")
+          schedule_interval="15 */8 * * *")
 
 project_base_urls = ['http://fcjwq.maoming.gov.cn:7800/user_kfs.aspx?lid=84364c88-3187-4678-b990-06bee6412f8d',
                      'http://fcjwq.maoming.gov.cn:7800/user_kfs.aspx?lid=f578dadb-8913-4f66-94b6-365ed1d1a132',
@@ -125,7 +125,7 @@ for item in cur:
                                       'BuildingUUID': str(item['BuildingUUID'])}}
             building_info_list.append(building_info)
 
-index_skip = int(math.ceil(len(building_info_list) / float(4))) + 1
+index_skip = int(math.ceil(len(building_info_list) / float(3))) + 1
 for cur, index in enumerate(list(range(0, len(building_info_list), index_skip))):
     t3 = PythonOperator(
         task_id='LoadBuildingInfoMM_%s' % cur,

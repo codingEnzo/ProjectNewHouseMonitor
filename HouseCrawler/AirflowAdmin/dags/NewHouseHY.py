@@ -146,7 +146,7 @@ t3 = PythonOperator(
 
 building_info_list = list(map(lambda x: json.loads(
     x.decode()), dj_settings.REDIS_CACHE.smembers(REDIS_CACHE_KEY)))
-index_skip = int(math.ceil(len(building_info_list) / float(4))) + 1
+index_skip = int(math.ceil(len(building_info_list) / float(3))) + 1
 for cur, index in enumerate(list(range(0, len(building_info_list), index_skip))):
     t4 = PythonOperator(
         task_id='LoadBuildingInfoHY_%s' % cur,
