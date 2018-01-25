@@ -76,6 +76,10 @@ spider_settings = {
     'ITEM_PIPELINES': {
         'HouseCrawler.Pipelines.PipelinesHuizhou.PipelineHuizhou': 300,
     },
+    'DOWNLOADER_MIDDLEWARES': {
+        'scrapy.downloadermiddlewares.httpproxy.HttpProxyMiddleware': None,
+        'HouseCrawler.DownloadMiddleWares.ProxyMiddleWares.ProxyMiddleware': None,
+    },
     'RETRY_ENABLE': True,
     'CLOSESPIDER_TIMEOUT': 3600 * 7.5,
     'CONCURRENT_REQUESTS': 64,
