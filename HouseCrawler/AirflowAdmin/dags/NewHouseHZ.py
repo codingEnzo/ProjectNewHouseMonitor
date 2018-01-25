@@ -3,16 +3,20 @@ import datetime
 import functools
 import os
 import sys
-
+import json
+import math
 import django
 from airflow import DAG
 from airflow.operators.python_operator import PythonOperator
 
 BASE_DIR = os.path.abspath(os.environ.get('AIRFLOW_HOME'))
 HOUSESERVICECORE_DIR = os.path.abspath(os.path.join(BASE_DIR, 'ServiceCore'))
-HOUSEADMIN_DIR = os.path.abspath(os.path.join(BASE_DIR, 'ServiceCore/HouseAdmin'))
-HOUSECRAWLER_DIR = os.path.abspath(os.path.join(BASE_DIR, 'ServiceCore/HouseCrawler'))
-HOUSESERVICE_DIR = os.path.abspath(os.path.join(BASE_DIR, 'ServiceCore/SpiderService'))
+HOUSEADMIN_DIR = os.path.abspath(
+    os.path.join(BASE_DIR, 'ServiceCore/HouseAdmin'))
+HOUSECRAWLER_DIR = os.path.abspath(
+    os.path.join(BASE_DIR, 'ServiceCore/HouseCrawler'))
+HOUSESERVICE_DIR = os.path.abspath(
+    os.path.join(BASE_DIR, 'ServiceCore/SpiderService'))
 
 sys.path.append(BASE_DIR)
 sys.path.append(HOUSEADMIN_DIR)
@@ -25,6 +29,9 @@ django.setup()
 
 from HouseNew.models import *
 from services.spider_service import spider_call
+from django.conf import settings as dj_settings
+
+REDIS_CACHE_KEY = "NewHouseHZ"
 
 
 def just_one_instance(func):
@@ -94,40 +101,56 @@ t1 = PythonOperator(
                             'meta': {'PageType': 'ProjectBase', 'curPage': 1}}]},
     dag=dag)
 
-project_info_list = []
 
-cur = ProjectBaseHangzhou.objects.aggregate(*[
-    {"$sort":
+def cacheLoader(key=REDIS_CACHE_KEY):
+    r = dj_settings.REDIS_CACHE
+    cur = ProjectBaseHangzhou.objects.aggregate(*[
+        {"$sort":
+            {
+                "CurTimeStamp": 1
+            }},
         {
-            "CurTimeStamp": 1
-        }},
-    {
-        '$match': {
-            'OnSaleState': {
-                '$ne': '售完'
+            '$match': {
+                'OnSaleState': {
+                    '$ne': '售完'
+                }
             }
-        }
-    }, {'$group':
-        {
-            '_id': "$ProjectUUID",
-            'ProjectName': {'$first': '$ProjectName'},
-            'sid': {'$first': '$sid'},
-            'PropertyID': {'$first': '$PropertyID'},
-            'RegionName': {'$first': '$RegionName'},
-            'SourceUrl': {'$first': '$SourceUrl'},
-            'OnSaleState': {'$first': '$OnSaleState'},
-        }}
-])
-for item in cur:
-    project_info = {'source_url': item['SourceUrl'],
-                    'meta': {
-                        'PageType': 'MonitProjectInfo',
-                        'sid': item['sid'],
-                        'PropertyID': item['PropertyID'],
-                        'RegionName': item['RegionName'],
-                    }}
-    project_info_list.append(project_info)
+        }, {'$group':
+            {
+                '_id': "$ProjectUUID",
+                'ProjectName': {'$first': '$ProjectName'},
+                'sid': {'$first': '$sid'},
+                'PropertyID': {'$first': '$PropertyID'},
+                'RegionName': {'$first': '$RegionName'},
+                'SourceUrl': {'$first': '$SourceUrl'},
+                'OnSaleState': {'$first': '$OnSaleState'},
+            }}
+    ])
+    for item in cur:
+        try:
+            project_info = {'source_url': item['SourceUrl'],
+                            'meta': {
+                                'PageType': 'MonitProjectInfo',
+                                'sid': item['sid'],
+                                'PropertyID': item['PropertyID'],
+                                'RegionName': item['RegionName'],
+            }}
+            r.sadd(key, json.dumps(project_info))
+        except Exception:
+            import traceback
+            traceback.print_exc()
+    r.expire(key, int(spider_settings.get('CLOSESPIDER_TIMEOUT')))
 
+
+t_cache = PythonOperator(
+    task_id='LoadProjectInfoCache',
+    python_callable=cacheLoader,
+    op_kwargs={'key': REDIS_CACHE_KEY},
+    dag=dag)
+
+
+project_info_list = list(map(lambda x: json.loads(
+    x.decode()), dj_settings.REDIS_CACHE.smembers(REDIS_CACHE_KEY)))
 t2 = PythonOperator(
     task_id='MonitProjectInfoHZ',
     python_callable=spider_call,
@@ -136,6 +159,7 @@ t2 = PythonOperator(
                'urlList': project_info_list},
     dag=dag
 )
+t2.set_upstream(t_cache)
 
 index_base = {
     'source_url': 'http://www.tmsf.com/index.jsp',
