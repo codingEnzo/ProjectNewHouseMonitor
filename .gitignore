@@ -8,6 +8,7 @@ __pycache__/
 
 # Distribution / packaging
 .Python
+.idea/
 env/
 build/
 develop-eggs/
@@ -80,6 +81,7 @@ celerybeat-schedule
 
 # virtualenv
 venv/
+.env2/
 .venv/
 ENV/
 
@@ -92,3 +94,9 @@ ENV/
 .venv3/
 src/YWebAdmin/bower_components/
 src/YWebAdmin/*.xlsx
+
+
+# Logs
+logs/
+nohup.out
+.idea/
