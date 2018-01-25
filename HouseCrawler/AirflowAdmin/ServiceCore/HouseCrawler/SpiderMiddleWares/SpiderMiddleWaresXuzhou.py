@@ -426,15 +426,16 @@ class HouseInfoHandleMiddleware(object):
             src_arr = response.xpath('//img[starts-with(@src,"houseMap.aspx")]/@src').extract()
             for src in src_arr:
                 image_urls.append('http://www.xzhouse.com.cn/'+src)
+            houseDetailItem['ImageUrls'] = image_urls
 
-            imageItem = UnitshapeImageInfoItem()
-            imageItem['SourceUrl'] = response.url
-            imageItem['ProjectUUID'] = ProjectUUID
-            imageItem['PresellUUID'] = PresellUUID
-            imageItem['BuildingUUID'] = BuildingUUID
-            imageItem['HouseUUID'] = houseDetailItem['HouseUUID']
-            imageItem['ImageUrls'] = image_urls
+            # imageItem = UnitshapeImageInfoItem()
+            # imageItem['SourceUrl'] = response.url
+            # imageItem['ProjectUUID'] = ProjectUUID
+            # imageItem['PresellUUID'] = PresellUUID
+            # imageItem['BuildingUUID'] = BuildingUUID
+            # imageItem['HouseUUID'] = houseDetailItem['HouseUUID']
+            # imageItem['ImageUrls'] = image_urls
 
             result.append(houseDetailItem)
-            result.append(imageItem)
+            # result.append(imageItem)
         return result

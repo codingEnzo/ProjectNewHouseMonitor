@@ -299,7 +299,7 @@ class HouseListHandleMiddleware(object):
         for tr in tr_arr[1:]:
             ActualFloor = tr.xpath('./td[1]/text()').extract_first()
             td_arr = tr.xpath('./td[2]/table/tbody/tr/td')
-            for td in td_arr:
+            for i, td in enumerate(td_arr):
                 houseInfoItem = HouseInfoItem()
                 houseInfoItem['ProjectUUID'] = ProjectUUID
                 houseInfoItem['BuildingUUID'] = BuildingUUID
@@ -352,7 +352,7 @@ class HouseListHandleMiddleware(object):
                 if houseInfoItem['HouseNO'] is None:
                     return result
                 houseInfoItem['HouseUUID'] = uuid.uuid3(uuid.NAMESPACE_DNS,
-                                                        BuildingUUID + houseInfoItem['ActualFloor'] + houseInfoItem[
-                                                            'HouseNO'])
+                                                        BuildingUUID + houseInfoItem['ActualFloor'] + '层' +
+                                                        str(i) + '列' + houseInfoItem['HouseNO'])
                 result.append(houseInfoItem)
         return result

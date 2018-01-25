@@ -542,18 +542,38 @@ class CertificateDetailMiddleware(object):
 
 
 class HouseDetailMiddleware(object):
-
     def __init__(self, settings):
         self.settings = settings
         self.headers = {"Host": "data.fz0752.com",
-                   "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8",
-                   "Accept-Encoding": "gzip, deflate",
-                   "Accept-Language": "zh-CN,zh;q=0.9",
-                   "Connection": "keep-alive",
-                   "Upgrade-Insecure-Requests": "1",
-                   "Connection": "keep-alive",
-                   'Content-Type': 'application/x-www-form-urlencoded',
-                   "User-Agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/62.0.3202.62 Safari/537.36"}
+                        "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8",
+                        "Accept-Encoding": "gzip, deflate",
+                        "Accept-Language": "zh-CN,zh;q=0.9",
+                        "Connection": "keep-alive",
+                        "Upgrade-Insecure-Requests": "1",
+                        "Connection": "keep-alive",
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                        "User-Agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/62.0.3202.62 Safari/537.36"}
+        self.transferdict = {
+            '/fontHtml/images/house/ks.gif': '可售',
+            '/fontHtml/images/house/ysqy.gif': '已签预售合同',
+            '/fontHtml/images/house/ba.gif': '已备案',
+            '/fontHtml/images/house/bks.gif': '不可售',
+            '/fontHtml/images/house/ybz.gif': '已办证',
+            '/fontHtml/images/house/bzz.gif': '办证中',
+            '/fontHtml/images/house/cq1.gif': '草签',
+            '/fontHtml/images/house/xfqy.gif': '现房签约',
+            '/fontHtml/images/house/yyg.gif': '已预告',
+            '/fontHtml/images/house/xfyba.gif': '现房已预告', }
+        self.transferdict2 = {
+            'http://119.146.77.133:9999/Content/Images/Htqy/ybz.png': '已办证',
+            'http://119.146.77.133:9999/Content/Images/Htqy/bkcs.png': '不可出售',
+            'http://119.146.77.133:9999/Content/Images/Htqy/gfyxs.png': '购房意向书',
+            'http://119.146.77.133:9999/Content/Images/Htqy/ks.png': '可售',
+            'http://119.146.77.133:9999/Content/Images/Htqy/xfyqy.png': '现房已签约',
+            'http://119.146.77.133:9999/Content/Images/Htqy/yba.png': '已备案',
+            'http://119.146.77.133:9999/Content/Images/Htqy/yqysht.png': '已签预售合同',
+
+        }
 
     @classmethod
     def from_crawler(cls, crawler):
@@ -561,160 +581,279 @@ class HouseDetailMiddleware(object):
         return cls(crawler.settings)
 
     def process_spider_output(self, response, result, spider):
-        def cheack_status(status):
-            status_dict = {
-                '/fontHtml/images/house/ks.gif':'可售',
-                '/fontHtml/images/house/ysqy.gif':'已签预售合同',
-                '/fontHtml/images/house/ba.gif':'已备案',
-                '/fontHtml/images/house/bks.gif':'不可售',
-                '/fontHtml/images/house/ybz.gif':'已办证',
-                '/fontHtml/images/house/bzz.gif':'办证中',
-                '/fontHtml/images/house/cq1.gif':'草签',
-                '/fontHtml/images/house/xfqy.gif':'现房签约',
-                '/fontHtml/images/house/yyg.gif':'已预告',
-                '/fontHtml/images/house/xfyba.gif':'现房已预告',
-            }
-            return status_dict.get(status,status)
 
         out_come = cheack_response(pagetype=['hd_url', 'hd_url2'], response=response, result=result)
 
         if (out_come == 'right') and (response.meta['PageType'] == 'hd_url'):
 
             outcome_list, record_dict = [], response.meta['Record_Data']
+            # 备案表
+            if 'view' in response.url:
 
-            url_list = response.xpath('//table[@class="textCenter" and @bgcolor]/tr')
+                url_list = response.xpath('//table[@class="textCenter" and @bgcolor]/tr')
 
-            for i in url_list[2:]:
-                item_hd = House_Detail_Item()
+                for i in url_list[2:]:
+                    item_hd = House_Detail_Item()
 
-                item_hd['ProjectUUID'] = record_dict['ProjectUUID']
+                    item_hd['ProjectUUID'] = record_dict['ProjectUUID']
 
-                item_hd['BuildingUUID'] = record_dict['BuildingUUID']
+                    item_hd['BuildingUUID'] = record_dict['BuildingUUID']
 
-                item_hd['ProjectName'] = record_dict['ProjectName']
+                    item_hd['ProjectName'] = record_dict['ProjectName']
 
-                item_hd['BuildingName'] = record_dict['BuildingName']
+                    item_hd['BuildingName'] = record_dict['BuildingName']
 
-                item_hd['BuildingNumber'] = record_dict['BuildingNumber']
+                    item_hd['BuildingNumber'] = record_dict['BuildingNumber']
 
-                item_hd["PresalePermitNumberUUID"] = record_dict["PresalePermitNumberUUID"]
+                    item_hd["PresalePermitNumberUUID"] = record_dict["PresalePermitNumberUUID"]
 
+                    item_hd['HouseName'] = i.xpath('./td[not(@rowspan)][1]/text()').extract_first()
 
-                item_hd['HouseName'] = i.xpath('./td[not(@rowspan)][1]/text()').extract_first()
+                    item_hd['ForecastBuildingArea'] = i.xpath('./td[not(@rowspan)][2]/text()').extract_first()
 
-                item_hd['ForecastBuildingArea'] = i.xpath('./td[not(@rowspan)][2]/text()').extract_first()
+                    item_hd['ForecastInsideOfBuildingArea'] = i.xpath('./td[not(@rowspan)][3]/text()').extract_first()
 
-                item_hd['ForecastInsideOfBuildingArea'] = i.xpath('./td[not(@rowspan)][3]/text()').extract_first()
+                    item_hd['MeasuredBuildingArea'] = i.xpath('./td[not(@rowspan)][4]/text()').extract_first()
 
-                item_hd['MeasuredBuildingArea'] = i.xpath('./td[not(@rowspan)][4]/text()').extract_first()
+                    item_hd['MeasuredInsideOfBuildingArea'] = i.xpath('./td[not(@rowspan)][5]/text()').extract_first()
 
-                item_hd['MeasuredInsideOfBuildingArea'] = i.xpath('./td[not(@rowspan)][5]/text()').extract_first()
+                    item_hd['SalePriceByBuildingArea'] = i.xpath('./td[not(@rowspan)][6]/text()').extract_first()
 
-                item_hd['SalePriceByBuildingArea'] = i.xpath('./td[not(@rowspan)][6]/text()').extract_first()
+                    item_hd['SalePriceByQuantiy'] = i.xpath('./td[not(@rowspan)][7]/text()').extract_first()
 
-                item_hd['SalePriceByBuildingArea'] = i.xpath('./td[not(@rowspan)][7]/text()').extract_first()
+                    state = i.xpath('./td[not(@rowspan)][8]/img/@src').extract_first()
 
-                item_hd['HouseSaleState'] = cheack_status(i.xpath('./td[not(@rowspan)][8]/img/@src').extract_first())
+                    item_hd['HouseSaleState'] = self.transferdict.get(state, state)
 
-                item_hd['HouseUrl'] = 'http://data.fz0752.com' + i.xpath(
-                    './td[not(@rowspan)][9]/a/@href').extract_first()
+                    item_hd['HouseUrl'] = 'http://data.fz0752.com' + i.xpath(
+                        './td[not(@rowspan)][9]/a/@href').extract_first()
 
-                item_hd['HouseID'] = re.search(r'num\=(\d+)', item_hd['HouseUrl']).group(1) if item_hd[
-                    'HouseUrl'] else ''
+                    item_hd['HouseID'] = re.search(r'num\=(\d+)', item_hd['HouseUrl']).group(1) if item_hd[
+                        'HouseUrl'] else ''
 
-                houseuuid_raw = item_hd['ProjectName'] + item_hd['BuildingName'] + item_hd['BuildingNumber'] + str(
-                    item_hd["PresalePermitNumberUUID"]) + item_hd['HouseID']
+                    houseuuid_raw = item_hd['ProjectName'] + item_hd['BuildingName'] + item_hd['BuildingNumber'] + str(
+                        item_hd["PresalePermitNumberUUID"]) + item_hd['HouseID']
 
-                item_hd['HouseUUID'] = str(uuid.uuid3(uuid.NAMESPACE_DNS, houseuuid_raw))
+                    item_hd['HouseUUID'] = str(uuid.uuid3(uuid.NAMESPACE_DNS, houseuuid_raw))
 
+                    item_hd['ComplateTag'] = 0  # 标记标签别删啊
 
-                houseDetail_req = Request(url = '',headers=self.headers,
-                        meta={
-                            'PageType' : 'hd_url2',
-                            'Item':item_hd
-                        })
+                    item_hd['SourceUrl'] = response.url
+                    # 在pipeline中找不到数据才发出请求
+                    # houseDetail_req = Request(url = '',headers=self.headers,
+                    #         meta={
+                    #             'PageType' : 'hd_url2',
+                    #             'Item':item_hd
+                    #         })
 
-                outcome_list.append(houseDetail_req)
+                    outcome_list.append(item_hd)
+            # 楼盘表
+            else:
+                url_list = response.xpath('//table[@class="table_cs"]//td[@style][not(@rowspan)]')
+
+                for i in url_list:
+                    item_hd = House_Detail_Item()
+
+                    item_hd['HouseName'] = clean_rule1(i.xpath('./text()').extract_first())
+
+                    item_hd['ProjectUUID'] = record_dict['ProjectUUID']
+
+                    item_hd['BuildingUUID'] = record_dict['BuildingUUID']
+
+                    item_hd['ProjectName'] = record_dict['ProjectName']
+
+                    item_hd['BuildingName'] = record_dict['BuildingName']
+
+                    item_hd['BuildingNumber'] = record_dict['BuildingNumber']
+
+                    item_hd["PresalePermitNumberUUID"] = record_dict["PresalePermitNumberUUID"]
+
+                    item_hd['SalePriceByBuildingArea'] = clean_rule1(
+                        i.xpath('./span[@class="baj_css"]/text()').extract_first())
+
+                    state = i.xpath('./img/@src').extract_first()
+
+                    item_hd['HouseSaleState'] = self.transferdict2.get(state, state)
+
+                    item_hd['HouseID'] = clean_rule1(i.xpath('./img/@id').extract_first())
+
+                    item_hd['HouseUrl'] = 'http://data.fz0752.com/jygs/fyhouseinfo.shtml?type=1&id={0}'.format(
+                        item_hd['HouseID'])
+
+                    houseuuid_raw = item_hd['ProjectName'] + item_hd['BuildingName'] + item_hd['BuildingNumber'] + str(
+                        item_hd["PresalePermitNumberUUID"]) + item_hd['HouseID']
+
+                    item_hd['HouseUUID'] = str(uuid.uuid3(uuid.NAMESPACE_DNS, houseuuid_raw))
+
+                    item_hd['ComplateTag'] = 0
+
+                    item_hd['SourceUrl'] = response.url
+
+                    outcome_list.append(item_hd)
 
             return outcome_list
-
 
         elif (out_come == 'right') and (response.meta['PageType'] == 'hd_url2'):
 
             outcome_list = []
+            # 备案表页面
+            if 'num' in response.url:
 
-            item_hd = response.meta['Item']
+                item_hd = House_Detail_Item(response.meta['Item'])
 
-            item_hd['HouseUseType'] = clean_rule1(
-                response.xpath('/html/body/center/div[2]/div[5]/table/tr[4]/td[4]/text()').extract_first())
+                item_hd['HouseUseType'] = clean_rule1(
+                    response.xpath('/html/body/center/div[2]/div[5]/table/tr[4]/td[4]/text()').extract_first())
 
-            item_hd['HouseUse'] = clean_rule1(
-                response.xpath('/html/body/center/div[2]/div[5]/table/tr[5]/td[2]/text()').extract_first())
+                item_hd['HouseUse'] = clean_rule1(
+                    response.xpath('/html/body/center/div[2]/div[5]/table/tr[5]/td[2]/text()').extract_first())
 
-            item_hd['UnitShape'] = clean_rule1(
-                response.xpath('/html/body/center/div[2]/div[5]/table/tr[5]/td[4]/text()').extract_first())
+                item_hd['UnitShape'] = clean_rule1(
+                    response.xpath('/html/body/center/div[2]/div[5]/table/tr[5]/td[4]/text()').extract_first())
 
-            item_hd['FloorName'] = clean_rule1(
-                response.xpath('/html/body/center/div[2]/div[5]/table/tr[6]/td[2]/text()').extract_first())
+                item_hd['FloorName'] = clean_rule1(
+                    response.xpath('/html/body/center/div[2]/div[5]/table/tr[6]/td[2]/text()').extract_first())
 
-            item_hd['FloorHight'] = clean_rule1(
-                response.xpath('/html/body/center/div[2]/div[5]/table/tr[6]/td[4]/text()').extract_first())
+                item_hd['FloorHight'] = clean_rule1(
+                    response.xpath('/html/body/center/div[2]/div[5]/table/tr[6]/td[4]/text()').extract_first())
 
-            item_hd['Toward'] = clean_rule1(
-                response.xpath('/html/body/center/div[2]/div[5]/table/tr[7]/td[2]/text()').extract_first())
+                item_hd['Toward'] = clean_rule1(
+                    response.xpath('/html/body/center/div[2]/div[5]/table/tr[7]/td[2]/text()').extract_first())
 
-            item_hd['BuildingStructure'] = clean_rule1(
-                response.xpath('/html/body/center/div[2]/div[5]/table/tr[7]/td[4]/text()').extract_first())
+                item_hd['BuildingStructure'] = clean_rule1(
+                    response.xpath('/html/body/center/div[2]/div[5]/table/tr[7]/td[4]/text()').extract_first())
 
-            item_hd['IsPublicMating'] = clean_rule1(
-                response.xpath(' /html/body/center/div[2]/div[5]/table/tr[8]/td[2]/text()').extract_first())
+                item_hd['IsPublicMating'] = clean_rule1(
+                    response.xpath(' /html/body/center/div[2]/div[5]/table/tr[8]/td[2]/text()').extract_first())
 
-            item_hd['IsMoveBack'] = clean_rule1(
-                response.xpath('/html/body/center/div[2]/div[5]/table/tr[8]/td[4]/text()').extract_first())
+                item_hd['IsMoveBack'] = clean_rule1(
+                    response.xpath('/html/body/center/div[2]/div[5]/table/tr[8]/td[4]/text()').extract_first())
 
-            item_hd['IsPrivateUse'] = clean_rule1(
-                response.xpath('/html/body/center/div[2]/div[5]/table/tr[9]/td[2]/text()').extract_first())
+                item_hd['IsPrivateUse'] = clean_rule1(
+                    response.xpath('/html/body/center/div[2]/div[5]/table/tr[9]/td[2]/text()').extract_first())
 
-            item_hd['IsPermitSale'] = clean_rule1(
-                response.xpath('/html/body/center/div[2]/div[5]/table/tr[9]/td[4]/text()').extract_first())
+                item_hd['IsPermitSale'] = clean_rule1(
+                    response.xpath('/html/body/center/div[2]/div[5]/table/tr[9]/td[4]/text()').extract_first())
 
-            item_hd['Balconys'] = clean_rule1(
-                response.xpath(' /html/body/center/div[2]/div[5]/table/tr[12]/td[2]/text()').extract_first())
+                item_hd['Balconys'] = clean_rule1(
+                    response.xpath(' /html/body/center/div[2]/div[5]/table/tr[12]/td[2]/text()').extract_first())
 
-            item_hd['UnenclosedBalconys'] = clean_rule1(
-                response.xpath('/html/body/center/div[2]/div[5]/table/tr[12]/td[4]/text()').extract_first())
+                item_hd['UnenclosedBalconys'] = clean_rule1(
+                    response.xpath('/html/body/center/div[2]/div[5]/table/tr[12]/td[4]/text()').extract_first())
 
-            item_hd['Kitchens'] = clean_rule1(
-                response.xpath('/html/body/center/div[2]/div[5]/table/tr[13]/td[2]/text()').extract_first())
+                item_hd['Kitchens'] = clean_rule1(
+                    response.xpath('/html/body/center/div[2]/div[5]/table/tr[13]/td[2]/text()').extract_first())
 
-            item_hd['Toilets'] = clean_rule1(
-                response.xpath('/html/body/center/div[2]/div[5]/table/tr[13]/td[4]/text()').extract_first())
+                item_hd['Toilets'] = clean_rule1(
+                    response.xpath('/html/body/center/div[2]/div[5]/table/tr[13]/td[4]/text()').extract_first())
 
-            item_hd['SalePriceList'] = clean_rule1(
-                response.xpath('/html/body/center/div[2]/div[5]/table/tr[10]/td[2]/text()').extract_first())
+                item_hd['SalePriceList'] = clean_rule1(
+                    response.xpath('/html/body/center/div[2]/div[5]/table/tr[10]/td[2]/text()').extract_first())
 
-            item_hd['ForecastPublicArea'] = clean_rule1(
-                response.xpath('/html/body/center/div[2]/div[5]/table/tr[17]/td[2]/text()').extract_first())
+                item_hd['ForecastPublicArea'] = clean_rule1(
+                    response.xpath('/html/body/center/div[2]/div[5]/table/tr[17]/td[2]/text()').extract_first())
 
-            item_hd['MeasuredBuildingArea'] = clean_rule1(
-                response.xpath('/html/body/center/div[2]/div[5]/table/tr[15]/td[4]/text()').extract_first())
+                item_hd['MeasuredBuildingArea'] = clean_rule1(
+                    response.xpath('/html/body/center/div[2]/div[5]/table/tr[15]/td[4]/text()').extract_first())
 
-            item_hd['MeasuredInsideOfBuildingArea'] = clean_rule1(
-                response.xpath('/html/body/center/div[2]/div[5]/table/tr[16]/td[4]/text()').extract_first())
+                item_hd['MeasuredInsideOfBuildingArea'] = clean_rule1(
+                    response.xpath('/html/body/center/div[2]/div[5]/table/tr[16]/td[4]/text()').extract_first())
 
-            item_hd['MeasuredSharedPublicArea'] = clean_rule1(
-                response.xpath('/html/body/center/div[2]/div[5]/table/tr[17]/td[4]/text()').extract_first())
+                item_hd['MeasuredSharedPublicArea'] = clean_rule1(
+                    response.xpath('/html/body/center/div[2]/div[5]/table/tr[17]/td[4]/text()').extract_first())
 
-            item_hd['IsMortgage'] = clean_rule1(
-                response.xpath('/html/body/center/div[2]/div[5]/table/tr[19]/td[2]/text()').extract_first())
+                item_hd['IsMortgage'] = clean_rule1(
+                    response.xpath('/html/body/center/div[2]/div[5]/table/tr[19]/td[2]/text()').extract_first())
 
-            item_hd['IsAttachment'] = clean_rule1(
-                response.xpath('/html/body/center/div[2]/div[5]/table/tr[19]/td[4]/text()').extract_first())
+                item_hd['IsAttachment'] = clean_rule1(
+                    response.xpath('/html/body/center/div[2]/div[5]/table/tr[19]/td[4]/text()').extract_first())
 
+                item_hd['Address'] = clean_rule1(
+                    response.xpath('//td[text()="地址："]/following-sibling::*/text()').extract_first())
 
-            outcome_list.append(item_hd)
+                item_hd['ComplateTag'] = 1
 
+                outcome_list.append(item_hd)
+            # 楼盘表页面
+            else:
+                item_hd = House_Detail_Item(response.meta['Item'])
+
+                item_hd['FloorName'] = clean_rule1(
+                    response.xpath('//th[text()="楼层"]/following-sibling::*/text()').extract_first())
+
+                item_hd['FloorHight'] = clean_rule1(
+                    response.xpath('//th[text()="层高"]/following-sibling::*/text()').extract_first())
+
+                item_hd['HouseUseType'] = clean_rule1(
+                    response.xpath('//th[text()="规划用途"]/following-sibling::*/text()').extract_first())
+
+                item_hd['HouseUse'] = clean_rule1(
+                    response.xpath('//th[text()="房屋功能"]/following-sibling::*/text()').extract_first())
+
+                item_hd['UnitShape'] = clean_rule1(
+                    response.xpath('//th[text()="户型"]/following-sibling::*/text()').extract_first())
+
+                item_hd['Toward'] = clean_rule1(
+                    response.xpath('//th[text()="朝向"]/following-sibling::*/text()').extract_first())
+
+                item_hd['BuildingStructure'] = clean_rule1(
+                    response.xpath('//th[text()="房屋结构"]/following-sibling::*/text()').extract_first())
+
+                item_hd['IsPublicMating'] = clean_rule1(
+                    response.xpath('//th[text()="是否公共配套"]/following-sibling::*/text()').extract_first())
+
+                item_hd['IsMoveBack'] = clean_rule1(
+                    response.xpath('//th[text()="是否回迁"]/following-sibling::*/text()').extract_first())
+
+                item_hd['IsPrivateUse'] = clean_rule1(
+                    response.xpath('//th[text()="是否自用"]/following-sibling::*/text()').extract_first())
+
+                item_hd['IsPermitSale'] = clean_rule1(
+                    response.xpath('//th[text()="批准销售状态"]/following-sibling::*/text()').extract_first())
+
+                item_hd['Balconys'] = clean_rule1(
+                    response.xpath('//th[text()="封闭阳台数(个)"]/following-sibling::*/text()').extract_first())
+
+                item_hd['UnenclosedBalconys'] = clean_rule1(
+                    response.xpath('//th[text()="非封闭阳台数(个)"]/following-sibling::*/text()').extract_first())
+
+                item_hd['Kitchens'] = clean_rule1(
+                    response.xpath('//th[text()="厨房数(个)"]/following-sibling::*/text()').extract_first())
+
+                item_hd['Toilets'] = clean_rule1(
+                    response.xpath('//th[text()="卫生间数(个)"]/following-sibling::*/text()').extract_first())
+
+                item_hd['ForecastPublicArea'] = clean_rule1(
+                    response.xpath('//th[text()="预测分摊面积(㎡)"]/following-sibling::*/text()').extract_first())
+
+                item_hd['ForecastBuildingArea'] = clean_rule1(
+                    response.xpath('//th[text()="预测建筑面积(㎡)"]/following-sibling::*/text()').extract_first())
+
+                item_hd['ForecastInsideOfBuildingArea'] = clean_rule1(
+                    response.xpath('//th[text()="预测套内建筑面积(㎡)"]/following-sibling::*/text()').extract_first())
+
+                item_hd['MeasuredBuildingArea'] = clean_rule1(
+                    response.xpath('//th[text()="实测建筑面积(㎡)"]/following-sibling::*/text()').extract_first())
+
+                item_hd['MeasuredInsideOfBuildingArea'] = clean_rule1(
+                    response.xpath('//th[text()="实测套内建筑面积(㎡)"]/following-sibling::*/text()').extract_first())
+
+                item_hd['MeasuredSharedPublicArea'] = clean_rule1(
+                    response.xpath('//th[text()="实测分摊面积(㎡)"]/following-sibling::*/text()').extract_first())
+
+                item_hd['IsMortgage'] = clean_rule1(
+                    response.xpath('//th[text()="是否抵押"]/following-sibling::*/text()').extract_first())
+
+                item_hd['IsAttachment'] = clean_rule1(
+                    response.xpath('//th[text()="是否查封"]/following-sibling::*/text()').extract_first())
+
+                item_hd['Address'] = clean_rule1(
+                    response.xpath('//th[text()="房屋坐落"]/following-sibling::*/text()').extract_first())
+
+                item_hd['ComplateTag'] = 1
+
+                outcome_list.append(item_hd)
             return outcome_list
+
 
         else:
             # print('over')
@@ -731,7 +870,6 @@ class HouseDetailMiddleware(object):
 
 
 class MonitorMiddleware(object):
-
     def __init__(self, settings):
         self.settings = settings
 
