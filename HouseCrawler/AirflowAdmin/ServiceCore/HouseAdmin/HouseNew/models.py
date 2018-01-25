@@ -4113,47 +4113,57 @@ class HouseBaseCangzhou(Document):
 
 
 class Project_DetailHuizhou(Document):
-    RecordID = fields.UUIDField(default=uuid.uuid1(), binary=True, primary_key=True, null=False)  # 记录id
+    RecordID = fields.UUIDField(default=uuid.uuid1(), binary=True, primary_key=True, null=False,
+                                choices=False)  # 记录id
     RecordTime = fields.StringField(default=str(datetime.datetime.now()), index=True)  # 记录时间
-    ProjectUUID = fields.UUIDField(default=uuid.uuid3(uuid.NAMESPACE_DNS, ''), binary=False, null=False)  # 项目uuid
-    RealEstateProjectID = fields.StringField(default='')  # 项目id
-    ProjectUrl = fields.URLField(default=None, null=True, blank=True)  # 项目url
-    AveragePrice = fields.StringField(default='')  # 均价
-    PresalePermitNumber = fields.StringField(default='')  # 预售证编号
-    ProjectName = fields.StringField(default='')  # 项目名称
-    RegionName = fields.StringField(default='')  # 所在区域
-    ProjectAddress = fields.StringField(default='')  # 惠州市惠城区金山大道与三环南路交汇处
-    Developer = fields.StringField(default='')  # 发展商
-    EarliestOpeningTime = fields.StringField(default='')  # 最早开盘时间
-    GreeningRate = fields.StringField(default='')  # 绿化率
-    FloorAreaRatio = fields.StringField(default='')  # 容积率
-    DistrictName = fields.StringField(default='')  # 行政区
-    ManagementFees = fields.StringField(default='')  # 物业费
-    ManagementCompany = fields.StringField(default='')  # 物业公司
-    TotalBuidlingArea = fields.StringField(default='')  # 总建筑面积
-    FloorArea = fields.StringField(default='')  # 占地面积
-    ParkingSpaceAmount = fields.StringField(default='')  # 车位套数
-    ProjectInformation = fields.StringField(default='')  # 项目信息
-    HouseBuildingCount = fields.StringField(default='')  # 楼幢总数
-    HousingCount = fields.StringField(default='')  # 总户数
-    PropertyRightsDescription = fields.StringField(default='')  # 产权年限描述
-    Decoration = fields.StringField(default='')  # 装修
-    Project_LivingTime = fields.StringField(default='')  # 入住时间
-    BuildingType = fields.StringField(default='')  # 建筑类型 低层/多层/中高层/高层/超高层
-    Project_Traffic = fields.StringField(default='')  # 项目交通
-    Project_Introduce = fields.StringField(default='')  # 项目介绍
-    Project_Surround = fields.StringField(default='')  # 项目周边
-    ProjectLandNumber = fields.StringField(default='')  # 国土证号
-    Project_Feature = fields.StringField(default='')  # 项目特色
-    ProjectBlock = fields.StringField(default='')  # 版块
-    ProjectHouseType = fields.StringField(default='')  # 物业类别
-    ProjectMainShape = fields.StringField(default='')  # 主力户型
-    ParkingSpaceMatching = fields.StringField(default='')  # 车位配比
-    HouseSoldAmount = fields.StringField(default='')  # 已售套数
-    HouseUnsoldAmount = fields.StringField(default='')  # 未售套数
-    DeveloperLevel = fields.StringField(default='')  # 资质等级
-    DeveloperPermitNumber = fields.StringField(default='')  # 开发商资质证书
-    SaleTelphoneNumber = fields.StringField(default='')  # 销售电话
+    CheackTimeLatest = fields.StringField(default=str(datetime.datetime.now()), index=True)
+    ProjectUUID = fields.UUIDField(default=uuid.uuid3(uuid.NAMESPACE_DNS, ''), binary=False, null=False,
+                                   primary_key=False, choices=False)  # 项目uuid
+    RealEstateProjectID = fields.StringField(default='', null=False, primary_key=False, choices=False)  # 项目id
+    ProjectUrl = fields.URLField(default=None, null=True, blank=True, primary_key=False,
+                                 choices=False)  # 项目url
+    SourceUrl = fields.URLField(default=None, null=True, blank=True, primary_key=False,
+                                choices=False)  # 来源url
+    AveragePrice = fields.StringField(default='', null=False, primary_key=False, choices=False)  # 均价
+    PresalePermitNumber = fields.StringField(default='', null=False, primary_key=False, choices=False)  # 预售证编号
+    ProjectName = fields.StringField(default='', null=False, primary_key=False, choices=False)  # 项目名称
+    RegionName = fields.StringField(default='', null=False, primary_key=False, choices=False)  # 所在区域
+    ProjectAddress = fields.StringField(default='', null=False, primary_key=False,
+                                        choices=False)  # 惠州市惠城区金山大道与三环南路交汇处
+    Developer = fields.StringField(default='', null=False, primary_key=False, choices=False)  # 发展商
+    EarliestOpeningTime = fields.StringField(default='', null=False, primary_key=False, choices=False)  # 最早开盘时间
+    GreeningRate = fields.StringField(default='', null=False, primary_key=False, choices=False)  # 绿化率
+    FloorAreaRatio = fields.StringField(default='', null=False, primary_key=False, choices=False)  # 容积率
+    DistrictName = fields.StringField(default='', null=False, primary_key=False, choices=False)  # 行政区
+    ManagementFees = fields.StringField(default='', null=False, primary_key=False, choices=False)  # 物业费
+    ManagementCompany = fields.StringField(default='', null=False, primary_key=False, choices=False)  # 物业公司
+    TotalBuidlingArea = fields.StringField(default='', null=False, primary_key=False, choices=False)  # 总建筑面积
+    FloorArea = fields.StringField(default='', null=False, primary_key=False, choices=False)  # 占地面积
+    ParkingSpaceAmount = fields.StringField(default='', null=False, primary_key=False, choices=False)  # 车位套数
+    ProjectInformation = fields.StringField(default='', null=False, primary_key=False, choices=False)  # 项目信息
+    HouseBuildingCount = fields.StringField(default='', null=False, primary_key=False, choices=False)  # 楼幢总数
+    HousingCount = fields.StringField(default='', null=False, primary_key=False, choices=False)  # 总户数
+    PropertyRightsDescription = fields.StringField(default='', null=False, primary_key=False,
+                                                   choices=False)  # 产权年限描述
+    Decoration = fields.StringField(default='', null=False, primary_key=False, choices=False)  # 装修
+    Project_LivingTime = fields.StringField(default='', null=False, primary_key=False, choices=False)  # 入住时间
+    BuildingType = fields.StringField(default='', null=False, primary_key=False,
+                                      choices=False)  # 建筑类型 低层/多层/中高层/高层/超高层
+    Project_Traffic = fields.StringField(default='', null=False, primary_key=False, choices=False)  # 项目交通
+    Project_Introduce = fields.StringField(default='', null=False, primary_key=False, choices=False)  # 项目介绍
+    Project_Surround = fields.StringField(default='', null=False, primary_key=False, choices=False)  # 项目周边
+    ProjectLandNumber = fields.StringField(default='', null=False, primary_key=False, choices=False)  # 国土证号
+    Project_Feature = fields.StringField(default='', null=False, primary_key=False, choices=False)  # 项目特色
+    ProjectBlock = fields.StringField(default='', null=False, primary_key=False, choices=False)  # 版块
+    ProjectHouseType = fields.StringField(default='', null=False, primary_key=False, choices=False)  # 物业类别
+    ProjectMainShape = fields.StringField(default='', null=False, primary_key=False, choices=False)  # 主力户型
+    ParkingSpaceMatching = fields.StringField(default='', null=False, primary_key=False, choices=False)  # 车位配比
+    HouseSoldAmount = fields.StringField(default='', null=False, primary_key=False, choices=False)  # 已售套数
+    HouseUnsoldAmount = fields.StringField(default='', null=False, primary_key=False, choices=False)  # 未售套数
+    DeveloperLevel = fields.StringField(default='', null=False, primary_key=False, choices=False)  # 资质等级
+    DeveloperPermitNumber = fields.StringField(default='', null=False, primary_key=False,
+                                               choices=False)  # 开发商资质证书
+    SaleTelphoneNumber = fields.StringField(default='', null=False, primary_key=False, choices=False)  # 销售电话
     meta = {
         'indexes': [
             'RecordTime',
@@ -4161,36 +4171,49 @@ class Project_DetailHuizhou(Document):
             'ProjectUrl',
             'ProjectName',
             'ProjectBlock'
+
         ]
     }
 
 
 class Certificate_DetailHuizhou(Document):
-    RecordID = fields.UUIDField(default=uuid.uuid1(), binary=True, primary_key=True, null=False)  # 记录id
-    RecordTime = fields.StringField(default=str(datetime.datetime.now()), index=True)  # 记录时间
-    ProjectUUID = fields.UUIDField(default=uuid.uuid3(uuid.NAMESPACE_DNS, ''), binary=False, null=False)  # 项目uuid
-    PresalePermitNumberUUID = fields.StringField(default='')  # 预售证uuid
-    RealEstateProjectID = fields.StringField(default='')  # 项目id
-    PresalePermitUrl = fields.StringField(default='')  # 预售证url
-    SourceUrl = fields.StringField(default='')  # 来源url
-    ProjectName = fields.StringField(default='')
-    PresalePermitNumber = fields.StringField(default='')  # 预售证编号
-    LssuingAuthority = fields.StringField(default='')  # 发证机关
-    PresaleTotalBuidlingArea = fields.StringField(default='')  # 预售总建筑面积
-    ValidityDateStartDate = fields.StringField(default='')  # 有效期起始日期
-    ValidityDateClosingDate = fields.StringField(default='')  # 有效期截止日期
-    LssueDate = fields.StringField(default='')  # 发证日期
-    Bank_Account = fields.StringField(default='')  # 预售款专用帐户
-    Remarks = fields.StringField(default='')  # 备注
-    BuiltFloorCount = fields.StringField(default='')  # 发证时各栋已建层数
-    PresaleHousingLandIsMortgage = fields.StringField(default='')  # 土地是否抵押
-    LivingArea = fields.StringField(default='')  # 住宅面积
-    BusinessArea = fields.StringField(default='')  # 商业用房面积
-    OtherArea = fields.StringField(default='')  # 其它面积
-    PresaleBuildingNo = fields.StringField(default='')  # 预售房屋栋号及层数                                #预售房屋栋号及层数
-    PresaleHouseCount = fields.StringField(default='')  # 本期总单元套数
-    DeveloperPermitNumber = fields.StringField(default='')  # 开发商资质证书
-    LandNumberAndUse = fields.StringField(default='')  # 土地使用权证号及用途
+    RecordID = fields.UUIDField(default = uuid.uuid1(), binary = True, primary_key = True, null = False,
+                                choices = False)  # 记录id
+    RecordTime = fields.StringField(default = str(datetime.datetime.now()), index = True)  # 记录时间
+    CheackTimeLatest = fields.StringField(default = str(datetime.datetime.now()), index = True)
+    ProjectUUID = fields.UUIDField(default = uuid.uuid3(uuid.NAMESPACE_DNS, ''), binary = False, null = False,
+                                   primary_key = False, choices = False)  # 项目uuid
+    PresalePermitNumberUUID = fields.UUIDField(default = uuid.uuid3(uuid.NAMESPACE_DNS, ''), binary = False,
+                                               null = False, primary_key = False, choices = False)  # 预售证uuid
+    RealEstateProjectID = fields.StringField(default = '', null = False, primary_key = False, choices = False)  # 项目id
+    PresalePermitUrl = fields.StringField(default = '', null = False, primary_key = False, choices = False)  # 预售证url
+    SourceUrl = fields.StringField(default = '', null = False, primary_key = False, choices = False)  # 来源url
+    ProjectName = fields.StringField(default = '', null = False, primary_key = False, choices = False)
+    PresalePermitNumber = fields.StringField(default = '', null = False, primary_key = False, choices = False)  # 预售证编号
+    LssuingAuthority = fields.StringField(default = '', null = False, primary_key = False, choices = False)  # 发证机关
+    PresaleTotalBuidlingArea = fields.StringField(default = '', null = False, primary_key = False,
+                                                  choices = False)  # 预售总建筑面积
+    ValidityDateStartDate = fields.StringField(default = '', null = False, primary_key = False,
+                                               choices = False)  # 有效期起始日期
+    ValidityDateClosingDate = fields.StringField(default = '', null = False, primary_key = False,
+                                                 choices = False)  # 有效期截止日期
+    LssueDate = fields.StringField(default = '', null = False, primary_key = False, choices = False)  # 发证日期
+    Bank_Account = fields.StringField(default = '', null = False, primary_key = False, choices = False)  # 预售款专用帐户
+    Remarks = fields.StringField(default = '', null = False, primary_key = False, choices = False)  # 备注
+    BuiltFloorCount = fields.StringField(default = '', null = False, primary_key = False, choices = False)  # 发证时各栋已建层数
+    PresaleHousingLandIsMortgage = fields.StringField(default = '', null = False, primary_key = False,
+                                                      choices = False)  # 土地是否抵押
+    LivingArea = fields.StringField(default = '', null = False, primary_key = False, choices = False)  # 住宅面积
+    BusinessArea = fields.StringField(default = '', null = False, primary_key = False, choices = False)  # 商业用房面积
+    OtherArea = fields.StringField(default = '', null = False, primary_key = False, choices = False)  # 其它面积
+    PresaleBuildingNo = fields.StringField(default = '', null = False, primary_key = False,
+                                           choices = False)  # 预售房屋栋号及层数                                #预售房屋栋号及层数
+    PresaleHouseCount = fields.StringField(default = '', null = False, primary_key = False,
+                                           choices = False)  # 本期总单元套数
+    DeveloperPermitNumber = fields.StringField(default = '', null = False, primary_key = False,
+                                               choices = False)  # 开发商资质证书
+    LandNumberAndUse = fields.StringField(default = '', null = False, primary_key = False,
+                                          choices = False)  # 土地使用权证号及用途
     meta = {
         'indexes': [
             'RecordTime',
@@ -4203,18 +4226,25 @@ class Certificate_DetailHuizhou(Document):
 
 
 class Building_DetailHuizhou(Document):
-    RecordID = fields.UUIDField(default=uuid.uuid1(), binary=True, primary_key=True, null=False)  # 记录id
-    RecordTime = fields.StringField(default=str(datetime.datetime.now()), index=True)  # 记录时间
-    ProjectUUID = fields.UUIDField(default=uuid.uuid3(uuid.NAMESPACE_DNS, ''), binary=False, null=False)  # 项目uuid
-    PresalePermitNumberUUID = fields.StringField(default='')  # 预售证uuid
-    BuildingUUID = fields.UUIDField(default=uuid.uuid3(uuid.NAMESPACE_DNS, ''), binary=False, null=False)  # 楼栋uuid
-    BuildingID = fields.StringField(default='')  # 楼栋id
-    PresalePermitNumber = fields.StringField(default='')  # 预售证编号
-    BuildingUrl = fields.URLField(default=None, null=True, blank=True)  # 楼栋url
-    SourceUrl = fields.URLField(default=None, null=True, blank=True)  # 来源url
-    ProjectName = fields.StringField(default='')  # 项目名称
-    BuildingName = fields.StringField(default='')  # 楼栋名称
-    BuildingNumber = fields.StringField(default='')  # 楼栋号码
+    RecordID = fields.UUIDField(default = uuid.uuid1(), binary = True, primary_key = True, null = False,
+                                choices = False)  # 记录id
+    RecordTime = fields.StringField(default = str(datetime.datetime.now()), index = True)  # 记录时间
+    CheackTimeLatest = fields.StringField(default = str(datetime.datetime.now()), index = True)
+    ProjectUUID = fields.UUIDField(default = uuid.uuid3(uuid.NAMESPACE_DNS, ''), binary = False, null = False,
+                                   primary_key = False, choices = False)  # 项目uuid
+    PresalePermitNumberUUID = fields.UUIDField(default = uuid.uuid3(uuid.NAMESPACE_DNS, ''), binary = False,
+                                               null = False, primary_key = False, choices = False)  # 预售证uuid
+    BuildingUUID = fields.UUIDField(default = uuid.uuid3(uuid.NAMESPACE_DNS, ''), binary = False, null = False,
+                                    primary_key = False, choices = False)  # 楼栋uuid
+    BuildingID = fields.StringField(default = '', null = False, primary_key = False, choices = False)  # 楼栋id
+    PresalePermitNumber = fields.StringField(default = '', null = False, primary_key = False, choices = False)  # 预售证编号
+    BuildingUrl = fields.URLField(default = None, null = True, blank = True, primary_key = False,
+                                  choices = False)  # 楼栋url
+    SourceUrl = fields.URLField(default = None, null = True, blank = True, primary_key = False,
+                                choices = False)  # 来源url
+    ProjectName = fields.StringField(default = '', null = False, primary_key = False, choices = False)  # 项目名称
+    BuildingName = fields.StringField(default = '', null = False, primary_key = False, choices = False)  # 楼栋名称
+    BuildingNumber = fields.StringField(default = '', null = False, primary_key = False, choices = False)  # 楼栋号码
     meta = {
         'indexes': [
             'RecordTime',
