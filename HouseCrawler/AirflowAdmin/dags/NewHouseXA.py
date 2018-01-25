@@ -77,15 +77,29 @@ def query_mongodb(obj=None, name="ProjectBase", key=REDIS_CACHE_KEY):
     r = dj_settings.REDIS_CACHE
     try:
         if obj and name == "ProjectBase":
+            headers = {
+                'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8',
+                'Accept-Encoding': 'gzip, deflate',
+                'Accept-Language': 'zh-CN,zh;q=0.9',
+                'Cache-Control': 'no-cache',
+                'Connection': 'keep-alive',
+                'Host': 'b.fang99.com',
+                'Upgrade-Insecure-Requests': '1',
+                'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_2) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/63.0.3239.132 Safari/537.36'
+            }
+
             cur = obj.objects.all()
             for item in cur:
-                project_info = {'source_url': item.ProjectBaseSubURL,
-                                'meta': {
-                                    'PageType': 'ProjectSubBase',
-                                    'ProjectUUID': item.ProjectUUID,
-                                    'ProjectName': item.ProjectName,
-                                    'ProjectCompany': item.ProjectCompany
-                                }}
+                project_info = {
+                    'source_url': item.ProjectBaseSubURL,
+                    'meta': {
+                        'PageType': 'ProjectSubBase',
+                        'ProjectUUID': item.ProjectUUID,
+                        'ProjectName': item.ProjectName,
+                        'ProjectCompany': item.ProjectCompany,
+                    },
+                    'headers': headers
+                }
                 r.sadd(key, pickle.dumps(project_info))
 
             r.expire(key, 86400)
