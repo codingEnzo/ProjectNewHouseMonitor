@@ -154,7 +154,7 @@ class ProjectInfoHandleMiddleware(BaseMiddleware):
         :return : result
         """
         result = list(result)
-        if not (200 <= response.status < 300):  # common case
+        if not (200 <= response.status < 400):  # common case
             if result:
                 return result
             return []
