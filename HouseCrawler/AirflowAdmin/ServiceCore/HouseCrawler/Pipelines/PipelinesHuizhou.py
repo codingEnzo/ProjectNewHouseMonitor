@@ -7,6 +7,7 @@ import sys
 import uuid
 
 from HouseCrawler.Items.ItemsHuizhou import *
+from scrapy.http import Request
 
 sys.path.append(os.path.abspath('.'))
 sys.path.append(os.path.abspath('..'))
