@@ -101,8 +101,7 @@ t2 = PythonOperator(
     dag=dag
 )
 
-project_info_generator = map(lambda x: pickle.loads(
-    x.decode()), dj_settings.REDIS_CACHE.smembers(REDIS_CACHE_KEY))
+project_info_generator = map(lambda x: pickle.loads(x), dj_settings.REDIS_CACHE.smembers(REDIS_CACHE_KEY))
 
 t3 = PythonOperator(
     task_id='LoadProjectInfo',
