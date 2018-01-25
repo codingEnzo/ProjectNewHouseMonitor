@@ -3,6 +3,7 @@ import datetime
 import os
 import sys
 import math
+import json
 import django
 from airflow import DAG
 from airflow.operators.python_operator import PythonOperator
@@ -27,6 +28,9 @@ django.setup()
 
 from HouseNew.models import ProjectBaseMaoming, BuildingInfoMaoming
 from services.spider_service import spider_call
+from django.conf import settings as dj_settings
+
+REDIS_CACHE_KEY = "NewHouseMM"
 
 STARTDATE = datetime.datetime.now() - datetime.timedelta(hours=10)
 
@@ -104,30 +108,47 @@ t2 = PythonOperator(
     dag=dag
 )
 
-building_info_list = []
-cur = BuildingInfoMaoming.objects.aggregate(*[{"$sort": {"CurTimeStamp": 1}},
-                                              {'$group': {
-                                                  '_id': "$BuildingUUID",
-                                                  'ProjectName': {'$first': '$ProjectName'},
-                                                  'ProjectUUID': {'$first': '$ProjectUUID'},
-                                                  'BuildingName': {'$first': '$BuildingName'},
-                                                  'BuildingUUID': {'$first': '$BuildingUUID'},
-                                                  'BuildingURL': {'$first': '$BuildingURL'}
-                                              }}])
-for item in cur:
-    if item['BuildingURL']:
-        if True:
-            building_info = {'source_url': item['BuildingURL'],
-                             'meta': {'PageType': 'HouseInfo',
-                                      'ProjectName': item['ProjectName'],
-                                      'BuildingName': item['BuildingName'],
-                                      'ProjectUUID': str(item['ProjectUUID']),
-                                      'BuildingUUID': str(item['BuildingUUID'])}}
-            building_info_list.append(building_info)
 
+def cacheLoader(key=REDIS_CACHE_KEY):
+    r = dj_settings.REDIS_CACHE
+    cur = BuildingInfoMaoming.objects.aggregate(*[{"$sort": {"CurTimeStamp": -1}},
+                                                  {'$group': {
+                                                      '_id': "$BuildingUUID",
+                                                      'ProjectName': {'$first': '$ProjectName'},
+                                                      'ProjectUUID': {'$first': '$ProjectUUID'},
+                                                      'BuildingName': {'$first': '$BuildingName'},
+                                                      'BuildingUUID': {'$first': '$BuildingUUID'},
+                                                      'BuildingURL': {'$first': '$BuildingURL'},
+                                                  }}])
+    for item in cur:
+        try:
+            if item['BuildingURL']:
+                if True:
+                    building_info = {'source_url': item['BuildingURL'],
+                                     'meta': {'PageType': 'HouseInfo',
+                                              'ProjectName': item['ProjectName'],
+                                              'BuildingName': item['BuildingName'],
+                                              'ProjectUUID': str(item['ProjectUUID']),
+                                              'BuildingUUID': str(item['BuildingUUID'])}}
+                    r.sadd(key, json.dumps(building_info))
+        except Exception:
+            import traceback
+            traceback.print_exc()
+        r.expire(key, int(spider_settings.get('CLOSESPIDER_TIMEOUT')))
+
+
+t3 = PythonOperator(
+    task_id='LoadBuildingInfoCache',
+    python_callable=cacheLoader,
+    op_kwargs={'key': REDIS_CACHE_KEY},
+    dag=dag)
+
+
+building_info_list = list(map(lambda x: json.loads(
+    x.decode()), dj_settings.REDIS_CACHE.smembers(REDIS_CACHE_KEY)))
 index_skip = int(math.ceil(len(building_info_list) / float(3))) + 1
 for cur, index in enumerate(list(range(0, len(building_info_list), index_skip))):
-    t3 = PythonOperator(
+    t4 = PythonOperator(
         task_id='LoadBuildingInfoMM_%s' % cur,
         python_callable=spider_call,
         op_kwargs={'spiderName': 'DefaultCrawler',
@@ -135,3 +156,4 @@ for cur, index in enumerate(list(range(0, len(building_info_list), index_skip)))
                    'urlList': building_info_list[index:index + index_skip],
                    'spider_count': 32},
         dag=dag)
+    t4.set_upstream(t3)
