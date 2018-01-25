@@ -27,8 +27,12 @@ django.setup()
 
 from HouseNew.models import *
 from services.spider_service import spider_call
+from django.conf import settings as dj_settings
+
+import pickle
 
 STARTDATE = datetime.datetime.now() - datetime.timedelta(hours=6)
+REDIS_CACHE_KEY = "NewHouseXA"
 
 default_args = {
     'owner': 'airflow',
@@ -67,3 +71,43 @@ t1 = PythonOperator(
                             'meta': {'PageType': 'ProjectInitial'}}]},
     dag=dag
 )
+
+
+def query_mongodb(obj=None, name="ProjectBase", key=REDIS_CACHE_KEY):
+    r = dj_settings.REDIS_CACHE
+    try:
+        if obj and name == "ProjectBase":
+            cur = obj.objects.all()
+            for item in cur:
+                project_info = {'source_url': item.ProjectBaseSubURL,
+                                'meta': {
+                                    'PageType': 'ProjectSubBase',
+                                    'ProjectUUID': item.ProjectUUID,
+                                    'ProjectName': item.ProjectName,
+                                    'ProjectCompany': item.ProjectCompany
+                                }}
+                r.sadd(key, pickle.dumps(project_info))
+
+            r.expire(key, 86400)
+    except Exception:
+        import traceback
+        traceback.print_exc()
+
+
+t2 = PythonOperator(
+    task_id='LoadProjectInfoCache',
+    python_callable=query_mongodb,
+    op_kwargs={'key': REDIS_CACHE_KEY, 'obj': ProjectBaseXian, 'name': 'ProjectBase'},
+    dag=dag
+)
+
+project_info_generator = map(lambda x: pickle.loads(
+    x.decode()), dj_settings.REDIS_CACHE.smembers(REDIS_CACHE_KEY))
+
+t3 = PythonOperator(
+    task_id='LoadProjectInfo',
+    python_callable=spider_call,
+    op_kwargs={'spiderName': 'DefaultCrawler',
+               'settings': spider_settings,
+               'urlList': project_info_generator},
+    dag=dag)
