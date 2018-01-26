@@ -11,8 +11,7 @@ from scrapy import Request
 from scrapy import Selector
 
 from HouseNew.models import *
-from HouseCrawler.Items.ItemsFuzhou import *
-from HouseCrawler.settings import USER_AGENTS
+from HouseCrawler.Items.ItemsFZ import *
 if sys.version_info.major >= 3:
     import urllib.parse as urlparse
 else:
