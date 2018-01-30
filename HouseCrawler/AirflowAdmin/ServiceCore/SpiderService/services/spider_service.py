@@ -23,6 +23,7 @@ logger = logging.getLogger(__name__)
 
 
 class Crawler_Run(billiard.Process):
+
     def __init__(self, spiderName, settings, urlList=None, spider_count=64, *args, **kwargs):
         billiard.Process.__init__(self)
         self.crawler_runner = CrawlerRunner(settings)
@@ -37,17 +38,18 @@ class Crawler_Run(billiard.Process):
             print("There is no spider names %s" % spiderName)
 
     def run(self):
-        if self.start_urls:
-            url_list = list(self.start_urls)
+        url_list = list(self.start_urls)
+        if url_list:
             spider_count = len(url_list) / 12 + bool(len(url_list) % 12)
             if spider_count >= self.spider_count:
                 spider_count = self.spider_count
             if spider_count >= 200:
                 spider_count = 200
-            url_index_skip = int(math.ceil(len(url_list) / float(spider_count)))
+            url_index_skip = int(
+                math.ceil(len(url_list) / float(spider_count)))
             for url_index in range(0, len(url_list), url_index_skip):
                 self.crawler_runner.crawl(self.spider,
-                                        start_urls=url_list[url_index:url_index + url_index_skip])
+                                          start_urls=url_list[url_index:url_index + url_index_skip])
         else:
             self.crawler_runner.crawl(self.spider, **self.extra_params)
         self.d = self.crawler_runner.join()
@@ -57,7 +59,8 @@ class Crawler_Run(billiard.Process):
 
     def stop(self):
         for c in list(self.crawler_runner.crawlers):
-            c.engine.close_spider(c.spider, 'force stop spider {name}'.format(name=c.spider.name))
+            c.engine.close_spider(
+                c.spider, 'force stop spider {name}'.format(name=c.spider.name))
 
 
 @shared_task(bind=True, default_retry_delay=60, max_retries=1)

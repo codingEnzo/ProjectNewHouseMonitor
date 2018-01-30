@@ -356,7 +356,7 @@ class BuildingListHandleMiddleware(object):
                 binfo['BuildingName'] = b.xpath(
                     './td[2]/text()').extract_first() or ''
                 binfo['BuildingRegName'] = b.xpath(
-                    './td[1]/text()').extract_first() or ''
+                    './td[1]/text()').extract_first() or b.xpath('./td[1]/a/@title').extract_first() or ""
                 binfo['BuildingRegUUID'] = uuid.uuid3(
                     uuid.NAMESPACE_DNS, binfo['BuildingRegName'])
                 binfo['BuildingURL'] = (urlparse.urljoin(
