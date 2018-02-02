@@ -132,7 +132,7 @@ def cacheLoader(key=REDIS_CACHE_KEY):
             if item['BuildingURL']:
                 if True:
                     building_info = {'source_url': item['BuildingURL'],
-                                     'meta': {'PageType': 'HouseInfo',
+                                     'meta': {'PageType': 'BuildingInfo',
                                               'ProjectName': item['ProjectName'],
                                               'BuildingName': item['BuildingName'],
                                               'ProjectUUID': str(item['ProjectUUID']),
