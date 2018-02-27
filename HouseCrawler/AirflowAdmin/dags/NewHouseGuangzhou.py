@@ -131,12 +131,14 @@ for item in cur:
                              }
         buildingList_info_list.append(buildingList_info)
 
-t2 = PythonOperator(
-    task_id='LoadBuildingListGuangzhou',
-    python_callable=spider_call,
-    op_kwargs={'spiderName': 'DefaultCrawler',
-               'settings': spider_settings,
-               'urlList': buildingList_info_list},
-    dag=dag)
+index_skip = int(math.ceil(len(buildingList_info_list) / float(3))) + 1
+for cur, index in enumerate(list(range(0, len(buildingList_info_list), index_skip))):
+    t2 = PythonOperator(
+        task_id='LoadBuildingListGuangzhou_%s' % cur,
+        python_callable=spider_call,
+        op_kwargs={'spiderName': 'DefaultCrawler',
+                   'settings': spider_settings,
+                   'urlList': buildingList_info_list},
+        dag=dag)
 
-t2.set_upstream(t1)
+    t2.set_upstream(t1)
