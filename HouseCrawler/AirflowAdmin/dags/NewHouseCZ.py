@@ -118,7 +118,7 @@ t2 = PythonOperator(
 
 def cacheLoader(key=REDIS_CACHE_KEY):
     r = dj_settings.REDIS_CACHE
-    cur = projectbasechangzhou.objects.aggregate(*[{"$sort": {"CurTimeStamp": -1}},
+    cur = ProjectBaseChangzhou.objects.aggregate(*[{"$sort": {"CurTimeStamp": -1}},
                                                    {'$group': {
                                                        '_id': "$ProjectUUID",
                                                        'ProjectName': {'$first': '$ProjectName'},
