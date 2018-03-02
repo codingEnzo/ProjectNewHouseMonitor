@@ -118,25 +118,23 @@ t2 = PythonOperator(
 
 def cacheLoader(key=REDIS_CACHE_KEY):
     r = dj_settings.REDIS_CACHE
-    cur = BuildingInfoChangzhou.objects.aggregate(*[{"$sort": {"CurTimeStamp": -1}},
-                                                    {'$group': {
-                                                        '_id': "$BuildingUUID",
-                                                        'ProjectName': {'$first': '$ProjectName'},
-                                                        'ProjectUUID': {'$first': '$ProjectUUID'},
-                                                        'BuildingName': {'$first': '$BuildingName'},
-                                                        'BuildingUUID': {'$first': '$BuildingUUID'},
-                                                        'BuildingURL': {'$first': '$BuildingURL'},
-                                                    }}])
+    cur = projectbasechangzhou.objects.aggregate(*[{"$sort": {"CurTimeStamp": -1}},
+                                                   {'$group': {
+                                                       '_id': "$ProjectUUID",
+                                                       'ProjectName': {'$first': '$ProjectName'},
+                                                       'ProjectUUID': {'$first': '$ProjectUUID'},
+                                                       'ProjectPresaleNum': {'$first': '$ProjectPresaleNum'},
+                                                       'ProjectBuildingListURL': {'$first': '$ProjectBuildingListURL'},
+                                                   }}])
     for item in cur:
         try:
-            if item['BuildingURL']:
+            if item['ProjectBuildingListURL']:
                 if True:
-                    building_info = {'source_url': item['BuildingURL'],
+                    building_info = {'source_url': item['ProjectBuildingListURL'],
                                      'meta': {'PageType': 'BuildingInfo',
                                               'ProjectName': item['ProjectName'],
-                                              'BuildingName': item['BuildingName'],
                                               'ProjectUUID': str(item['ProjectUUID']),
-                                              'BuildingUUID': str(item['BuildingUUID'])}}
+                                              'ProjectPresaleNum': str(item['ProjectPresaleNum'])}}
                     r.sadd(key, json.dumps(building_info))
         except Exception:
             import traceback
