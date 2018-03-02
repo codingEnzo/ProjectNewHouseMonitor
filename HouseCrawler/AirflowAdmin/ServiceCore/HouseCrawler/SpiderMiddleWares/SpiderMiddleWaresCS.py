@@ -111,18 +111,13 @@ class ProjectBaseHandleMiddleware(object):
 
         sel = Selector(response)
         if response.meta.get('PageType') == 'ProjectBase':
-            base_url = 'http://search.csfdc.gov.cn/index.php/home/Index/sfloor'
-            req_dict = {'xmmc': '',
-                        'p': 0,
-                        '__hash__': ''}
-            req_dict['__hash__'] = sel.xpath(
-                '//meta[@name="__hash__"]/@content').extract_first()
-            total_page = get_total_page(response.body_as_unicode())
+            base_url = 'http://www.cszjw.net/sfloor?'
+            req_dict = {'page': 0}
+            total_page = int(response.xpath('//div[@class="div_cutPage"]/a[text()!="»"]/text()').extract()[-1])
             for page in range(1, total_page + 1):
-                req_dict['p'] = page
-                url = base_url
-                body = urlparse.urlencode(req_dict)
-                result.append(Request(url=url, body=body, method='POST', dont_filter=True,
+                req_dict['page'] = page
+                url = base_url + urlparse.urlencode(req_dict)
+                result.append(Request(url=url, method='GET', dont_filter=True,
                                       headers=headers, meta={'PageType': 'ProjectList'}))
         elif response.meta.get('PageType') == 'ProjectList':
             project_list = sel.xpath('//tr[td[a and not(@colspan)]]')

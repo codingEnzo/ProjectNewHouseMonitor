@@ -74,7 +74,7 @@ t1 = PythonOperator(
         'spiderName': 'DefaultCrawler',
         'settings': spider_settings,
         'urlList': [
-            {'source_url': 'http://search.csfdc.gov.cn/index.php/home/Index/sfloor',
+            {'source_url': 'http://www.cszjw.net/sfloor',
              'meta': {'PageType': 'ProjectBase'}}
         ]
     },
