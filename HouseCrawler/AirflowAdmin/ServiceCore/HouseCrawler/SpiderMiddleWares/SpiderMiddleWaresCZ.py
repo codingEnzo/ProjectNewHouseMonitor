@@ -57,8 +57,10 @@ class ProjectBaseHandleMiddleware(object):
                     total_pages = round(int(total_entries) / 10)
                     for i in range(1, total_pages + 1):
                         ysz_page_url_list = 'http://gs.czfdc.com.cn/newxgs/Pages/Code/Xjfas.ashx?' \
-                                            'kfs=&lpmc=&method=GetYszData&page={page}&ysxkz='.format(page=i)
-                        result.append(Request(ysz_page_url_list, meta={'PageType': 'ProjectBaseList'}))
+                                            'kfs=&lpmc=&method=GetYszData&page={page}&ysxkz='.format(
+                                                page=i)
+                        result.append(Request(ysz_page_url_list, meta={
+                                      'PageType': 'ProjectBaseList'}))
 
             elif response.meta.get('PageType') == 'ProjectBaseList':
                 raw_data = json.loads(response.text)
@@ -71,15 +73,19 @@ class ProjectBaseHandleMiddleware(object):
                         p_base['ProjectName'] = row.get('PRJNAME', '')
                         p_base['ProjectPresaleNum'] = row.get('PRENUM', '')
                         p_base['ProjectPresaleId'] = row.get('psaleid', '')
-                        p_base['ProjectPresaleDate'] = row.get('PresaleCertificateDate', '')
+                        p_base['ProjectPresaleDate'] = row.get(
+                            'PresaleCertificateDate', '')
                         p_base['ProjectUUID'] = uuid.uuid3(uuid.NAMESPACE_DNS,
                                                            p_base['ProjectName'] + p_base['ProjectPresaleId'])
                         p_base['ProjectURL'] = 'http://gs.czfdc.com.cn/newxgs/Pages/Code/Xjfas.ashx?' \
-                                               'id={}&method=GetLpJbqk'.format(p_base['ProjectPresaleId'])
+                                               'id={}&method=GetLpJbqk'.format(
+                                                   p_base['ProjectPresaleId'])
                         p_base['ProjectRecordURL'] = 'http://gs.czfdc.com.cn/newxgs/Pages/Code/Xjfas.ashx?' \
-                                                     'id={}&method=GetLpXmxx'.format(p_base['ProjectPresaleId'])
+                                                     'id={}&method=GetLpXmxx'.format(
+                                                         p_base['ProjectPresaleId'])
                         p_base['ProjectBuildingListURL'] = 'http://gs.czfdc.com.cn/newxgs/Pages/Code/Xjfas.ashx?' \
-                                                           'id={}&method=GetLpLzList'.format(p_base['ProjectPresaleId'])
+                                                           'id={}&method=GetLpLzList'.format(
+                                                               p_base['ProjectPresaleId'])
                         result.append(p_base)
         return result
 
@@ -128,13 +134,20 @@ class ProjectInfoHandleMiddleware(object):
                     p_info['ProjectCompany'] = info_data.get('NAME', '') or ''
                     p_info['ProjectAddress'] = info_data.get('BSIT', '') or ''
                     p_info['ProjectRegion'] = info_data.get('CZAREA', '') or ''
-                    p_info['ProjectPresaleArea'] = str(info_data.get('YSROOMBAREA', '') or '')
-                    p_info['ProjectPresaleHouseNum'] = str(info_data.get('YSCANSALEROOMNUMS', '') or 0.0)
-                    p_info['ProjectPresaleBuildingRange'] = info_data.get('CONSNUM', '') or ''
-                    p_info['ProjectSalesAgency'] = info_data.get('SalesAgency', '') or ''
-                    p_info['ProjectSupervisorBank'] = info_data.get('jgyh', '') or ''
-                    p_info['ProjectSupervisorAccount'] = info_data.get('jgzh', '') or ''
-                    p_info['ProjectBankGuarantee'] = info_data.get('dbyh', '') or ''
+                    p_info['ProjectPresaleArea'] = str(
+                        info_data.get('YSROOMBAREA', '') or '')
+                    p_info['ProjectPresaleHouseNum'] = str(
+                        info_data.get('YSCANSALEROOMNUMS', '') or 0.0)
+                    p_info['ProjectPresaleBuildingRange'] = info_data.get(
+                        'CONSNUM', '') or ''
+                    p_info['ProjectSalesAgency'] = info_data.get(
+                        'SalesAgency', '') or ''
+                    p_info['ProjectSupervisorBank'] = info_data.get(
+                        'jgyh', '') or ''
+                    p_info['ProjectSupervisorAccount'] = info_data.get(
+                        'jgzh', '') or ''
+                    p_info['ProjectBankGuarantee'] = info_data.get(
+                        'dbyh', '') or ''
                     result.append(
                         Request(response.meta['ProjectRecordURL'], meta={'PageType': 'ProjectRecord', 'Item': p_info}))
 
@@ -172,6 +185,7 @@ class ProjectInfoHandleMiddleware(object):
 
 
 class BuildingInfoHandleMiddleware(object):
+
     def __init__(self, settings):
         self.settings = settings
 
@@ -196,15 +210,18 @@ class BuildingInfoHandleMiddleware(object):
             if raw_data:
                 for i, building in enumerate(raw_data):
                     house_id = building.get('houseid', '')
+                    psale_id = building.get('psaleid', '')
                     b_info = BuildingInfoItem()
                     b_info['ProjectUUID'] = response.meta['ProjectUUID']
                     b_info['ProjectName'] = response.meta['ProjectName']
-                    b_info['ProjectPresaleNum'] = response.meta['ProjectPresaleNum']
+                    b_info['ProjectPresaleNum'] = response.meta[
+                        'ProjectPresaleNum']
                     b_info['BuildingName'] = building.get('housenum', '')
                     b_info['BuildingUUID'] = uuid.uuid3(uuid.NAMESPACE_DNS,
                                                         b_info['ProjectUUID'] + b_info['ProjectName'] + house_id)
                     b_info['BuildingURL'] = 'http://gs.czfdc.com.cn/newxgs/Pages/Code/Xjfas.ashx?' \
-                                            'method=GetShowData&houseID={}&saleSate=&cell='.format(house_id)
+                                            'method=GetShowData&houseID={house_id}&saleSate=&cell=&psaleID={psale_id}'.format(
+                                                house_id=house_id, psale_id=psale_id)
                     meta = response.meta
                     meta['PageType'] = 'HouseInfo'
                     meta['BuildingName'] = b_info['BuildingName']
@@ -219,11 +236,14 @@ class BuildingInfoHandleMiddleware(object):
                     h_info = HouseInfoItem()
                     h_info['ProjectUUID'] = response.meta['ProjectUUID']
                     h_info['ProjectName'] = response.meta['ProjectName']
-                    h_info['ProjectPresaleNum'] = response.meta['ProjectPresaleNum']
+                    h_info['ProjectPresaleNum'] = response.meta[
+                        'ProjectPresaleNum']
                     h_info['BuildingName'] = response.meta['BuildingName']
                     h_info['BuildingUUID'] = response.meta['BuildingUUID']
-                    h_info['HouseBuildingArea'] = str(cell.get('BuildingArea', ''))
-                    h_info['HouseContractPrice'] = str(cell.get('ContractPrice', ''))
+                    h_info['HouseBuildingArea'] = str(
+                        cell.get('BuildingArea', ''))
+                    h_info['HouseContractPrice'] = str(
+                        cell.get('ContractPrice', ''))
                     h_info['HouseUsage'] = cell.get('buse', '') or ''
                     h_info['HouseLabel'] = cell.get('roomlabel', '') or ''
                     h_info['HouseCurCell'] = cell.get('curcell', '') or ''
