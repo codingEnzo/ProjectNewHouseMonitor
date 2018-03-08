@@ -49,7 +49,7 @@ class ProjectInfoItem(DjangoItem):
                   'BuildingPermit': '',
                   'LegalPersonNumber': '',
                   'LegalPerson': '',
-                  'SourceUrl': 'SourceUrl',
+                  'SourceUrl': '',
                   'Decoration': '',
                   'ParkingSpaceAmount': 'ParkingSpaceAmount',
                   'Remarks': '',
