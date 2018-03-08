@@ -1,5 +1,6 @@
 # coding = utf-8
 import json
+import copy
 import logging
 import os
 import sys
@@ -24,6 +25,9 @@ class KafkaPipeline(object):
         return cls(crawler.settings)
 
     def get_kafka_json(self, item):
+        item_tmp = copy.deepcopy(item)
+        for key in item_tmp:
+            item_tmp[key] = str(item_tmp[key])
         kafka_dict = {}
         extra_dict = {}
         kafka_dict['City'] = self.city
