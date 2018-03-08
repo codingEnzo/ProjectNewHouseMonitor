@@ -53,15 +53,15 @@ default_args = {
 
 spider_settings = {
     'ITEM_PIPELINES': {
-        # 'HouseCrawler.Pipelines.PipelinesXuzhou.PipelineXuzhou': 300,
-        # 'HouseCrawler.Pipelines.PipelinesUtils.PipelinesCheck.CheckPipeline': 299,
-        # 'HouseCrawler.Pipelines.PipelinesUtils.PipelinesKafka.KafkaPipeline': 301,
+        'HouseCrawler.Pipelines.PipelinesXuzhou.PipelineXuzhou': 300,
+        'HouseCrawler.Pipelines.PipelinesUtils.PipelinesCheck.CheckPipeline': 299,
+        'HouseCrawler.Pipelines.PipelinesUtils.PipelinesKafka.KafkaPipeline': 301,
     },
     'SPIDER_MIDDLEWARES': {
         'HouseCrawler.SpiderMiddleWares.SpiderMiddleWaresXuzhou.ProjectBaseHandleMiddleware': 103,
         'HouseCrawler.SpiderMiddleWares.SpiderMiddleWaresXuzhou.ProjectInfoHandleMiddleware': 105,
         'HouseCrawler.SpiderMiddleWares.SpiderMiddleWaresXuzhou.PresellInfoHandleMiddleware': 106,
-        'HouseCrawler.SpiderMiddleWares.SpiderMiddleWaresXuzhou.BuildingInfoHandleMiddleware': 107,
+        # 'HouseCrawler.SpiderMiddleWares.SpiderMiddleWaresXuzhou.BuildingInfoHandleMiddleware': 107,
         'HouseCrawler.SpiderMiddleWares.SpiderMiddleWaresXuzhou.HouseInfoHandleMiddleware': 108,
     },
     'RETRY_ENABLE': True,
