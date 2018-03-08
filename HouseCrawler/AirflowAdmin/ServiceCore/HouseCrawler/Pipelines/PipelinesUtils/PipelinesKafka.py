@@ -39,7 +39,7 @@ class KafkaPipeline(object):
         for key in item:
             extra_dict['Extra' + key] = str(item.get(key, ''))
         kafka_dict['ExtraJson'] = extra_dict
-        return json.dumps(kafka_dict).encode()
+        return json.dumps(kafka_dict, ensure_ascii=False).encode()
 
     def process_item(self, item, spider):
         if item:
