@@ -59,7 +59,7 @@ spider_settings = {
     },
     'SPIDER_MIDDLEWARES': {
         'HouseCrawler.SpiderMiddleWares.SpiderMiddleWaresXuzhou.ProjectBaseHandleMiddleware': 103,
-        # 'HouseCrawler.SpiderMiddleWares.SpiderMiddleWaresXuzhou.ProjectInfoHandleMiddleware': 105,
+        'HouseCrawler.SpiderMiddleWares.SpiderMiddleWaresXuzhou.ProjectInfoHandleMiddleware': 105,
         # 'HouseCrawler.SpiderMiddleWares.SpiderMiddleWaresXuzhou.PresellInfoHandleMiddleware': 106,
         # 'HouseCrawler.SpiderMiddleWares.SpiderMiddleWaresXuzhou.BuildingInfoHandleMiddleware': 107,
         # 'HouseCrawler.SpiderMiddleWares.SpiderMiddleWaresXuzhou.HouseInfoHandleMiddleware': 108,
