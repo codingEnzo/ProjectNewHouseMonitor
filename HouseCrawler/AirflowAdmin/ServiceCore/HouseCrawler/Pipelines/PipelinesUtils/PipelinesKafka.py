@@ -25,9 +25,9 @@ class KafkaPipeline(object):
         return cls(crawler.settings)
 
     def get_kafka_json(self, item):
-        item_tmp = copy.deepcopy(item)
-        for key in item_tmp:
-            item_tmp[key] = str(item_tmp[key])
+        item = copy.deepcopy(item)
+        for key in item:
+            item[key] = str(item[key])
         kafka_dict = {}
         extra_dict = {}
         kafka_dict['City'] = self.city
