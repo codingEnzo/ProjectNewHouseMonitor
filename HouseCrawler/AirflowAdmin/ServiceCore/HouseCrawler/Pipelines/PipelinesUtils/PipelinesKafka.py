@@ -30,6 +30,8 @@ class KafkaPipeline(object):
         for key in item.fields_map:
             if item.fields_map.get(key) != '' and item.get(item.fields_map.get(key)):
                 kafka_dict[key] = item.pop(item.fields_map.get(key))
+            else:
+                kafka_dict[key] = ""
         for key in item:
             extra_dict['Extra' + key] = str(item.get(key, ''))
         kafka_dict['ExtraJson'] = extra_dict
