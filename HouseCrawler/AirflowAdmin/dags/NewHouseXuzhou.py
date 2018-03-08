@@ -54,8 +54,8 @@ default_args = {
 spider_settings = {
     'ITEM_PIPELINES': {
         'HouseCrawler.Pipelines.PipelinesXuzhou.PipelineXuzhou': 300,
-        'HouseCrawler.Pipelines.PipelinesUtils.PipelinesCheck.CheckPipeline': 299,
-        'HouseCrawler.Pipelines.PipelinesUtils.PipelinesKafka.KafkaPipeline': 301,
+        # 'HouseCrawler.Pipelines.PipelinesUtils.PipelinesCheck.CheckPipeline': 299,
+        # 'HouseCrawler.Pipelines.PipelinesUtils.PipelinesKafka.KafkaPipeline': 301,
     },
     'SPIDER_MIDDLEWARES': {
         'HouseCrawler.SpiderMiddleWares.SpiderMiddleWaresXuzhou.ProjectBaseHandleMiddleware': 103,
