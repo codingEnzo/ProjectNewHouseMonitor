@@ -25,23 +25,28 @@ class KafkaPipeline(object):
         return cls(crawler.settings)
 
     def get_kafka_json(self, item):
-        item = copy.deepcopy(item)
-        for key in item:
-            item[key] = str(item[key])
-        kafka_dict = {}
-        extra_dict = {}
-        kafka_dict['City'] = self.city
-        for key in item.fields_map:
-            if item.fields_map.get(key) != '' and item.get(item.fields_map.get(key)):
-                kafka_dict[key] = item.pop(item.fields_map.get(key))
-            else:
-                kafka_dict[key] = ""
-        for key in item:
-            extra_dict['Extra' + key] = str(item.get(key, ''))
-        kafka_dict['ExtraJson'] = extra_dict
-        return json.dumps(kafka_dict, ensure_ascii=False).encode()
+        if item.a.__dict__.get('_cls') in ['ProjectInfoItem', 'PresellInfoItem', 'BuildingInfoItem', 'HouseInfoItem']:
+            table_name = item.a.__dict__.get('_cls').replace('Item', '')
+            item = copy.deepcopy(item)
+            for key in item:
+                item[key] = str(item[key])
+            kafka_dict = {}
+            extra_dict = {}
+            kafka_dict['City'] = self.city
+            kafka_dict['TableName'] = table_name
+            for key in item.fields_map:
+                if item.fields_map.get(key) != '' and item.get(item.fields_map.get(key)):
+                    kafka_dict[key] = item.pop(item.fields_map.get(key))
+                else:
+                    kafka_dict[key] = ""
+            for key in item:
+                extra_dict['Extra' + key] = str(item.get(key, ''))
+            kafka_dict['ExtraJson'] = extra_dict
+            return json.dumps(kafka_dict, ensure_ascii=False).encode()
 
     def process_item(self, item, spider):
         if item:
-            self.producer.send('kafka_spark', self.get_kafka_json(item))
+            kafka_json = self.get_kafka_json(item)
+            if kafka_json:
+                self.producer.send('kafka_spark', kafka_json)
             return item
