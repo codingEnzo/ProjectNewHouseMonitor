@@ -25,8 +25,8 @@ class KafkaPipeline(object):
         return cls(crawler.settings)
 
     def get_kafka_json(self, item):
-        if item.__dict__.get('_cls') in ['ProjectInfoItem', 'PresellInfoItem', 'BuildingInfoItem', 'HouseInfoItem']:
-            table_name = item.a.__dict__.get('_cls').replace('Item', '')
+        if str(item.__dict__.get('_cls')) in ['ProjectInfoItem', 'PresellInfoItem', 'BuildingInfoItem', 'HouseInfoItem']:
+            table_name = str(item.a.__dict__.get('_cls')).replace('Item', '')
             item = copy.deepcopy(item)
             for key in item:
                 item[key] = str(item[key])
