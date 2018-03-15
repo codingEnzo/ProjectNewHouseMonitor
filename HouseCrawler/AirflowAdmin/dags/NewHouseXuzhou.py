@@ -176,7 +176,7 @@ def building_cache_query():
                 'meta': {'PageType': 'BuildingList',
                          'ProjectID': item['ProjectID'],
                          'ProjectUUID': str(item['ProjectUUID']),
-                         'PreselltUUID': str(item['PresellUUID']),
+                         'PresellUUID': str(item['PresellUUID']),
                          'ProjectName': item['ProjectName'],
                          'PresalePermitNumber': item['PresalePermitNumber'],
                          }
