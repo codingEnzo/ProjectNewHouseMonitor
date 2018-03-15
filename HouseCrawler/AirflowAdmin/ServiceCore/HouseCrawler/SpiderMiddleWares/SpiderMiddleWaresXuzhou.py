@@ -156,6 +156,7 @@ class PresellInfoHandleMiddleware(object):
         if response.meta.get('PageType') not in ('PresellInfo', 'NowsellInfo', 'BuildingList'):
             return result if result else []
         print('PresellInfoHandleMiddleware')
+        print(response.meta.get('PageType'))
         ProjectUUID = response.meta.get('ProjectUUID')
         ProjectID = response.meta.get('ProjectID')
         ProjectName = response.meta.get('ProjectName')
