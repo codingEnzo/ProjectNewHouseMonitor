@@ -94,6 +94,7 @@ class PresellInfoXuzhou(Document):
     SoldAmount = fields.StringField(default='', max_length=255)  # 已销售套数
     UnsoldAmount = fields.StringField(default='', max_length=255)  # 可售套数
     TotalArea = fields.StringField(default='', max_length=255)  # 总面积
+    SellType = fields.StringField(default='', max_length=20)  # 证件类型
     meta = {
         'indexes': [
             'CurTimeStamp',

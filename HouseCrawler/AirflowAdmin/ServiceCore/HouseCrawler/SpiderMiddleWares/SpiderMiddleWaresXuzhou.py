@@ -52,7 +52,8 @@ class ProjectBaseHandleMiddleware(object):
                     projectItem['ProjectName'] = obj.get('xmmc')
                     projectItem['PromotionName'] = obj.get('tgmc')
                     if obj.get('lx'):
-                        projectItem['HouseUseType'] = ''.join(re.split('\s+', str(obj.get('lx'))))
+                        projectItem['HouseUseType'] = ''.join(
+                            re.split('\s+', str(obj.get('lx'))))
                     projectItem['AveragePrice'] = obj['nxsjg']
                     projectItem['ProjectAddress'] = obj.get('xmdz')
                     zt = obj.get('zt')
@@ -152,27 +153,39 @@ class PresellInfoHandleMiddleware(object):
         result = list(result)
         if not (200 <= response.status < 300):  # common case
             return result if result else []
-        if response.meta.get('PageType') not in ('PresellInfo', 'BuildingList'):
+        if response.meta.get('PageType') not in ('PresellInfo', 'NowsellInfo', 'BuildingList'):
             return result if result else []
-        # print(PresellInfoHandleMiddleware')
+        print('PresellInfoHandleMiddleware')
         ProjectUUID = response.meta.get('ProjectUUID')
         ProjectID = response.meta.get('ProjectID')
         ProjectName = response.meta.get('ProjectName')
         resp = json.loads(response.body_as_unicode())
         if resp.get('success'):
-            if response.meta.get('PageType') == 'PresellInfo':
+            if response.meta.get('PageType') in('PresellInfo', 'NowsellInfo'):
                 try:
-                    xsqk_list = resp.get('obj').get('item_xsqk')
-                    for xsqk in xsqk_list:
+                    if response.meta.get('PageType') == 'PresellInfo':
+                        xsqk_list = resp.get('obj').get('item_xsqk')
+                        sell_type = 'Presell'
+                    else:
+                        xsqk_list = resp.get('obj').get('item_xsxx')
+                        sell_type = 'Nowsell'
+                    for index, xsqk in enumerate(xsqk_list):
                         if xsqk.get('SaleScope') is None:
                             continue
                         presellInfoItem = PresellInfoItem()
+                        presellInfoItem['SellType'] = sell_type
+
                         presellInfoItem['ProjectUUID'] = ProjectUUID
                         presellInfoItem['ProjectID'] = ProjectID
                         presellInfoItem['ProjectName'] = ProjectName
                         presellInfoItem['PresellID'] = xsqk['SaleItemID']
-                        presellInfoItem['PresellUUID'] = uuid.uuid3(uuid.NAMESPACE_DNS,
-                                                                    ProjectUUID + presellInfoItem['PresellID'])
+                        if sell_type == 'Presell':
+                            presellInfoItem['PresellUUID'] = uuid.uuid3(uuid.NAMESPACE_DNS,
+                                                                        ProjectUUID + presellInfoItem['PresellID'])
+                        else:
+                            presellInfoItem['PresellUUID'] = uuid.uuid3(uuid.NAMESPACE_DNS,
+                                                                        ProjectUUID + presellInfoItem['PresellID'] +
+                                                                        sell_type + 'index:' + str(index))
 
                         presellInfoItem['DistrictName'] = xsqk['District']
                         presellInfoItem['RegionName'] = xsqk['Zone']
@@ -200,7 +213,7 @@ class PresellInfoHandleMiddleware(object):
                         presellInfoItem['UnsoldAmount'] = xsqk['kxsts']
                         presellInfoItem['TotalArea'] = xsqk['TotalArea']
                         result.append(presellInfoItem)
-                except Exception:
+                except:
                     traceback.print_exc()
             elif response.meta.get('PageType') == 'BuildingList':
                 PresalePermitNumber = response.meta.get('PresalePermitNumber')
@@ -227,7 +240,7 @@ class PresellInfoHandleMiddleware(object):
                         buildingItem['SoldArea'] = lpxx['cjmj']
                         buildingItem['UnsoldArea'] = lpxx['kxsmj']
                         result.append(buildingItem)
-                except Exception:
+                except:
                     traceback.print_exc()
         return result
 
