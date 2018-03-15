@@ -196,7 +196,7 @@ t4 = PythonOperator(
 
 
 building_generator = map(lambda x: pickle.loads(
-    x), dj_settings.REDIS_CACHE.smembers(REDIS_PROJECT_CACHE_KEY))
+    x), dj_settings.REDIS_CACHE.smembers(REDIS_PESELL_CACHE_KEY))
 t5 = PythonOperator(
     task_id='LoadBuildingXuzhou',
     python_callable=spider_call,
