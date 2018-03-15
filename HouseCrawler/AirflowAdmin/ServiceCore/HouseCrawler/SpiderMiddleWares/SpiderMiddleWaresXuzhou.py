@@ -240,7 +240,6 @@ class PresellInfoHandleMiddleware(object):
                         buildingItem['ApprovalPresaleArea'] = lpxx['zmj']
                         buildingItem['SoldArea'] = lpxx['cjmj']
                         buildingItem['UnsoldArea'] = lpxx['kxsmj']
-                        print(buildingItem)
                         result.append(buildingItem)
                 except:
                     traceback.print_exc()

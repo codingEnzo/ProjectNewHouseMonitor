@@ -31,6 +31,7 @@ from services.spider_service import spider_call
 from django.conf import settings as dj_settings
 
 REDIS_CACHE_KEY = "NewHouseHY"
+REDIS_CACHE_PROJECTINFO_KEY = "NewHouseHYPROJECTINFO"
 
 STARTDATE = datetime.datetime.now() - datetime.timedelta(hours=8)
 
@@ -92,12 +93,23 @@ t1 = PythonOperator(
     dag=dag
 )
 
-project_info_list = []
-cur = ProjectBaseHeyuan.objects.all()
-for item in cur:
-    project_info = {'source_url': item.ProjectURL,
-                    'meta': {'PageType': 'ProjectInfo'}}
-    project_info_list.append(project_info)
+
+def project_cacheLoader(key=REDIS_CACHE_PROJECTINFO_KEY):
+    r = dj_settings.REDIS_CACHE
+    cur = ProjectBaseHeyuan.objects.all()
+    for item in cur:
+        try:
+            project_info = {'source_url': item.ProjectURL,
+                            'meta': {'PageType': 'ProjectInfo'}}
+            r.sadd(key, json.dumps(project_info))
+        except Exception:
+            import traceback
+            traceback.print_exc()
+        r.expire(key, int(spider_settings.get('CLOSESPIDER_TIMEOUT')))
+
+
+project_info_list = list(map(lambda x: json.loads(
+    x.decode()), dj_settings.REDIS_CACHE.smembers(REDIS_CACHE_PROJECTINFO_KEY)))
 t2 = PythonOperator(
     task_id='LoadProjectInfoHY',
     python_callable=spider_call,
