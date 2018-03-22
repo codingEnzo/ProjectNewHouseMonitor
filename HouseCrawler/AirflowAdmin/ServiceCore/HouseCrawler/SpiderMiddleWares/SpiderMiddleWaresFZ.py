@@ -73,22 +73,22 @@ class GetProjectPageBaseHandleMiddleware(object):
                         nexturl = 'http://222.77.178.63:7002/result_new.asp?' \
                                   'page2=%d&xm_search=&zl_search=&gs_search=&' \
                                   'pzs_search=&pzx_search=&xzq_search=&bk_search=' % i
-                        # req = Request(
-                        #     url=nexturl,
-                        #     meta={
-                        #         'PageType': 'ProjectBase',
-                        #     }
-                        # )
-                        # result.append(req)
+                        req = Request(
+                            url=nexturl,
+                            meta={
+                                'PageType': 'ProjectBase',
+                            }
+                        )
+                        result.append(req)
 
-                        project_base = {
-                            'source_url': nexturl,
-                            'meta': {'PageType': 'ProjectBase',
-                                     }}
-                        project_base_json = json.dumps(
-                            project_base, sort_keys=True)
-                        self.r.sadd('FuzhouCrawler:start_urls',
-                                    project_base_json)
+                        # project_base = {
+                        #     'source_url': nexturl,
+                        #     'meta': {'PageType': 'ProjectBase',
+                        #              }}
+                        # project_base_json = json.dumps(
+                        #     project_base, sort_keys=True)
+                        # self.r.sadd('FuzhouCrawler:start_urls',
+                        #             project_base_json)
 
         return result
 
