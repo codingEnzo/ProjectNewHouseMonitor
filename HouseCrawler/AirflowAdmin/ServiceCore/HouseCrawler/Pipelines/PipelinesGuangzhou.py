@@ -16,6 +16,7 @@ logger = logging.getLogger(__name__)
 
 
 class PipelineGuangzhou(object):
+
     def __init__(self, settings):
         self.settings = settings
 
@@ -54,19 +55,19 @@ class PipelineGuangzhou(object):
         exist_flag = False
         q_object = item.django_model.objects
         if isinstance(item, ProjectInfoItem):
-            if q_object.filter(ProjectUUID = item['ProjectUUID']).latest(field_name = 'CurTimeStamp'):
+            if q_object.filter(ProjectUUID=item['ProjectUUID']).latest(field_name='CurTimeStamp'):
                 exist_flag = True
         elif isinstance(item, PresellInfoItem):
-            if q_object.filter(PresellUUID = item['PresellUUID']).latest(field_name = 'CurTimeStamp'):
+            if q_object.filter(PresellUUID=item['PresellUUID']).latest(field_name='CurTimeStamp'):
                 exist_flag = True
         elif isinstance(item, BuildingInfoItem):
-            if q_object.filter(BuildingUUID = item['BuildingUUID']).latest(field_name = 'CurTimeStamp'):
+            if q_object.filter(BuildingUUID=item['BuildingUUID']).latest(field_name='CurTimeStamp'):
                 exist_flag = True
         elif isinstance(item, HouseInfoItem):
-            if q_object.filter(HouseUUID = item['HouseUUID']).latest(field_name = 'CurTimeStamp'):
+            if q_object.filter(HouseUUID=item['HouseUUID']).latest(field_name='CurTimeStamp'):
                 exist_flag = True
-        elif isinstance(item,PermitInfoItem):
-            if q_object.filter(PermitUUID = item['PermitUUID']).latest(field_name = 'CurTimeStamp'):
+        elif isinstance(item, PermitInfoItem):
+            if q_object.filter(PermitUUID=item['PermitUUID']).latest(field_name='CurTimeStamp'):
                 exist_flag = True
         return exist_flag
 
@@ -74,18 +75,21 @@ class PipelineGuangzhou(object):
         diff_flag = False
         q_object = item.django_model.objects
         if isinstance(item, ProjectInfoItem):
-            res_object = q_object.filter(ProjectUUID = item['ProjectUUID']).latest(field_name = 'CurTimeStamp')
+            res_object = q_object.filter(ProjectUUID=item['ProjectUUID']).latest(
+                field_name='CurTimeStamp')
             for key in item:
                 if not hasattr(res_object, key):
                     diff_flag = True
                     break
                 item_key_value = self.safe_format_value(item.get(key))
-                res_object_key_value = self.safe_format_value(getattr(res_object, key))
+                res_object_key_value = self.safe_format_value(
+                    getattr(res_object, key))
                 if item_key_value != res_object_key_value:
                     diff_flag = True
                     break
         elif isinstance(item, PresellInfoItem):
-            res_object = q_object.filter(PresellUUID = item['PresellUUID']).latest(field_name = 'CurTimeStamp')
+            res_object = q_object.filter(PresellUUID=item['PresellUUID']).latest(
+                field_name='CurTimeStamp')
             for key in item:
                 if not hasattr(res_object, key):
                     diff_flag = True
@@ -94,7 +98,8 @@ class PipelineGuangzhou(object):
                     diff_flag = True
                     break
         elif isinstance(item, BuildingInfoItem):
-            res_object = q_object.filter(BuildingUUID = item['BuildingUUID']).latest(field_name = 'CurTimeStamp')
+            res_object = q_object.filter(BuildingUUID=item['BuildingUUID']).latest(
+                field_name='CurTimeStamp')
             for key in item:
                 if not hasattr(res_object, key):
                     diff_flag = True
@@ -103,7 +108,8 @@ class PipelineGuangzhou(object):
                     diff_flag = True
                     break
         elif isinstance(item, HouseInfoItem):
-            res_object = q_object.filter(HouseUUID = item['HouseUUID']).latest(field_name = 'CurTimeStamp')
+            res_object = q_object.filter(HouseUUID=item['HouseUUID']).latest(
+                field_name='CurTimeStamp')
             for key in item:
                 if not hasattr(res_object, key):
                     diff_flag = True
@@ -114,8 +120,9 @@ class PipelineGuangzhou(object):
             if diff_flag:
                 item['HouseStateLatest'] = getattr(res_object, 'HouseState')
                 item['HouseLabelLatest'] = getattr(res_object, 'HouseLabel')
-        elif isinstance(item,PermitInfoItem):
-            res_object = q_object.filter(PermitUUID = item['PermitUUID']).latest(field_name = 'CurTimeStamp')
+        elif isinstance(item, PermitInfoItem):
+            res_object = q_object.filter(PermitUUID=item['PermitUUID']).latest(
+                field_name='CurTimeStamp')
             for key in item:
                 if not hasattr(res_object, key):
                     diff_flag = True

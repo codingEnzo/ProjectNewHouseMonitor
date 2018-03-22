@@ -4,6 +4,7 @@ import copy
 import logging
 import os
 import sys
+import datetime
 from kafka import KafkaProducer
 
 sys.path.append(os.path.abspath('.'))
@@ -27,7 +28,7 @@ class KafkaPipeline(object):
     def get_kafka_json(self, item):
         item_cls = str(item.__class__).replace(
             "<class '", '').replace("'>", '').split('.')[-1]
-        if item_cls in ['ProjectInfoItem', 'PresellInfoItem', 'BuildingInfoItem', 'HouseInfoItem']:
+        if item_cls in ['ProjectInfoItem', 'PresellInfoItem', 'BuildingInfoItem', 'HouseInfoItem', 'PermitInfoItem']:
             table_name = item_cls
             item = copy.deepcopy(item)
             for key in item:
@@ -36,6 +37,7 @@ class KafkaPipeline(object):
             extra_dict = {}
             kafka_dict['City'] = self.city
             kafka_dict['TableName'] = table_name
+            kafka_dict['RecordTime'] = str(datetime.datetime.now())
             for key in item.fields_map:
                 if item.fields_map.get(key) != '' and item.get(item.fields_map.get(key)):
                     kafka_dict[key] = item.pop(item.fields_map.get(key))
