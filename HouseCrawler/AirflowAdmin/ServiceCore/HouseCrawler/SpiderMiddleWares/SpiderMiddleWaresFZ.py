@@ -66,7 +66,7 @@ class GetProjectPageBaseHandleMiddleware(object):
             if pageresults:
                 pageresults = pageresults.replace('\r', ''). \
                     replace('\n', '').replace('\t', ''). \
-                    replace(' ', '').replace(u' ', '')
+                    replace(' ', '').replace(u' ', '').replace('\xa0', '')
                 getnum = re.search(r'/共(\d+)页查到记录共(\d+)条', pageresults)
                 if getnum:
                     for i in range(1, int(getnum.group(1)) + 1):
