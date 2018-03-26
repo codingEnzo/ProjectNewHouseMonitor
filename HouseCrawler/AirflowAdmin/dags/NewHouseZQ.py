@@ -66,7 +66,8 @@ spider_settings = {
     'CLOSESPIDER_TIMEOUT': 3600 * 7.5,
     'CONCURRENT_REQUESTS': 8,
     'RETRY_TIMES': 30,
-    'REDIRECT_ENABLED': True
+    'REDIRECT_ENABLED': True,
+    'CITY': "肇庆"
 }
 
 dag = DAG('NewHouseZQ', default_args=default_args,

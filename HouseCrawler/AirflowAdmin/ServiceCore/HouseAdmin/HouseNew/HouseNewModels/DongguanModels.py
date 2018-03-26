@@ -23,6 +23,8 @@ class ProjectBaseDongguan(Document):
     ProjectURL = fields.URLField(default=None, null=True, blank=True)
     ProjectURLCurTimeStamp = fields.StringField(
         default=str(datetime.datetime.now()), index=True)
+    SourceURL = fields.StringField(
+        default='', max_length=1024, null=False)
     meta = {
         'indexes': [
             'CurTimeStamp',
@@ -78,6 +80,8 @@ class ProjectInfoDongguan(Document):
         default='', max_length=1024, null=False)
     ProjectUnavailableNum = fields.StringField(
         default='', max_length=1024, null=False)
+    SourceURL = fields.StringField(
+        default='', max_length=1024, null=False)
     meta = {
         'indexes': [
             'CurTimeStamp',
@@ -111,6 +115,8 @@ class BuildingInfoDongguan(Document):
     BuildingURL = fields.URLField(default=None, null=True, blank=True)
     BuildingURLCurTimeStamp = fields.StringField(
         default=str(datetime.datetime.now()), index=True)
+    SourceURL = fields.StringField(
+        default='', max_length=1024, null=False)
     meta = {
         'indexes': [
             'CurTimeStamp',
@@ -165,6 +171,8 @@ class HouseInfoDongguan(Document):
     HouseUnitPrice = fields.StringField(default='0.0', null=False)
     HousePrice = fields.StringField(default='0.0', null=False)
     HousePriceFlag = fields.BooleanField(default=False, null=False)
+    SourceURL = fields.StringField(
+        default='', max_length=1024, null=False)
     meta = {
         'indexes': [
             'CurTimeStamp',

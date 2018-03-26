@@ -62,6 +62,7 @@ spider_settings = {
     'RETRY_ENABLE': True,
     'CLOSESPIDER_TIMEOUT': 3600 * 7.5,
     'CONCURRENT_REQUESTS': 64,
+    'CITY': "东莞"
 }
 
 dag = DAG('NewHouseDG', default_args=default_args,
@@ -90,7 +91,9 @@ for item in cur:
     if datetime.datetime.now().hour >= 8 and int(item.ProjectSaleSum) == 0:
         continue
     project_info = {'source_url': item.ProjectURL,
-                    'meta': {'PageType': 'ProjectInfo'}}
+                    'meta': {'PageType': 'ProjectInfo',
+                             'ProjectName': item['ProjectName'],
+                             'ProjectUUID': str(item['ProjectUUID'])}}
     project_info_list.append(project_info)
 t2 = PythonOperator(
     task_id='LoadProjectInfoDG',
