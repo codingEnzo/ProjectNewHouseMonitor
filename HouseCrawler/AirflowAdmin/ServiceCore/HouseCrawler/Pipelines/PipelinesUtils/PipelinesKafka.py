@@ -37,7 +37,6 @@ class KafkaPipeline(object):
             extra_dict = {}
             kafka_dict['City'] = self.city
             kafka_dict['TableName'] = table_name
-            kafka_dict['RecordTime'] = str(datetime.datetime.now())
             for key in item.fields_map:
                 if item.fields_map.get(key) != '' and item.get(item.fields_map.get(key)):
                     kafka_dict[key] = item.pop(item.fields_map.get(key))
@@ -46,6 +45,7 @@ class KafkaPipeline(object):
             for key in item:
                 extra_dict['Extra' + key] = str(item.get(key, ''))
             kafka_dict['ExtraJson'] = extra_dict
+            kafka_dict['RecordTime'] = str(datetime.datetime.now())
             return json.dumps(kafka_dict, ensure_ascii=False).encode()
 
     def process_item(self, item, spider):
