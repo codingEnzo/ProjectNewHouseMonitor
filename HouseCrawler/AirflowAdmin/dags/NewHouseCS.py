@@ -85,7 +85,10 @@ project_info_list = []
 cur = ProjectBaseChangsha.objects.all()
 for item in cur:
     project_info = {'source_url': item.ProjectURL,
-                    'meta': {'PageType': 'ProjectInfo'}}
+                    'meta': {'PageType': 'ProjectInfo',
+                             'ProjectName': item.ProjectName,
+                             'ProjectUUID': str(item.ProjectUUID)
+                             }}
     project_info_list.append(project_info)
 
 t2 = PythonOperator(
@@ -96,50 +99,3 @@ t2 = PythonOperator(
                'urlList': project_info_list},
     dag=dag
 )
-
-
-def cacheLoader(key=REDIS_CACHE_KEY):
-    r = dj_settings.REDIS_CACHE
-    cur = BuildingInfoChangsha.objects.aggregate(*[{"$sort": {"CurTimeStamp": -1}},
-                                                   {'$group': {
-                                                    '_id': "$BuildingUUID",
-                                                    'ProjectName': {'$first': '$ProjectName'},
-                                                    'ProjectUUID': {'$first': '$ProjectUUID'},
-                                                    'BuildingName': {'$first': '$BuildingName'},
-                                                    'BuildingUUID': {'$first': '$BuildingUUID'},
-                                                    'BuildingURL': {'$first': '$BuildingURL'},
-                                                    }}])
-    for item in cur:
-        try:
-            if item['BuildingURL']:
-                if True:
-                    building_info = {'source_url': item['BuildingURL'],
-                                     'meta': {'PageType': 'HouseInfo',
-                                              'ProjectName': item['ProjectName'],
-                                              'BuildingName': item['BuildingName'],
-                                              'ProjectUUID': str(item['ProjectUUID']),
-                                              'BuildingUUID': str(item['BuildingUUID'])}}
-                    r.sadd(key, json.dumps(building_info))
-        except Exception:
-            import traceback
-            traceback.print_exc()
-        r.expire(key, int(spider_settings.get('CLOSESPIDER_TIMEOUT')))
-
-
-t3 = PythonOperator(
-    task_id='LoadBuildingInfoCache',
-    python_callable=cacheLoader,
-    op_kwargs={'key': REDIS_CACHE_KEY},
-    dag=dag)
-
-
-building_info_list = list(map(lambda x: json.loads(
-    x.decode()), dj_settings.REDIS_CACHE.smembers(REDIS_CACHE_KEY)))
-t4 = PythonOperator(
-    task_id='LoadBuildingInfoCS',
-    python_callable=spider_call,
-    op_kwargs={'spiderName': 'DefaultCrawler',
-               'settings': spider_settings,
-               'urlList': building_info_list},
-    dag=dag)
-t4.set_upstream(t3)

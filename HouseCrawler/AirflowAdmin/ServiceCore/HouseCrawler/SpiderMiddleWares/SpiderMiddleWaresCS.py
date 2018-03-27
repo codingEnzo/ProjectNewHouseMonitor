@@ -53,13 +53,15 @@ def get_house_req(strHref, ProjectName, ProjectUUID, BuildingName, BuildingUUID)
                     'Accept-Language': 'en-US,en;q=0.5',
                     'Connection': 'keep-alive',
                     'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
-                    'Host': 'search.csfdc.gov.cn',
-                    'Referer': 'http://search.csfdc.gov.cn/index.php/home/index/floorinfo_n/xmbh/201409301985',
+                    'Cookie': 'XSRF-TOKEN=eyJpdiI6InRLWmxkeDYyQnoxMUZvdlRNWlhCVXc9PSIsInZhbHVlIjoiUlFuSnBuNDRDcHk4VHpxdis3RTZiTVwvcEI2RHkwOGFFeHd1S2JMZXN2TmZuandnaFFyOTFKdmt6ZzkzNVQrcGY1MmFuNnY5TzM2dFp2NjQ5V1hQcWVRPT0iLCJtYWMiOiIxMWVkY2ZmZjc4YTI4ODM1MjJhNzQyOWU0MmFlNWI0YzJhN2ZmN2ZlYTZmMTc2NGMyZDBlMWY4ZmZmMzBhYzA2In0%3D;',
+                    'Host': 'www.cszjw.net',
                     'X-Requested-With': 'XMLHttpRequest'}
-    req_url = 'http://search.csfdc.gov.cn/index.php/home/Index/geths/'
-    match_id = re.search(r"javascript:hsjajx\('(.+)',.+\)", str(strHref))
+    req_url = 'http://www.cszjw.net/geths'
+    match_id = re.search(
+        r"javascript:hsjajx\('(.+)',(.+),(.+)\)", str(strHref))
     if match_id:
-        req_dict = {'ywzh': str(match_id.group(1))}
+        req_dict = {'ywzh': str(match_id.group(1)),
+                    'n': match_id.group(3), 'i': match_id.group(2)}
         house_req = Request(url=req_url, body=urlparse.urlencode(req_dict), method='POST',
                             headers=house_header,
                             meta={'PageType': 'HouseInfo',
@@ -113,7 +115,8 @@ class ProjectBaseHandleMiddleware(object):
         if response.meta.get('PageType') == 'ProjectBase':
             base_url = 'http://www.cszjw.net/sfloor?'
             req_dict = {'page': 0}
-            total_page = int(response.xpath('//div[@class="div_cutPage"]/a[text()!="»"]/text()').extract()[-1])
+            total_page = int(response.xpath(
+                '//div[@class="div_cutPage"]/a[text()!="»"]/text()').extract()[-1])
             for page in range(1, total_page + 1):
                 req_dict['page'] = page
                 url = base_url + urlparse.urlencode(req_dict)
@@ -181,10 +184,8 @@ class ProjectInfoHandleMiddleware(object):
         sel = Selector(response)
         if response.meta.get('PageType') == 'ProjectInfo':
             pinfo = ProjectInfoItem()
-            pinfo['ProjectName'] = sel.xpath(
-                '//body/div/div/div[1]/table/tr[1]/th/text()').extract_first() or ''
-            pinfo['ProjectUUID'] = uuid.uuid3(uuid.NAMESPACE_DNS,
-                                              pinfo['ProjectName'] + get_url_id(response.url))
+            pinfo['ProjectName'] = response.meta.get('ProjectName', '')
+            pinfo['ProjectUUID'] = response.meta.get('ProjectUUID', '')
             pinfo['ProjectDistrict'] = sel.xpath(
                 '//body/div/div/div[1]/table/tr[2]/td[2]/text()').extract_first() or ''
             pinfo['ProjectBaseLicenseCode'] = sel.xpath(
@@ -349,7 +350,11 @@ class HouseInfoHandleMiddleware(object):
                 result.append(req)
         elif response.meta.get('PageType') == 'HouseInfo':
             sel = Selector(text=response.body_as_unicode()[1:-1])
-            house_list = sel.xpath('//tr[not(th)]')
+            house_list = sel.xpath('//tr[not(th) and not(@id)]')
+            if sel.xpath('//tr[@id and @style]').extract_first():
+                result.append(get_house_req(sel.xpath('//tr[@id and @style]/td[@onclick]/@onclick').extract_first(),
+                                            response.meta.get('ProjectName') or '', response.meta.get('ProjectUUID') or '',
+                                            response.meta.get('BuildingName') or '', response.meta.get('BuildingUUID') or ''))
             for house in house_list:
                 hinfo = HouseInfoItem()
                 hinfo['ProjectName'] = response.meta.get('ProjectName') or ''
@@ -358,25 +363,26 @@ class HouseInfoHandleMiddleware(object):
                 hinfo['BuildingUUID'] = response.meta.get('BuildingUUID') or ''
                 hinfo['HouseName'] = json.loads('{"foo":"%s"}' % house.xpath(
                     './td[1]/text()').extract_first() or '').get('foo')
-                hinfo['HouseUUID'] = uuid.uuid3(uuid.NAMESPACE_DNS, hinfo[
-                                                'HouseName'] + str(hinfo['BuildingUUID']))
-                hinfo['HouseFloor'] = json.loads('{"foo":"%s"}' % house.xpath(
-                    './td[2]/text()').extract_first() or '').get('foo')
-                hinfo['HouseBuildingArea'] = json.loads('{"foo":"%s"}' % house.xpath(
-                    './td[5]/text()').extract_first() or '').get('foo')
-                hinfo['HouseInnerArea'] = json.loads('{"foo":"%s"}' % house.xpath(
-                    './td[6]/text()').extract_first() or '').get('foo')
-                hinfo['HouseShareArea'] = json.loads('{"foo":"%s"}' % house.xpath(
-                    './td[7]/text()').extract_first() or '').get('foo')
-                hinfo['HouseType'] = json.loads('{"foo":"%s"}' % house.xpath(
-                    './td[4]/text()').extract_first() or '').get('foo')
-                hinfo['HouseUsage'] = json.loads('{"foo":"%s"}' % house.xpath(
-                    './td[3]/text()').extract_first() or '').get('foo')
-                hinfo['HouseSaleState'] = json.loads('{"foo":"%s"}' % house.xpath(
-                    './td[9]/text()').extract_first() or '').get('foo')
-                hinfo['HouseDType'] = json.loads('{"foo":"%s"}' % house.xpath(
-                    './td[5]/text()').extract_first() or '').get('foo')
-                result.append(hinfo)
+                if hinfo['HouseName'] != 'None':
+                    hinfo['HouseUUID'] = uuid.uuid3(uuid.NAMESPACE_DNS, hinfo[
+                                                    'HouseName'] + str(hinfo['BuildingUUID']))
+                    hinfo['HouseFloor'] = json.loads('{"foo":"%s"}' % house.xpath(
+                        './td[2]/text()').extract_first() or '').get('foo')
+                    hinfo['HouseBuildingArea'] = json.loads('{"foo":"%s"}' % house.xpath(
+                        './td[5]/text()').extract_first() or '').get('foo')
+                    hinfo['HouseInnerArea'] = json.loads('{"foo":"%s"}' % house.xpath(
+                        './td[6]/text()').extract_first() or '').get('foo')
+                    hinfo['HouseShareArea'] = json.loads('{"foo":"%s"}' % house.xpath(
+                        './td[7]/text()').extract_first() or '').get('foo')
+                    hinfo['HouseType'] = json.loads('{"foo":"%s"}' % house.xpath(
+                        './td[4]/text()').extract_first() or '').get('foo')
+                    hinfo['HouseUsage'] = json.loads('{"foo":"%s"}' % house.xpath(
+                        './td[3]/text()').extract_first() or '').get('foo')
+                    hinfo['HouseSaleState'] = json.loads('{"foo":"%s"}' % house.xpath(
+                        './td[9]/text()').extract_first() or '').get('foo')
+                    hinfo['HouseDType'] = json.loads('{"foo":"%s"}' % house.xpath(
+                        './td[5]/text()').extract_first() or '').get('foo')
+                    result.append(hinfo)
         return result
 
     def process_spider_exception(self, response, exception, spider):
