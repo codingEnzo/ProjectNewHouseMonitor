@@ -99,7 +99,9 @@ project_info_list = []
 cur = ProjectBaseZhaoqing.objects.all()
 for item in cur:
     project_info = {'source_url': item.ProjectURL,
-                    'meta': {'PageType': 'ProjectInfo'}}
+                    'meta': {'PageType': 'ProjectInfo',
+                             'ProjectName': item.ProjectName,
+                             'ProjectUUID': str(item.ProjectUUID)}}
     project_info_list.append(project_info)
 t2 = PythonOperator(
     task_id='LoadProjectInfoZQ',

@@ -19,7 +19,7 @@ class KafkaPipeline(object):
     def __init__(self, settings):
         self.producer = KafkaProducer(bootstrap_servers='10.30.2.205:9092')
         self.settings = settings
-        self.city = settings.get('CITY')
+        self.city = settings.get('CITY', '')
 
     @classmethod
     def from_crawler(cls, crawler):

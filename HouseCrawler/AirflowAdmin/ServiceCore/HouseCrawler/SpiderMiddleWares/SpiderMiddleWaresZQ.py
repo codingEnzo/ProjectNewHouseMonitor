@@ -177,14 +177,14 @@ class ProjectInfoHandleMiddleware(object):
         print('ProjectInfoHandleMiddleware')
 
         if response.meta.get('PageType') == 'ProjectInfo':
+            meta = copy.deepcopy(response.meta)
+            meta['PageType'] = 'ProjectInfoUse'
             result.append(Request(url=response.url,
-                                  headers=headers, meta={'PageType': 'ProjectInfoUse'}))
+                                  headers=headers, meta=meta))
         elif response.meta.get('PageType') == 'ProjectInfoUse':
             pinfo = ProjectInfoItem()
-            pinfo['ProjectName'] = response.xpath(
-                '//td[text()="项目名称："]/following-sibling::td[1]/text()').extract_first() or ''
-            pinfo['ProjectUUID'] = uuid.uuid3(uuid.NAMESPACE_DNS, pinfo[
-                                              'ProjectName'] + response.url)
+            pinfo['ProjectName'] = response.meta.get('ProjectName', '')
+            pinfo['ProjectUUID'] = response.meta.get('ProjectUUID', '')
             pinfo['ProjectCompany'] = response.xpath(
                 '//td[text()="开发商名称："]/following-sibling::td[1]/a/text()').extract_first() or ''
             pinfo['CompanyUUID'] = uuid.uuid3(
@@ -349,16 +349,14 @@ class BuildingListHandleMiddleware(object):
                 '//table[contains(@id, "preselltable")]/tr[position()>1]')
             for b in b_sell_list:
                 binfo = BuildingInfoItem()
-                binfo['ProjectName'] = response.xpath(
-                    '//td[text()="项目名称："]/following-sibling::td[1]/text()').extract_first() or ''
-                binfo['ProjectUUID'] = uuid.uuid3(uuid.NAMESPACE_DNS, binfo[
-                                                  'ProjectName'] + response.url)
+                binfo['ProjectName'] = response.meta.get('ProjectName', '')
+                binfo['ProjectUUID'] = response.meta.get('ProjectUUID', '')
                 binfo['BuildingName'] = b.xpath(
                     './td[2]/text()').extract_first() or ''
                 binfo['BuildingRegName'] = b.xpath(
                     './td[1]/text()').extract_first() or b.xpath('./td[1]/a/@title').extract_first() or ""
                 binfo['BuildingRegUUID'] = uuid.uuid3(
-                    uuid.NAMESPACE_DNS, binfo['BuildingRegName'])
+                    uuid.NAMESPACE_DNS, binfo['BuildingRegName']) if binfo['BuildingRegName'] != "" else binfo['BuildingRegName']
                 binfo['BuildingURL'] = (urlparse.urljoin(
                     response.url, b.xpath('./td[4]/a/@href').extract_first() or '')).replace(' ', '').strip()
                 binfo['BuildingUUID'] = uuid.uuid3(uuid.NAMESPACE_DNS, binfo[
@@ -384,7 +382,7 @@ class BuildingListHandleMiddleware(object):
                     binfo['BuildingRegName'] = response.xpath(
                         '//td[@id="bookid"]/a/text()').extract_first() or ''
                     binfo['BuildingRegUUID'] = uuid.uuid3(
-                        uuid.NAMESPACE_DNS, binfo['BuildingRegName'])
+                        uuid.NAMESPACE_DNS, binfo['BuildingRegName']) if binfo['BuildingRegName'] != "" else binfo['BuildingRegName']
                     binfo['BuildingURL'] = urlparse.urljoin(
                         response.url, b.xpath('./td[5]/a/@href').extract_first() or '')
                     binfo['BuildingUUID'] = uuid.uuid3(uuid.NAMESPACE_DNS, binfo[
@@ -447,34 +445,35 @@ class PreSellInfoHandleMiddleware(object):
             preinfo = PreSellInfoItem()
             preinfo['PreRegName'] = response.xpath(
                 '//td[@id="bookid"]/a/text()').extract_first() or ''
-            preinfo['PreRegUUID'] = uuid.uuid3(
-                uuid.NAMESPACE_DNS, preinfo['PreRegName'])
-            preinfo['PreHouseArea'] = (response.xpath(
-                '//td[@id="PresellArea"]/text()').extract_first() or '').replace('平方米', '').strip()
-            preinfo['PreHouseNum'] = get_presell_num1(response.xpath(
-                '//td[@id="djrqtd"]/text()').extract_first() or '')
-            preinfo['PreLandLicense'] = response.xpath(
-                '//td[@id="landinfo"]/text()').extract_first() or ''
-            preinfo['PreLandUsage'] = response.xpath(
-                '//td[@id="zczjtd"]/text()').extract_first() or ''
-            preinfo['PreLimitDate'] = response.xpath(
-                '//td[@id="FZDatebegin"]/text()').extract_first() or ''
-            preinfo['PreDistrict'] = response.xpath(
-                '//td[@id="FQ"]/text()').extract_first() or ''
-            preinfo['PreOpenDate'] = response.xpath(
-                '//td[@id="kpdate"]/text()').extract_first() or ''
-            preinfo['PreBankList'] = []
-            bank_list = response.xpath(
-                '//table[@id="banktable"]/tr[@bgcolor="#f5f5f5"]')
-            for bank in bank_list:
-                preinfo['PreBankList'].append({'BankName': bank.xpath('./td[1]/text()').extract_first() or '',
-                                               'BankAcount': bank.xpath('./td[2]/text()').extract_first() or '',
-                                               'BankPhone': bank.xpath('./td[3]/text()').extract_first() or ''})
-            preinfo_url = urlparse.urljoin(response.url, response.xpath(
-                '//td[@id="bookid"]/a/@href').extract_first() or '')
-            print(preinfo_url)
-            result.append(Request(url=preinfo_url, headers=headers, meta={
-                          'PageType': 'PreSellInfo', 'item': preinfo}))
+            if preinfo['PreRegName'] != "":
+                preinfo['PreRegUUID'] = uuid.uuid3(
+                    uuid.NAMESPACE_DNS, preinfo['PreRegName'])
+                preinfo['PreHouseArea'] = (response.xpath(
+                    '//td[@id="PresellArea"]/text()').extract_first() or '').replace('平方米', '').strip()
+                preinfo['PreHouseNum'] = get_presell_num1(response.xpath(
+                    '//td[@id="djrqtd"]/text()').extract_first() or '')
+                preinfo['PreLandLicense'] = response.xpath(
+                    '//td[@id="landinfo"]/text()').extract_first() or ''
+                preinfo['PreLandUsage'] = response.xpath(
+                    '//td[@id="zczjtd"]/text()').extract_first() or ''
+                preinfo['PreLimitDate'] = response.xpath(
+                    '//td[@id="FZDatebegin"]/text()').extract_first() or ''
+                preinfo['PreDistrict'] = response.xpath(
+                    '//td[@id="FQ"]/text()').extract_first() or ''
+                preinfo['PreOpenDate'] = response.xpath(
+                    '//td[@id="kpdate"]/text()').extract_first() or ''
+                preinfo['PreBankList'] = []
+                bank_list = response.xpath(
+                    '//table[@id="banktable"]/tr[@bgcolor="#f5f5f5"]')
+                for bank in bank_list:
+                    preinfo['PreBankList'].append({'BankName': bank.xpath('./td[1]/text()').extract_first() or '',
+                                                   'BankAcount': bank.xpath('./td[2]/text()').extract_first() or '',
+                                                   'BankPhone': bank.xpath('./td[3]/text()').extract_first() or ''})
+                preinfo_url = urlparse.urljoin(response.url, response.xpath(
+                    '//td[@id="bookid"]/a/@href').extract_first() or '')
+                print(preinfo_url)
+                result.append(Request(url=preinfo_url, headers=headers, meta={
+                              'PageType': 'PreSellInfo', 'item': preinfo}))
         elif response.meta.get('PageType') == 'PreSellInfo':
             preinfo = response.meta.get('item')
             if preinfo:
