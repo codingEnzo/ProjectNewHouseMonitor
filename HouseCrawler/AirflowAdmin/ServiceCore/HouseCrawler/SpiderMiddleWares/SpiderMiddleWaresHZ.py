@@ -122,13 +122,15 @@ class ProjectBaseHandleMiddleware(object):
                     sid = t.group(1)
                     propertyID = t.group(2)
 
+                    ProjectName = onclick.xpath('./a/text()').extract_first(default='').strip()
+
                     url = 'http://www.tmsf.com/newhouse/property_{sid}_{propertyID}_info.htm'.format(sid=sid,
                                                                                                      propertyID=propertyID)
                     req = Request(url=url,
                                   headers=self.settings.get('DEFAULT_REQUEST_HEADERS'),
                                   dont_filter=True,
                                   meta={'PageType': 'TemplateInfo', 'sid': sid, 'PropertyID': propertyID,
-                                        'DistrictName': DistrictName})
+                                        'DistrictName': DistrictName, 'ProjectName': ProjectName})
                     req_list.append(req)
                 except:
                     import traceback
@@ -165,15 +167,12 @@ class TemplateInfoHandleMiddleware(object):
         projectBase['ProjectUUID'] = uuid.uuid3(uuid.NAMESPACE_DNS, projectBase['PropertyID'] + response.url)
         projectBase['DistrictName'] = response.meta.get('DistrictName')
         projectBase['RegionName'] = response.meta.get('DistrictName')
+        projectBase['ProjectName'] = response.meta.get('ProjectName')
         projectBase['SourceUrl'] = response.url
         # 判断页面模板，富阳区的页面模板为分站
         m = response.xpath('//li[@id="siteother"]').extract()
         if len(m) > 0:  # 分站模板
             projectBase['ManagementCompany'] = ''
-            try:
-                projectBase['ProjectName'] = response.xpath('//span[text()="楼盘名称："]/../text()').extract()[1]
-            except:
-                projectBase['ProjectName'] = ''
             try:
                 projectBase['ProjectAddress'] = response.xpath('//span[text()="物业地址："]/../text()').extract()[1]
             except:
