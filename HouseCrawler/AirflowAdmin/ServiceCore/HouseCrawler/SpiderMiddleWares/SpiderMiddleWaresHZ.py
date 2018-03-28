@@ -452,6 +452,8 @@ class BuildingListHandleMiddleware(object):
         PresellID = response.meta.get('PresellID')
         ProjectUUID = response.meta.get('ProjectUUID')
         PresellUUID = response.meta.get('PresellUUID')
+        ProjectName = response.meta.get('ProjectName')
+        PresellName = response.meta.get('PresellName')
         building_elements = response.xpath('//a[starts-with(@id,"building_")]')
 
         # 判断页面模板，富阳区的页面模板为分站
@@ -460,6 +462,8 @@ class BuildingListHandleMiddleware(object):
             buildingItem = BuildingInfoItem()
             buildingItem['ProjectUUID'] = ProjectUUID
             buildingItem['PresellUUID'] = PresellUUID
+            buildingItem['ProjectName'] = ProjectName
+            buildingItem['PresellName'] = PresellName
             buildingItem['BuildingID'] = element.xpath('@id').extract_first().replace('building_', '')
             buildingItem['BuildingUUID'] = uuid.uuid3(uuid.NAMESPACE_DNS,
                                                       str(buildingItem['PresellUUID']) + buildingItem['BuildingID'])
@@ -500,10 +504,13 @@ class BuildingListHandleMiddleware(object):
                                               'curPage': 1,
                                               'sid': sid,
                                               'BuildingID': buildingItem['BuildingID'],
+                                              'BuildingName': buildingItem['BuildingName'],
                                               'PropertyID': PropertyID,
                                               'PresellID': PresellID,
                                               'ProjectUUID': buildingItem['ProjectUUID'],
+                                              'ProjectName': buildingItem['ProjectName'],
                                               'PresellUUID': buildingItem['PresellUUID'],
+                                              'PresellName': buildingItem['PresellName'],
                                               'BuildingUUID': buildingItem['BuildingUUID']})
                 result.append(houseList_req)
         return result
@@ -687,6 +694,9 @@ class HouseListHandleMiddleware(object):
         PresellID = response.meta.get('PresellID')
         BuildingID = response.meta.get('BuildingID')
         ProjectUUID = response.meta.get('ProjectUUID')
+        ProjectName = response.meta.get('ProjectName')
+        PresellName = response.meta.get('PresellName')
+        BuildingName = response.meta.get('BuildingName')
         PresellUUID = response.meta.get('PresellUUID')
         BuildingUUID = response.meta.get('BuildingUUID')
         if curPage and curPage == 1:
@@ -714,6 +724,9 @@ class HouseListHandleMiddleware(object):
                         'PresellID': PresellID,
                         'BuildingID': BuildingID,
                         'ProjectUUID': str(ProjectUUID),
+                        'BuildingName': BuildingName,
+                        'ProjectName': ProjectName,
+                        'PresellName': PresellName,
                         'PresellUUID': str(PresellUUID),
                         'BuildingUUID': str(BuildingUUID),
                     }
@@ -746,8 +759,11 @@ class HouseListHandleMiddleware(object):
 
             houseInfoItem = HouseInfoItem()
             houseInfoItem['ProjectUUID'] = ProjectUUID
+            houseInfoItem['ProjectName'] = ProjectName
             houseInfoItem['PresellUUID'] = PresellUUID
+            houseInfoItem['PresellName'] = PresellName
             houseInfoItem['BuildingUUID'] = BuildingUUID
+            houseInfoItem['BuildingName'] = BuildingName
 
             houseInfoItem['BuildingName'] = buildingName  # 栋号
             houseInfoItem['HouseNO'] = houseNO  # 房号

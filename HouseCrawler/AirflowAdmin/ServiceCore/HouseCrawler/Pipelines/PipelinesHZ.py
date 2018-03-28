@@ -61,7 +61,9 @@ class HZPipeline(object):
                      'sid': item['sid'],
                      'PropertyID': item['PropertyID'],
                      'PresellID': item['PresellID'],
-                     'ProjectUUID': item['ProjectUUID'],
+                     'PresellName': item['PresellName'],
+                     'ProjectName': item['ProjectName'],
+                     'ProjectUUID': str(item['ProjectUUID']),
                      'PresellUUID': str(item['PresellUUID']),
                      }
 

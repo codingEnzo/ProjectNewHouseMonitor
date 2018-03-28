@@ -71,6 +71,8 @@ default_args = {
 spider_settings = {
     'ITEM_PIPELINES': {
         'HouseCrawler.Pipelines.PipelinesHZ.HZPipeline': 300,
+        'HouseCrawler.Pipelines.PipelinesUtils.PipelinesCheck.CheckPipeline': 299,
+        'HouseCrawler.Pipelines.PipelinesUtils.PipelinesKafka.KafkaPipeline': 301,
     },
     'SPIDER_MIDDLEWARES': {
         'HouseCrawler.SpiderMiddleWares.SpiderMiddleWaresHZ.IndexInfoHandleMiddleware': 102,
@@ -87,6 +89,7 @@ spider_settings = {
     'RETRY_ENABLE': True,
     'CLOSESPIDER_TIMEOUT': 3600 * 7.5,
     'CONCURRENT_REQUESTS': 64,
+    'CITY': '杭州'
 }
 
 dag = DAG('NewHouseHZ', default_args=default_args,

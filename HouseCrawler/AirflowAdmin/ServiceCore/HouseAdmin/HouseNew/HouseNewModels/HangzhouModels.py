@@ -135,8 +135,12 @@ class BuildingInfoHangzhou(Document):
         default=str(datetime.datetime.now()), index=True)
     ProjectUUID = fields.UUIDField(default=uuid.uuid3(
         uuid.NAMESPACE_DNS, ''), binary=False, null=False)
+    ProjectName = fields.StringField(
+        default='', max_length=100, null=False)
     PresellUUID = fields.UUIDField(default=uuid.uuid3(
         uuid.NAMESPACE_DNS, ''), binary=False, null=False)
+    PresellName = fields.StringField(
+        default='', max_length=100, null=False)
     BuildingUUID = fields.UUIDField(default=uuid.uuid3(
         uuid.NAMESPACE_DNS, ''), binary=False, null=False)
     BuildingID = fields.StringField(
@@ -160,10 +164,16 @@ class HouseInfoHangzhou(Document):
         default=str(datetime.datetime.now()), index=True)
     ProjectUUID = fields.UUIDField(default=uuid.uuid3(
         uuid.NAMESPACE_DNS, ''), binary=False, null=False)
+    ProjectName = fields.StringField(
+        default='', max_length=100, null=False)
     PresellUUID = fields.UUIDField(default=uuid.uuid3(
         uuid.NAMESPACE_DNS, ''), binary=False, null=False)
+    PresellName = fields.StringField(
+        default='', max_length=100, null=False)
     BuildingUUID = fields.UUIDField(default=uuid.uuid3(
         uuid.NAMESPACE_DNS, ''), binary=False, null=False)
+    BuildingName = fields.StringField(
+        default='', max_length=100, null=False)
     HouseUUID = fields.UUIDField(default=uuid.uuid3(
         uuid.NAMESPACE_DNS, ''), binary=False, null=False)
     BuildingName = fields.StringField(
