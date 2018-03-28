@@ -50,6 +50,7 @@ class KafkaPipeline(object):
 
     def process_item(self, item, spider):
         if item:
+            print(self.city)
             kafka_json = self.get_kafka_json(item)
             if kafka_json:
                 self.producer.send('kafka_spark', kafka_json)
