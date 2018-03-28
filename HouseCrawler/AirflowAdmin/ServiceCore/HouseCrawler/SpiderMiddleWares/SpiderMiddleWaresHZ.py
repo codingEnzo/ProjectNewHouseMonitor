@@ -194,6 +194,7 @@ class TemplateInfoHandleMiddleware(object):
                                        meta={
                                            'PageType': 'PresellList',
                                            'sid': projectBase['sid'],
+                                           'ProjectName': projectBase['ProjectName'],
                                            'PropertyID': projectBase['PropertyID'],
                                            'ProjectUUID': str(projectBase['ProjectUUID'])
                                        })
@@ -218,6 +219,7 @@ class TemplateInfoHandleMiddleware(object):
                                            meta={
                                                'PageType': 'PresellList',
                                                'sid': projectBase['sid'],
+                                               'ProjectName': projectBase['ProjectName'],
                                                'PropertyID': projectBase['PropertyID'],
                                                'ProjectUUID': str(projectBase['ProjectUUID'])
                                            })
@@ -339,6 +341,7 @@ class PresellListHandleMiddleware(object):
         sid = response.meta.get('sid')
         PropertyID = response.meta.get('PropertyID')
         ProjectUUID = response.meta.get('ProjectUUID')
+        ProjectName = response.meta.get('ProjectName')
 
         presell_arr = response.xpath('//a[starts-with(@id,"presell_")]')
         # 获取预售证列表
@@ -350,6 +353,7 @@ class PresellListHandleMiddleware(object):
             presellItem = PresellInfoItem()
             presellItem['PropertyID'] = PropertyID
             presellItem['ProjectUUID'] = ProjectUUID
+            presellItem['ProjectName'] = ProjectName
             presellItem['PresellID'] = PresellID
             presellItem['PresellNO'] = PresellNO
             presellItem['PresellUUID'] = PresellUUID
