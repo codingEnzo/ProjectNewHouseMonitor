@@ -70,6 +70,8 @@ class PresellInfoHangzhou(Document):
         datetime.datetime.now()), index=True)  # 创建时间
     ProjectUUID = fields.UUIDField(default=uuid.uuid3(
         uuid.NAMESPACE_DNS, ''), binary=False, null=False)
+    ProjectName = fields.StringField(
+        default='', max_length=100, null=False)
     PresellUUID = fields.UUIDField(default=uuid.uuid3(
         uuid.NAMESPACE_DNS, ''), binary=False, null=False)
     PresellID = fields.StringField(
