@@ -43,7 +43,8 @@ class KafkaPipeline(object):
                 else:
                     kafka_dict[key] = ""
             for key in item:
-                extra_dict['Extra' + key] = str(item.get(key, ''))
+                extra_dict['Extra' + key] = json.dumps(item.get(key, '')) if (isinstance(item.get(
+                    key, ''), dict) or isinstance(item.get(key, ''), list)) else str(item.get(key, ''))
             kafka_dict['ExtraJson'] = extra_dict
             kafka_dict['RecordTime'] = str(datetime.datetime.now())
             return json.dumps(kafka_dict, ensure_ascii=False).encode()
