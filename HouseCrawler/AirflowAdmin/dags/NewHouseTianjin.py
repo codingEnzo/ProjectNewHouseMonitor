@@ -80,6 +80,7 @@ spider_settings = {
     'DOWNLOAD_DELAY': 0.5,
     'CONCURRENT_REQUESTS': 4,
     'COOKIES_ENABLED': True,
+    'CITY': "天津"
 
 }
 
