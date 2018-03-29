@@ -79,9 +79,9 @@ class ProjectDetailMiddleware(object):
                 outcome_list.append(re_get)
             # ASP网站,到每一页获取参数post请求下一页
             pages_num = int(response.xpath(
-                '//*[@id="SplitPageModule1_lblPageCount"]/font/text()').extract_first())
+                '//*[@id="SplitPageModule1_lblPageCount"]/text()').extract_first())
             now_pages_num = int(response.xpath(
-                '//*[@id="SplitPageModule1_lblCurrentPage"]/font/text()').extract_first())
+                '//*[@id="SplitPageModule1_lblCurrentPage"]/text()').extract_first())
             if int(now_pages_num) < int(pages_num):
                 post_url = 'http://www.tjfdc.com.cn/Pages/fcdt/fcdtlist.aspx?SelMnu=FCSJ_XMXX'
                 re_postbody = {"__EVENTTARGET": 'SplitPageModule1$lbnNextPage',
