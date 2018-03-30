@@ -88,7 +88,7 @@ spider_settings = dict(
     CONCURRENT_REQUESTS=64,
 )
 
-dag = DAG('NewHouseNT', default_args=default_args, schedule_interval="15 */8 * * *")
+dag = DAG('NewHouseNT', default_args=default_args, schedule_interval="15 8 */2 * *")
 
 t1 = PythonOperator(
     task_id='LoadProjectBaseNT',

@@ -72,7 +72,7 @@ spider_settings = {
 }
 
 dag = DAG('NewHouseQZ', default_args=default_args,
-          schedule_interval="15 */8 * * *")
+          schedule_interval="15 8 */2 * *")
 
 t1 = PythonOperator(
     task_id='LoadProjectBaseQZ',
