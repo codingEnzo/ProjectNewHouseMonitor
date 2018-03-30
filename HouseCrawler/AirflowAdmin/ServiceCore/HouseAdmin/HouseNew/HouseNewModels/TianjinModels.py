@@ -125,6 +125,8 @@ class HouseDetailTianjin(Document):
     UnitName = fields.StringField(default='')
     BuildingNumber = fields.StringField(default='')
     UnitID = fields.StringField(default='')
+    UnitUUID = fields.UUIDField(
+        default=uuid.uuid3(uuid.NAMESPACE_DNS, ''), binary=False, null=False)
     BuildingID = fields.StringField(default='')
     HouseUrl = fields.StringField(default='')
     SalePermitNumber = fields.StringField(default='')  # 销售许可证号

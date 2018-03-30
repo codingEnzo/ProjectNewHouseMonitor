@@ -401,6 +401,7 @@ class HouseDetailMiddleware(object):
                         'SalePermitNumber']
                     item_hd['UnitID'] = record_dict['UnitID']
                     item_hd['UnitName'] = record_dict['UnitName']
+                    item_hd['UnitUUID'] = uuid.uuid3(uuid.NAMESPACE_DNS, item_hd['UnitID'] + item_hd['UnitName'])
                     item_hd['FloorName'] = clean_rule1(
                         i.xpath('../td[contains(@style,"width")]/text()').extract_first())
                     item_hd['HouseName'] = clean_rule1(
