@@ -379,7 +379,7 @@ class HouseInfoHandleMiddleware(object):
                 hinfo['HouseInnerArea'] = house_info_dict.get(
                     'data').get('lbInsideArea')
                 hinfo['HouseUUID'] = uuid.uuid3(uuid.NAMESPACE_DNS,
-                                                str(hinfo['ProjectUUID']) + str(hinfo['BuildingUUID']) + hinfo['HouseUUID'] + hinfo['HouseName'])
+                                                str(hinfo['ProjectUUID']) + str(hinfo['BuildingUUID']) + hinfo['HouseID'] + hinfo['HouseName'])
                 result.append(hinfo)
         return result
 
