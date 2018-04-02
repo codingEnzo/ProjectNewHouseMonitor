@@ -4,6 +4,7 @@ import logging
 import os
 import sys
 import uuid
+from scrapy.exceptions import DropItem
 
 from HouseCrawler.Items.ItemsZQ import *
 
@@ -166,6 +167,8 @@ class ZQPipeline(object):
                         logger.debug("item: %(item)s changed",
                                      {'item': item})
                         self.storage_item(item)
+                    else:
+                        raise DropItem('Drop no change item')
                 else:
                     logger.debug("item: %(item)s met first",
                                  {'item': item})

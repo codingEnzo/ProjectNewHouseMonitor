@@ -4,6 +4,7 @@ import os
 import logging
 import uuid
 import datetime
+from scrapy.exceptions import DropItem
 from HouseCrawler.Items.ItemsDG import *
 sys.path.append(os.path.abspath('.'))
 sys.path.append(os.path.abspath('..'))
@@ -143,6 +144,8 @@ class DGPipeline(object):
                         logger.debug("item: %(item)s changed",
                                         {'item': item})
                         self.storage_item(item)
+                    else:
+                        raise DropItem('Drop no change item')
                 else:
                     logger.debug("item: %(item)s met first",
                                     {'item': item})

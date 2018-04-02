@@ -4,6 +4,7 @@ import os
 import logging
 import uuid
 import datetime
+from scrapy.exceptions import DropItem
 from HouseCrawler.Items.ItemsHF import *
 sys.path.append(os.path.abspath('.'))
 sys.path.append(os.path.abspath('..'))
@@ -136,7 +137,7 @@ class HFPipeline(object):
                                         {'item': item})
                         self.storage_item(item)
                     else:
-                        logger.debug("item: %(item)s dropped 2", {'item': item})
+                        raise DropItem('Drop no change item')
                 else:
                     logger.debug("item: %(item)s met first",
                                     {'item': item})

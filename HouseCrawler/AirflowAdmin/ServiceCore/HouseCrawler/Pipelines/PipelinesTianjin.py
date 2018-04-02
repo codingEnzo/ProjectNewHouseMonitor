@@ -7,6 +7,7 @@ import uuid
 import datetime
 
 import django_mongoengine
+from scrapy.exceptions import DropItem
 from HouseCrawler.Items.ItemsTianjin import *
 sys.path.append(os.path.abspath('.'))
 sys.path.append(os.path.abspath('..'))
@@ -122,8 +123,11 @@ class PipelineTianjin(object):
         if item:
             self.replace_str(item)
             status, cheack_item = self.check_item_change(item)
-            if status == 'diff':
-                self.storage_item(cheack_item)
-            elif not status:
+            if status:
+                if status == 'diff':
+                    self.storage_item(cheack_item)
+                else:
+                    raise DropItem('Drop no change item')
+            else:
                 self.storage_item(cheack_item)
         return item

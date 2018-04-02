@@ -4,6 +4,7 @@ import logging
 import os
 import sys
 import uuid
+from scrapy.exceptions import DropItem
 
 import django_mongoengine
 from HouseCrawler.Items.ItemsGuangzhou import *
@@ -165,6 +166,8 @@ class PipelineGuangzhou(object):
                 if diff_result:
                     logger.debug("item: %(item)s changed", {'item': item})
                     self.storage_item(item)
+                else:
+                    raise DropItem('Drop no change item')
             else:
                 logger.debug("item: %(item)s met first", {'item': item})
                 self.storage_item(item)

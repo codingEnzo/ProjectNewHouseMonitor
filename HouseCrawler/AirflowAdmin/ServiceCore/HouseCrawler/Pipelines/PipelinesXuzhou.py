@@ -6,6 +6,7 @@ import uuid
 import datetime
 
 import django_mongoengine
+from scrapy.exceptions import DropItem
 from HouseCrawler.Items.ItemsXuzhou import *
 
 sys.path.append(os.path.abspath('.'))
@@ -151,6 +152,8 @@ class PipelineXuzhou(object):
                 if diff_result:
                     logger.debug("item: %(item)s changed", {'item': item})
                     self.storage_item(item)
+                else:
+                    raise DropItem('Drop no change item')
             else:
                 logger.debug("item: %(item)s met first", {'item': item})
                 self.storage_item(item)

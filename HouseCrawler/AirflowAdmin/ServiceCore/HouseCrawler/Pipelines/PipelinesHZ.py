@@ -6,6 +6,7 @@ import sys
 import uuid
 
 import django_mongoengine
+from scrapy.exceptions import DropItem
 from HouseCrawler.Items.ItemsHZ import *
 from scrapy import Request
 
@@ -204,6 +205,8 @@ class HZPipeline(object):
                 if diff_result:
                     logger.debug("item: %(item)s changed", {'item': item})
                     self.storage_item(item)
+                else:
+                    raise DropItem('Drop no change item')
             else:
                 logger.debug("item: %(item)s met first", {'item': item})
                 self.storage_item(item)
