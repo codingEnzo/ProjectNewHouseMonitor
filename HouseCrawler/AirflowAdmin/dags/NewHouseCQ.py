@@ -84,7 +84,7 @@ spider_settings = {
 
 
 dag = DAG('NewHouseCQ', default_args=default_args,
-          schedule_interval="10 6 * * *")
+          schedule_interval="15 23 * * *")
 
 t1 = PythonOperator(
     task_id='LoadProjectBaseCQ',
