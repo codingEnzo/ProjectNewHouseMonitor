@@ -122,7 +122,7 @@ class IframePageHandleMiddleware(object):
         ProjectID = project_info_url[project_info_url.rindex('=') + 1:]
         ProjectUUID = uuid.uuid3(uuid.NAMESPACE_DNS, project_info_url)
         ProjectName = response.xpath(
-            '//input[@name="pjName"]/@value').extract_first(default="")
+            '//div[@class="currentTitle"]/h3/text()').extract_first(default="")
         CertificateOfUseOfStateOwnedLand = ''
         ConstructionPermitNumber = ''
         BuildingPermit = ''
