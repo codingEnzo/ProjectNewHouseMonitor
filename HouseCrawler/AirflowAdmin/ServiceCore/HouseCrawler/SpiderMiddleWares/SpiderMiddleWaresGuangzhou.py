@@ -794,8 +794,10 @@ class SellFormInfoHandleMiddleware(object):
         except:
             pass
         if check_isNullBuilding:
+            print('check_isNullBuilding is True')
             return result
         a_list = response.xpath('//a[contains(@href,"sellFormDetail.aspx")]')
+        print(llen(a_list))
         for a in a_list:
             href = urlparse.urljoin('http://www.gzcc.gov.cn/data/laho/sellFormDetail.aspx?',
                                     a.xpath('@href').extract_first(default=""))
