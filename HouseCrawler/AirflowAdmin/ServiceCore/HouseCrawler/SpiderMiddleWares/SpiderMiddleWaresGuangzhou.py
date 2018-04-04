@@ -68,7 +68,7 @@ class ProjectBaseHandleMiddleware(object):
             return result if result else []
         if response.meta.get('PageType') != 'ProjectBase':
             return result if result else []
-        # print('ProjectBaseHandleMiddleware')
+        print('ProjectBaseHandleMiddleware')
         if response.meta.get('GetPage'):
             total_page = get_totla_page(response.body_as_unicode())
             for i in range(1, total_page + 1):
