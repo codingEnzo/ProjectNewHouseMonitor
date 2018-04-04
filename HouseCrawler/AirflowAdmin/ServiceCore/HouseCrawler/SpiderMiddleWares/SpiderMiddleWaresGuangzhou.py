@@ -85,7 +85,7 @@ class ProjectBaseHandleMiddleware(object):
                 '//table[@class="resultTableC"]/tbody/tr[not(@class)]')
             for tr in tr_arr:
                 href = tr.xpath('td[2]/a/@href').extract_first(default="").strip()
-                print(urlparse.urljoin(response.url, href))
+                # print(urlparse.urljoin(response.url, href))
                 req = Request(
                     url=urlparse.urljoin(response.url, href),
                     headers=self.settings.getdict('DEFAULT_REQUEST_HEADERS'),
@@ -139,6 +139,7 @@ class IframePageHandleMiddleware(object):
                 'country_name'][:-1].split(',')
             url = 'http://www.gzcc.gov.cn/data/laho/country.aspx?country_name={country_name}&country_id={country_id}'
             for countryName, countryId in zip(country_names, country_ids):
+                print(url.format(country_name=str(countryName), country_id=str(countryName)))
                 req = Request(url=url.format(country_name=str(countryName), country_id=str(countryName)),
                               headers=self.settings.getdict(
                                   'POST_DEFAULT_REQUEST_HEADERS'),
