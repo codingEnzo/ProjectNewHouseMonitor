@@ -98,7 +98,7 @@ t1 = PythonOperator(
         'spiderName': 'DefaultCrawler',
         'settings': spider_settings,
             'urlList': [
-                {'source_url': 'http://www.gzcc.gov.cn/housing/fyxx/fdcxmxx/index_3.shtml',
+                {'source_url': 'http://www.gzcc.gov.cn/data/laho/ProjectSearch.aspx',
                  'meta': {'PageType': 'ProjectBase', 'GetPage': True}}
             ]
     },
