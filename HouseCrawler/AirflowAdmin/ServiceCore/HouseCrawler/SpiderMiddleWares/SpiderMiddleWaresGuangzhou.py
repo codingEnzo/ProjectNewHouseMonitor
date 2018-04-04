@@ -82,7 +82,7 @@ class ProjectBaseHandleMiddleware(object):
                 result.append(project_base_req)
         else:
             tr_arr = response.xpath(
-                '//table[@class="resultTableC"]/tr[not(@class)]')
+                '//table[@class="resultTableC"]/tbody/tr[not(@class)]')
             for tr in tr_arr:
                 href = tr.xpath('td[2]/a/@href').extract_first(default="")
                 req = Request(
