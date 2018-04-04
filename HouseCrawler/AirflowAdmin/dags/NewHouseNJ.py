@@ -28,7 +28,7 @@ django.setup()
 from HouseNew.models import *
 from services.spider_service import spider_call
 
-STARTDATE = datetime.datetime.now() - datetime.timedelta(hours=8)
+STARTDATE = datetime.datetime.now() - datetime.timedelta(hours=14)
 
 default_args = {
     'owner': 'airflow',
@@ -78,7 +78,7 @@ urlClass = {
 }
 
 dag = DAG('NewHouseNJ', default_args=default_args,
-          schedule_interval="15 6 * * *")
+          schedule_interval="15 */12 * * *")
 
 t1 = PythonOperator(
     task_id='LoadProjectBaseNJ',

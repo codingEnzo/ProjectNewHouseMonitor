@@ -50,7 +50,7 @@ def just_one_instance(func):
     return f
 
 
-STARTDATE = datetime.datetime.now() - datetime.timedelta(hours=6)
+STARTDATE = datetime.datetime.now() - datetime.timedelta(hours=14)
 
 default_args = {
     'owner': 'airflow',
@@ -83,7 +83,7 @@ spider_settings = {
 
 
 dag = DAG('NewHouseDL', default_args=default_args,
-          schedule_interval="30 4 * * *")
+          schedule_interval="30 */12 * * *")
 
 t1 = PythonOperator(
     task_id='LoadProjectBaseDL',

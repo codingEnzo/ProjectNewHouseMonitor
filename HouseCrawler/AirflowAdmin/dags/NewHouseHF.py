@@ -51,7 +51,7 @@ def just_one_instance(func):
     return f
 
 
-STARTDATE = datetime.datetime.now() - datetime.timedelta(hours=9)
+STARTDATE = datetime.datetime.now() - datetime.timedelta(hours=14)
 
 default_args = {
     'owner': 'airflow',
@@ -81,7 +81,7 @@ spider_settings = {
         'HouseCrawler.SpiderMiddleWares.SpiderMiddleWaresHF.HouseInfoHandleMiddleware': 105,
     },
     'RETRY_ENABLE': True,
-    'CLOSESPIDER_TIMEOUT': 3600 * 7.5,
+    'CLOSESPIDER_TIMEOUT': 3600 * 11.5,
     'CONCURRENT_REQUESTS': 56,
     'CITY': "合肥"
 }

@@ -33,7 +33,7 @@ from django.conf import settings as dj_settings
 REDIS_CACHE_KEY = "NewHouseHY"
 REDIS_CACHE_PROJECTINFO_KEY = "NewHouseHYPROJECTINFO"
 
-STARTDATE = datetime.datetime.now() - datetime.timedelta(hours=8)
+STARTDATE = datetime.datetime.now() - datetime.timedelta(hours=14)
 
 default_args = {
     'owner': 'airflow',
@@ -70,7 +70,7 @@ spider_settings = {
 }
 
 dag = DAG('NewHouseHY', default_args=default_args,
-          schedule_interval="0 6 * * *")
+          schedule_interval="0 */12 * * *")
 
 project_base_urls = ['http://183.63.60.194:8808/api/GzymApi/GetIndexSearchData?Jgid=FC830662-EA75-427C-9A82-443B91E383CB&PageIndex=1&PageSize=5000&Ysxmmc=&Ysxkzh=&Kfsmc=&Kfxmmc=',
                      'http://183.63.60.194:8808/api/GzymApi/GetIndexSearchData?Jgid=289e2e6c-ac49-43ba-be2a-eaf6060d615b&PageIndex=1&PageSize=5000&Ysxmmc=&Ysxkzh=&Kfsmc=&Kfxmmc=',

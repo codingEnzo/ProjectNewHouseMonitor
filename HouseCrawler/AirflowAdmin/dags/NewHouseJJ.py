@@ -31,7 +31,7 @@ from django.conf import settings as dj_settings
 
 REDIS_CACHE_KEY = "NewHouseJJ"
 
-STARTDATE = datetime.datetime.now() - datetime.timedelta(hours=9)
+STARTDATE = datetime.datetime.now() - datetime.timedelta(hours=14)
 
 default_args = {
     'owner': 'airflow',
@@ -64,7 +64,7 @@ spider_settings = {
 }
 
 dag = DAG('NewHouseJJ', default_args=default_args,
-          schedule_interval="15 4 * * *")
+          schedule_interval="15 */12 * * *")
 
 t1 = PythonOperator(
     task_id='LoadProjectBaseJJ',

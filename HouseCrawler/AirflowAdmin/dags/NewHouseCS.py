@@ -32,7 +32,7 @@ from django.conf import settings as dj_settings
 
 REDIS_CACHE_KEY = "NewHouseCS"
 
-STARTDATE = datetime.datetime.now() - datetime.timedelta(hours=6)
+STARTDATE = datetime.datetime.now() - datetime.timedelta(hours=14)
 
 default_args = {
     'owner': 'airflow',
@@ -65,7 +65,7 @@ spider_settings = {
 }
 
 dag = DAG('NewHouseCS', default_args=default_args,
-          schedule_interval="25 23 * * *")
+          schedule_interval="25 */12 * * *")
 
 t1 = PythonOperator(
     task_id='LoadProjectBaseCS',

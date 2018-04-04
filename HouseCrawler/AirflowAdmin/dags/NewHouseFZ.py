@@ -50,7 +50,7 @@ def just_one_instance(func):
     return f
 
 
-STARTDATE = datetime.datetime.now() - datetime.timedelta(hours=8)
+STARTDATE = datetime.datetime.now() - datetime.timedelta(hours=14)
 
 default_args = {
     'owner': 'airflow',
@@ -94,7 +94,7 @@ headers = {
 }
 
 dag = DAG('NewHouseFZ', default_args=default_args,
-          schedule_interval="15 6 * * *")
+          schedule_interval="15 */12 * * *")
 
 t1 = PythonOperator(
     task_id='LoadProjectBaseFZ',
