@@ -11,9 +11,12 @@ from airflow.operators.python_operator import PythonOperator
 
 BASE_DIR = os.path.abspath(os.environ.get('AIRFLOW_HOME'))
 HOUSESERVICECORE_DIR = os.path.abspath(os.path.join(BASE_DIR, 'ServiceCore'))
-HOUSEADMIN_DIR = os.path.abspath(os.path.join(BASE_DIR, 'ServiceCore/HouseAdmin'))
-HOUSECRAWLER_DIR = os.path.abspath(os.path.join(BASE_DIR, 'ServiceCore/HouseCrawler'))
-HOUSESERVICE_DIR = os.path.abspath(os.path.join(BASE_DIR, 'ServiceCore/SpiderService'))
+HOUSEADMIN_DIR = os.path.abspath(
+    os.path.join(BASE_DIR, 'ServiceCore/HouseAdmin'))
+HOUSECRAWLER_DIR = os.path.abspath(
+    os.path.join(BASE_DIR, 'ServiceCore/HouseCrawler'))
+HOUSESERVICE_DIR = os.path.abspath(
+    os.path.join(BASE_DIR, 'ServiceCore/SpiderService'))
 
 sys.path.append(BASE_DIR)
 sys.path.append(HOUSEADMIN_DIR)
@@ -48,11 +51,8 @@ def just_one_instance(func):
     return f
 
 
-STARTDATE = datetime.datetime.now() - datetime.timedelta(hours=8)
-
 default_args = {
     'owner': 'airflow',
-    'start_date': STARTDATE,
     'email': ['1012137875@qq.com'],
     'email_on_failure': False,
     'email_on_retry': False,
@@ -66,30 +66,30 @@ default_args = {
 }
 
 spider_settings = {
-            'ITEM_PIPELINES': {
-                'HouseCrawler.Pipelines.PipelinesTY.TYPipeline': 300,
-                },
-            'SPIDER_MIDDLEWARES': {
-                'HouseCrawler.SpiderMiddleWares.SpiderMiddleWaresTY.ProjectBaseHandleMiddleware': 102,
-                'HouseCrawler.SpiderMiddleWares.SpiderMiddleWaresTY.ProjectInfoHandleMiddleware': 103,
-                'HouseCrawler.SpiderMiddleWares.SpiderMiddleWaresTY.BuildingListHandleMiddleware': 104,
-                'HouseCrawler.SpiderMiddleWares.SpiderMiddleWaresTY.HouseInfoHandleMiddleware': 105,
-                },
-            'RETRY_ENABLE': True,
-            'CLOSESPIDER_TIMEOUT': 3600 * 5.5
-            }
+    'ITEM_PIPELINES': {
+        'HouseCrawler.Pipelines.PipelinesTY.TYPipeline': 300,
+    },
+    'SPIDER_MIDDLEWARES': {
+        'HouseCrawler.SpiderMiddleWares.SpiderMiddleWaresTY.ProjectBaseHandleMiddleware': 102,
+        'HouseCrawler.SpiderMiddleWares.SpiderMiddleWaresTY.ProjectInfoHandleMiddleware': 103,
+        'HouseCrawler.SpiderMiddleWares.SpiderMiddleWaresTY.BuildingListHandleMiddleware': 104,
+        'HouseCrawler.SpiderMiddleWares.SpiderMiddleWaresTY.HouseInfoHandleMiddleware': 105,
+    },
+    'RETRY_ENABLE': True,
+    'CLOSESPIDER_TIMEOUT': 3600 * 5.5
+}
 
 
 dag = DAG('NewHouseTY', default_args=default_args,
-            schedule_interval="45 6 * * *")
+          schedule_interval="45 6 * * *")
 
 t1 = PythonOperator(
     task_id='LoadProjectBaseTY',
     python_callable=spider_call,
     op_kwargs={'spiderName': 'DefaultCrawler',
-              'settings': spider_settings,
-              'urlList': [{'source_url': 'http://www.gyfc.net.cn/2_proInfo/index.aspx?page=1',
-                    'meta': {'PageType': 'ProjectBase'}}]},
+               'settings': spider_settings,
+               'urlList': [{'source_url': 'http://www.gyfc.net.cn/2_proInfo/index.aspx?page=1',
+                            'meta': {'PageType': 'ProjectBase'}}]},
     dag=dag)
 
 project_info_list = []
@@ -102,21 +102,22 @@ t2 = PythonOperator(
     task_id='LoadProjectInfoTY',
     python_callable=spider_call,
     op_kwargs={'spiderName': 'DefaultCrawler',
-                  'settings': spider_settings,
-                  'urlList': project_info_list},
+               'settings': spider_settings,
+               'urlList': project_info_list},
     dag=dag)
+
 
 def cacheLoader(key=REDIS_CACHE_KEY):
     r = dj_settings.REDIS_CACHE
     cur = BuildingInfoTaiyuan.objects.aggregate(*[{"$sort": {"CurTimeStamp": -1}},
-                                                {'$group': {
-                                                    '_id': "$BuildingUUID",
-                                                    'ProjectName': {'$first': '$ProjectName'},
-                                                    'ProjectUUID': {'$first': '$ProjectUUID'},
-                                                    'BuildingName': {'$first': '$BuildingName'},
-                                                    'BuildingUUID': {'$first': '$BuildingUUID'},
-                                                    'BuildingURL': {'$first': '$BuildingURL'},
-                                                }}])
+                                                  {'$group': {
+                                                      '_id': "$BuildingUUID",
+                                                      'ProjectName': {'$first': '$ProjectName'},
+                                                      'ProjectUUID': {'$first': '$ProjectUUID'},
+                                                      'BuildingName': {'$first': '$BuildingName'},
+                                                      'BuildingUUID': {'$first': '$BuildingUUID'},
+                                                      'BuildingURL': {'$first': '$BuildingURL'},
+                                                  }}])
     for item in cur:
         try:
             if item['BuildingURL']:

@@ -31,11 +31,9 @@ from django.conf import settings as dj_settings
 
 REDIS_CACHE_KEY = "NewHouseJJ"
 
-STARTDATE = datetime.datetime.now() - datetime.timedelta(hours=9)
 
 default_args = {
     'owner': 'airflow',
-    'start_date': STARTDATE,
     'email': ['coder.gsy@gmail.com'],
     'email_on_failure': False,
     'email_on_retry': False,
