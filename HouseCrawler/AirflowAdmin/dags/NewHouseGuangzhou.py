@@ -85,6 +85,9 @@ spider_settings = {
         'scrapy.downloadermiddlewares.httpproxy.HttpProxyMiddleware': None,
         'HouseCrawler.DownloadMiddleWares.ProxyMiddleWares.ProxyMiddleware': None,
     },
+    'DEPTH_PRIORITY': 1,
+    'SCHEDULER_DISK_QUEUE': 'scrapy.squeue.PickleFifoDiskQueue',
+    'SCHEDULER_MEMORY_QUEUE': 'scrapy.squeue.FifoMemoryQueue',
     'LOG_LEVEL': 'DEBUG',
     'CITY': '广州'
 }
