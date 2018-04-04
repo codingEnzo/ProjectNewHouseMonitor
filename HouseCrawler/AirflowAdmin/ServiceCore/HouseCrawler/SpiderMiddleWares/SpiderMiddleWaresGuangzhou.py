@@ -198,7 +198,7 @@ class IframePageHandleMiddleware(object):
                                       'PageType': 'ProjectInfo',
                                       'ProjectID': ProjectID,
                                       'ProjectUUID': str(ProjectUUID),
-                                      'StreetInfoUrl': urlparse(response.url, url_list[-1]),
+                                      'StreetInfoUrl': urlparse.urljoin(response.url, url_list[-1]),
                                       'CertificateOfUseOfStateOwnedLand': CertificateOfUseOfStateOwnedLand,
                                       'ConstructionPermitNumber': ConstructionPermitNumber,
                                       'BuildingPermit': BuildingPermit,
