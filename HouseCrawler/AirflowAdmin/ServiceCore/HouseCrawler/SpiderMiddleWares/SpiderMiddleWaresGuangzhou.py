@@ -84,7 +84,8 @@ class ProjectBaseHandleMiddleware(object):
             tr_arr = response.xpath(
                 '//table[@class="resultTableC"]/tbody/tr[not(@class)]')
             for tr in tr_arr:
-                href = tr.xpath('td[2]/a/@href').extract_first(default="")
+                href = tr.xpath('td[2]/a/@href').extract_first(default="").strip()
+                print(urlparse.urljoin(response.url, href))
                 req = Request(
                     url=urlparse.urljoin(response.url, href),
                     headers=self.settings.getdict('DEFAULT_REQUEST_HEADERS'),
@@ -109,8 +110,8 @@ class IframePageHandleMiddleware(object):
         def getParamsDict(url):
             query = urlparse.urlparse(url).query
             return dict([(k, v[0]) for k, v in urlparse.parse_qs(query).items()])
-        print(response.status)
         if not (200 <= response.status < 300):  # common case
+            print(response.status)
             return result if result else []
         if response.meta.get('PageType') != 'IframePage':
             return result if result else []
