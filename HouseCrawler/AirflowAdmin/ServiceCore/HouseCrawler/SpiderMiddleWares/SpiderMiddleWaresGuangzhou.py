@@ -57,7 +57,7 @@ class ProjectBaseHandleMiddleware(object):
             if debug:
                 return 1
             try:
-                t = regex.search(r'共(\d+)页,', string)
+                t = regex.search(r'共(\d+)页', string)
                 total_page = int(t.group(1))
             except Exception:
                 traceback.print_exc()
