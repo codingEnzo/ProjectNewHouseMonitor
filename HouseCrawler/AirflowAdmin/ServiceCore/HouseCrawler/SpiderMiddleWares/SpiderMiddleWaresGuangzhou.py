@@ -109,7 +109,7 @@ class IframePageHandleMiddleware(object):
         def getParamsDict(url):
             query = urlparse.urlparse(url).query
             return dict([(k, v[0]) for k, v in urlparse.parse_qs(query).items()])
-
+        print(response.status)
         if not (200 <= response.status < 300):  # common case
             return result if result else []
         if response.meta.get('PageType') != 'IframePage':
