@@ -28,9 +28,11 @@ django.setup()
 from HouseNew.models import *
 from services.spider_service import spider_call
 
+STARTDATE = datetime.datetime.now() - datetime.timedelta(hours=9)
 
 default_args = {
     'owner': 'airflow',
+    'start_date': STARTDATE,
     'email': ['coder.gsy@gmail.com'],
     'email_on_failure': False,
     'email_on_retry': False,

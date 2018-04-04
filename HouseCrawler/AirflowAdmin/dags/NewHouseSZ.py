@@ -48,8 +48,11 @@ def just_one_instance(func):
     return f
 
 
+STARTDATE = datetime.datetime.now() - datetime.timedelta(hours=8)
+
 default_args = {
     'owner': 'airflow',
+    'start_date': STARTDATE,
     'email': ['1012137875@qq.com'],
     'email_on_failure': False,
     'email_on_retry': False,
