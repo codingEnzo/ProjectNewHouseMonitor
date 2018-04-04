@@ -85,6 +85,7 @@ spider_settings = {
         'scrapy.downloadermiddlewares.httpproxy.HttpProxyMiddleware': None,
         'HouseCrawler.DownloadMiddleWares.ProxyMiddleWares.ProxyMiddleware': None,
     },
+    'LOG_LEVEL': 'DEBUG',
     'CITY': '广州'
 }
 

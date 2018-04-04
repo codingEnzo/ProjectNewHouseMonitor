@@ -114,6 +114,7 @@ class IframePageHandleMiddleware(object):
             return result if result else []
         if response.meta.get('PageType') != 'IframePage':
             return result if result else []
+        print('IframePageHandleMiddleware')
         result = list(result)
         url_list = Selector(response).re(r'url = "(.+)";')
         project_info_url = urlparse.urljoin(response.url, url_list[0])
@@ -232,7 +233,7 @@ class PermitInfoHandleMiddleware(object):
         if response.meta.get('PageType') not in (
                 'Permit_CertificateOfUseOfStateOwnedLand', 'Permit_ConstructionPermitNumber', 'Permit_BuildingPermit'):
             return result if result else []
-        # print('PermitInfoHandleMiddleware')
+        print('PermitInfoHandleMiddleware')
         result = list(result)
 
         if response.meta.get('PageType') == 'Permit_CertificateOfUseOfStateOwnedLand':
@@ -351,7 +352,7 @@ class ProjectInfoHandleMiddleware(object):
             return result if result else []
         if response.meta.get('PageType') not in ('StreetInfo', 'ProjectInfo'):
             return result if result else []
-        # print('ProjectInfoHandleMiddleware')
+        print('ProjectInfoHandleMiddleware', response.meta.get('PageType'))
         if response.meta.get('PageType') == 'StreetInfo':
             projectInfoItem = response.meta.get('projectInfoItem')
             try:
@@ -605,7 +606,7 @@ class PresellInfoHandleMiddleware(object):
             return result if result else []
         if response.meta.get('PageType') != 'PresellInfo':
             return result if result else []
-        # print('PresellInfoHandleMiddleware')
+        print('PresellInfoHandleMiddleware')
         # presellInfoItem = response.meta.get('presellInfoItem')
         presellInfoItem = PresellInfoItem()
         presellInfoItem['ProjectID'] = response.meta.get('ProjectID')
