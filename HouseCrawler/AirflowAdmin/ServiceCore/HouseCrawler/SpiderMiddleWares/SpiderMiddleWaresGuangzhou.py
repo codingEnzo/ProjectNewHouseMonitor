@@ -721,7 +721,7 @@ class BuildingListHandleMiddleware(object):
                     'modeID': '1', 'hfID': '0', 'unitType': '0', 'houseStatusID': '0', 'totalAreaID': '0',
                     'inAreaID': '0', 'buildingID': str(buildingID)
                 }
-                building_req = Request(url='http://www.gzcc.gov.cn/housing/search/project/sellForm_pic.jsp',
+                building_req = Request(url='http://www.gzcc.gov.cn/data/laho/sellFormpic.aspx?chnlname=fdcxmxx',
                                        headers=self.settings.getdict(
                                            'POST_DEFAULT_REQUEST_HEADERS'),
                                        dont_filter=True,
@@ -772,7 +772,7 @@ class SellFormInfoHandleMiddleware(object):
             return result if result else []
         if response.meta.get('PageType') != 'SellFormInfo':
             return result if result else []
-        # print('SellFormInfoHandleMiddleware')
+        print('SellFormInfoHandleMiddleware')
         ProjectID = response.meta.get('ProjectID')
         ProjectUUID = response.meta.get('ProjectUUID')
         ProjectName = response.meta.get('ProjectName')
@@ -847,7 +847,7 @@ class HouseInfoHandleMiddleware(object):
             return result if result else []
         if response.meta.get('PageType') != 'HouseInfo':
             return result if result else []
-        # print('HouseInfoHandleMiddleware')
+        print('HouseInfoHandleMiddleware')
         houseDetailItem = HouseInfoItem()
         houseDetailItem['HouseID'] = response.meta.get('HouseID')
         houseDetailItem['HouseUUID'] = response.meta.get('HouseUUID')
