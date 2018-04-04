@@ -125,7 +125,7 @@ buildingList_info_list = []
 for item in cur:
     if item['TotalUnsoldAmount'] != '0' or \
             item['CurTimeStamp'] >= str(datetime.datetime.now().date()):
-        url = '/data/laho/sellForm.aspx?pjID={ProjectID}&presell={PresalePermitNumber}&chnlname=fdcxmxx'
+        url = 'http://www.gzcc.gov.cn/data/laho/sellForm.aspx?pjID={ProjectID}&presell={PresalePermitNumber}&chnlname=fdcxmxx'
         buildingList_info = {'source_url': url.format(ProjectID=item['ProjectID'],
                                                       PresalePermitNumber=item['PresalePermitNumber']),
                              'meta': {'PageType': 'BuildingList',
