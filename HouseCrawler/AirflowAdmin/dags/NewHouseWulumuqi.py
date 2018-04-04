@@ -84,7 +84,7 @@ spider_settings = {
 }
 
 dag = DAG('NewHouseWulumuqi', default_args=default_args,
-          schedule_interval="30 8 */2 * *")
+          schedule_interval="30 8 * * *")
 
 t1 = PythonOperator(
     task_id='LoadProjectBaseWulumuqi',

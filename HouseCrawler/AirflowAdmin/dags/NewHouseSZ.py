@@ -98,7 +98,7 @@ headers = {
 }
 
 dag = DAG('NewHouseSZ', default_args=default_args,
-          schedule_interval="15 6 */2 * *")
+          schedule_interval="15 6 * * *")
 
 t1 = PythonOperator(
     task_id='LoadProjectBaseSZ',

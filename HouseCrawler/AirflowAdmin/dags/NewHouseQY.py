@@ -70,7 +70,7 @@ spider_settings = {
 }
 
 dag = DAG('NewHouseQY', default_args=default_args,
-          schedule_interval="15 8 */2 * *")
+          schedule_interval="15 8 * * *")
 
 project_base_urls = [
     'http://www.qyfgj.cn/newys/user_kfs.aspx?lid=6900fcbe-7a85-4447-a188-e9a056777415']

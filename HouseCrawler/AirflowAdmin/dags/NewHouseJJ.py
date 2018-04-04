@@ -64,7 +64,7 @@ spider_settings = {
 }
 
 dag = DAG('NewHouseJJ', default_args=default_args,
-          schedule_interval="15 4 */2 * *")
+          schedule_interval="15 4 * * *")
 
 t1 = PythonOperator(
     task_id='LoadProjectBaseJJ',

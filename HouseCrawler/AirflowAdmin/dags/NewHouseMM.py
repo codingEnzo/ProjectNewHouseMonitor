@@ -70,7 +70,7 @@ spider_settings = {
 }
 
 dag = DAG('NewHouseMM', default_args=default_args,
-          schedule_interval="15 8 */2 * *")
+          schedule_interval="15 8 * * *")
 
 project_base_urls = ['http://fcjwq.maoming.gov.cn:7800/user_kfs.aspx?lid=84364c88-3187-4678-b990-06bee6412f8d',
                      'http://fcjwq.maoming.gov.cn:7800/user_kfs.aspx?lid=f578dadb-8913-4f66-94b6-365ed1d1a132',

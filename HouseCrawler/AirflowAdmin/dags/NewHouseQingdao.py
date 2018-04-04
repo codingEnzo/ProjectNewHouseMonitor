@@ -82,7 +82,7 @@ spider_settings = {
 }
 
 dag = DAG('NewHouseQingdao', default_args=default_args,
-          schedule_interval="0 6 */2 * *")
+          schedule_interval="0 6 * * *")
 
 t1 = PythonOperator(
     task_id='LoadProjectBaseQingdao',
