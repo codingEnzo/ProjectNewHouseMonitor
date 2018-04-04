@@ -84,7 +84,8 @@ class ProjectBaseHandleMiddleware(object):
             tr_arr = response.xpath(
                 '//table[@class="resultTableC"]/tbody/tr[not(@class)]')
             for tr in tr_arr:
-                href = tr.xpath('td[2]/a/@href').extract_first(default="").strip()
+                href = tr.xpath(
+                    'td[2]/a/@href').extract_first(default="").strip()
                 # print(urlparse.urljoin(response.url, href))
                 req = Request(
                     url=urlparse.urljoin(response.url, href),
@@ -704,39 +705,38 @@ class BuildingListHandleMiddleware(object):
         ProjectUUID = response.meta.get('ProjectUUID')
         ProjectName = response.meta.get('ProjectName')
         td_list = response.xpath('//input[@name="buildingID"]/..')
-        if td_list:
-            for td in td_list:
-                buildingID = td.xpath('input/@value').extract_first(default="")
-                buildingName = td.re(r'\)">(.*)</td>')[0]
-                buildingItem = BuildingInfoItem()
-                buildingItem['ProjectUUID'] = ProjectUUID
-                buildingItem['ProjectID'] = ProjectID
-                buildingItem['ProjectName'] = ProjectName
-                buildingItem['BuildingID'] = buildingID
-                buildingItem['BuildingUUID'] = uuid.uuid3(
-                    uuid.NAMESPACE_DNS, ProjectUUID + buildingID)
-                buildingItem['BuildingName'] = buildingName
-                result.append(buildingItem)
-                req_dict = {
-                    'modeID': '1', 'hfID': '0', 'unitType': '0', 'houseStatusID': '0', 'totalAreaID': '0',
-                    'inAreaID': '0', 'buildingID': str(buildingID)
-                }
-                building_req = Request(url='http://www.gzcc.gov.cn/data/laho/sellFormpic.aspx?chnlname=fdcxmxx',
-                                       headers=self.settings.getdict(
-                                           'POST_DEFAULT_REQUEST_HEADERS'),
-                                       dont_filter=True,
-                                       meta={
-                                           'PageType': 'SellFormInfo',
-                                           'ProjectID': ProjectID,
-                                           'ProjectUUID': ProjectUUID,
-                                           'ProjectName': ProjectName,
-                                           'BuildingID': buildingID,
-                                           'BuildingName': buildingName,
-                                           'BuildingUUID': str(buildingItem['BuildingUUID']),
-                                       },
-                                       method='POST',
-                                       body=urlparse.urlencode(req_dict))
-                result.append(building_req)
+        for td in td_list:
+            buildingID = td.xpath('input/@value').extract_first(default="")
+            buildingName = td.re(r'\)">(.*)</td>')[0]
+            buildingItem = BuildingInfoItem()
+            buildingItem['ProjectUUID'] = ProjectUUID
+            buildingItem['ProjectID'] = ProjectID
+            buildingItem['ProjectName'] = ProjectName
+            buildingItem['BuildingID'] = buildingID
+            buildingItem['BuildingUUID'] = uuid.uuid3(
+                uuid.NAMESPACE_DNS, ProjectUUID + buildingID)
+            buildingItem['BuildingName'] = buildingName
+            result.append(buildingItem)
+            req_dict = {
+                'modeID': '1', 'hfID': '0', 'unitType': '0', 'houseStatusID': '0', 'totalAreaID': '0',
+                'inAreaID': '0', 'buildingID': str(buildingID)
+            }
+            building_req = Request(url='http://www.gzcc.gov.cn/data/laho/sellFormpic.aspx?chnlname=fdcxmxx',
+                                   headers=self.settings.getdict(
+                                       'POST_DEFAULT_REQUEST_HEADERS'),
+                                   dont_filter=True,
+                                   meta={
+                                       'PageType': 'SellFormInfo',
+                                       'ProjectID': ProjectID,
+                                       'ProjectUUID': ProjectUUID,
+                                       'ProjectName': ProjectName,
+                                       'BuildingID': buildingID,
+                                       'BuildingName': buildingName,
+                                       'BuildingUUID': str(buildingItem['BuildingUUID']),
+                                   },
+                                   method='POST',
+                                   body=urlparse.urlencode(req_dict))
+            result.append(building_req)
         return result
 
 
@@ -783,7 +783,7 @@ class SellFormInfoHandleMiddleware(object):
         FloorCount = ''
         try:
             tmp = response.xpath(
-                '//span[text()="暂时没有您想查看的数据"]/text()').extract_first(default="")
+                '//span[text()="暂时没有您想查看的数据"]/text()').extract_first()
             if tmp:
                 logger.info('项目id:%s,楼栋id：%s,楼栋名:%s没有户数据...' %
                             (ProjectID, BuildingID, BuildingName))
@@ -795,10 +795,10 @@ class SellFormInfoHandleMiddleware(object):
             pass
         if check_isNullBuilding:
             return result
-        a_list = response.xpath('//a[contains(@href,"sellFormDetail.jsp")]')
+        a_list = response.xpath('//a[contains(@href,"sellFormDetail.aspx")]')
         for a in a_list:
-            href = 'http://www.gzcc.gov.cn/housing/search/project/' + \
-                a.xpath('@href').extract_first(default="")
+            href = urlparse.urljoin('http://www.gzcc.gov.cn/data/laho/sellFormDetail.aspx?',
+                                    a.xpath('@href').extract_first(default=""))
             HouseID = href[href.rindex('=') + 1:]
             HouseUUID = uuid.uuid3(uuid.NAMESPACE_DNS, href)
             font_list = a.xpath('font/text()').extract()
@@ -894,14 +894,6 @@ class HouseInfoHandleMiddleware(object):
             '//td[starts-with(text(),"是否抵押")]/following-sibling::td[1]/text()').extract_first(default="")
         houseDetailItem['IsAttachment'] = response.xpath(
             '//td[starts-with(text(),"是否查封")]/following-sibling::td[1]/text()').extract_first(default="")
-
-        NUMBER_IMG = img_redis.get('NUMBER_IMG')
-        if NUMBER_IMG:
-            NUMBER_IMG = eval(NUMBER_IMG)
-        else:
-            logger.info('获取NUMBER_IMG失败，请检查redis中是否有数据！')
-            result.append(houseDetailItem)
-            return result
         yucezongmianji = response.xpath(
             '//td[starts-with(text(),"预测总面积")]/following-sibling::td[1]/text()').extract_first(default="").strip()
         houseDetailItem['ForecastBuildingArea'] = yucezongmianji
