@@ -357,7 +357,6 @@ class HouseInfoHandleMiddleware(object):
                     hinfo['BuildingName'] = response.meta.get('BuildingName')
                     hinfo['ProjectUUID'] = response.meta.get('ProjectUUID')
                     hinfo['BuildingUUID'] = response.meta.get('BuildingUUID')
-                    hinfo['SourceURL'] = response.url
                     hinfo['HouseName'] = house_item.xpath('./text()').extract_first() or\
                         house_item.xpath('./a/text()').extract_first() or ''
                     hinfo['HouseFloor'] = cur_floor

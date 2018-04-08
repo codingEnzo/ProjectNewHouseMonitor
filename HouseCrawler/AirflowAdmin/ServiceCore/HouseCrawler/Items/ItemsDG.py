@@ -165,6 +165,6 @@ class HouseInfoItem(DjangoItem):
                   'PriceType': '',
                   'DecorationPrice': '',
                   'Remarks': '',
-                  'SourceUrl': 'SourceUrl',
+                  'SourceUrl': '',
                   'ExtraJson': '',
                   }
