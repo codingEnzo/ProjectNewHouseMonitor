@@ -88,7 +88,7 @@ t1 = PythonOperator(
     python_callable=spider_call,
     op_kwargs={'spiderName': 'DefaultCrawler',
               'settings': spider_settings,
-              'urlList': [{'source_url': 'http://www.gyfc.net.cn/2_proInfo/index.aspx?page=1',
+              'urlList': [{'source_url': 'http://ys.tyfdc.gov.cn/Firsthand/tyfc/publish/p/ProjectListWeb.do',
                     'meta': {'PageType': 'ProjectBase'}}]},
     dag=dag)
 
