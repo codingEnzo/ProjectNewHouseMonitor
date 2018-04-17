@@ -27,6 +27,7 @@ django.setup()
 
 from HouseNew.models import *
 from services.spider_service import spider_call
+from django.conf import settings as dj_settings
 
 REDIS_CACHE_KEY = "NewHouseQingdao"
 
