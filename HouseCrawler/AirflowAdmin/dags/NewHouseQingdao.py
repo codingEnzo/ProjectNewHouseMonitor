@@ -51,6 +51,8 @@ default_args = {
 spider_settings = {
     'ITEM_PIPELINES': {
         'HouseCrawler.Pipelines.PipelinesQingdao.PipelineQingdao': 300,
+        'HouseCrawler.Pipelines.PipelinesUtils.PipelinesCheck.CheckPipeline': 299,
+        'HouseCrawler.Pipelines.PipelinesUtils.PipelinesKafka.KafkaPipeline': 301,
     },
     'SPIDER_MIDDLEWARES': {
         'HouseCrawler.SpiderMiddleWares.SpiderMiddleWaresQingdao.ProjectBaseHandleMiddleware': 102,
@@ -81,7 +83,8 @@ spider_settings = {
     'DOWNLOADER_MIDDLEWARES': {
         'scrapy.downloadermiddlewares.httpproxy.HttpProxyMiddleware': None,
         'HouseCrawler.DownloadMiddleWares.ProxyMiddleWares.ProxyMiddleware': None,
-    }
+    },
+    'CITY': '青岛'
 }
 
 dag = DAG('NewHouseQingdao', default_args=default_args,
