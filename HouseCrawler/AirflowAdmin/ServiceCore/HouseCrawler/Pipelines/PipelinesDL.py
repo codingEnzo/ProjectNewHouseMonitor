@@ -5,6 +5,7 @@ import logging
 import uuid
 import datetime
 from HouseCrawler.Items.ItemsDL import *
+from scrapy.exceptions import DropItem
 sys.path.append(os.path.abspath('.'))
 sys.path.append(os.path.abspath('..'))
 sys.path.append(os.path.abspath('../..'))
@@ -145,8 +146,12 @@ class DLPipeline(object):
                         logger.debug("item: %(item)s changed",
                                         {'item': item})
                         self.storage_item(item)
+                    else:
+                        raise DropItem('Drop no change item')
                 else:
                     logger.debug("item: %(item)s met first",
                                     {'item': item})
                     self.storage_item(item)
+            else:
+                raise DropItem('Drop no change item')
             return item

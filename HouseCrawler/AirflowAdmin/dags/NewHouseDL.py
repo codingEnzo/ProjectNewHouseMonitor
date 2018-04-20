@@ -69,7 +69,9 @@ default_args = {
 
 spider_settings = {
     'ITEM_PIPELINES': {
+        'HouseCrawler.Pipelines.PipelinesUtils.PipelinesCheck.CheckPipeline': 299,
         'HouseCrawler.Pipelines.PipelinesDL.DLPipeline': 300,
+        'HouseCrawler.Pipelines.PipelinesUtils.PipelinesKafka.KafkaPipeline': 301,
     },
     'SPIDER_MIDDLEWARES': {
         'HouseCrawler.SpiderMiddleWares.SpiderMiddleWaresDL.ProjectBaseHandleMiddleware': 102,
@@ -78,7 +80,8 @@ spider_settings = {
         'HouseCrawler.SpiderMiddleWares.SpiderMiddleWaresDL.HouseInfoHandleMiddleware': 105,
     },
     'RETRY_ENABLE': True,
-    'CLOSESPIDER_TIMEOUT': 3600 * 3.5
+    'CLOSESPIDER_TIMEOUT': 3600 * 3.5,
+    'CITY':'大连'
 }
 
 
