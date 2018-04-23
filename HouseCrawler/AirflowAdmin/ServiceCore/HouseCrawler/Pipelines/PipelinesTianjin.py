@@ -42,6 +42,20 @@ class PipelineTianjin(object):
             return sum([self.sum_value_hash(item) for item in value])
         else:
             return sum([safe_format_value(value), ])
+    
+    def check_item(self, item):
+        exist_flag = False
+        blank_count = 0
+        invail_list = ['�', ]
+        for key in item:
+            if item.get(key) in (None, ''):
+                blank_count += 1
+            for char in invail_list:
+                if char in str(item.get(key)):
+                    exist_flag = True
+        if blank_count >= 0.85 * len(item):
+            exist_flag = True
+        return exist_flag
 
     def check_item_change(self, item):
         no_monit_key = ('SourceUrl', 'UnitID', 'BuildingID',
@@ -113,7 +127,7 @@ class PipelineTianjin(object):
                     if item[key]:
                         value = str(item[key])
                         item[key] = value.replace(' ', '').replace('\r', '') \
-                            .replace('\t', '').replace('\n', '').replace('　', '').strip()
+                            .replace('\t', '').replace('\n', '').replace('　', '').replace('/','').strip()
                     else:
                         item[key] = ''
                 except:
@@ -121,13 +135,16 @@ class PipelineTianjin(object):
 
     def process_item(self, item, spider):
         if item:
-            self.replace_str(item)
-            status, cheack_item = self.check_item_change(item)
-            if status:
-                if status == 'diff':
-                    self.storage_item(cheack_item)
+            if not self.check_item(item):
+                self.replace_str(item)
+                status, cheack_item = self.check_item_change(item)
+                if status:
+                    if status == 'diff':
+                        self.storage_item(cheack_item)
+                    else:
+                        raise DropItem('Drop no change item')
                 else:
-                    raise DropItem('Drop no change item')
+                    self.storage_item(cheack_item)
             else:
-                self.storage_item(cheack_item)
+                raise DropItem('Drop no change item')
         return item
