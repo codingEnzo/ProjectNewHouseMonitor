@@ -127,7 +127,7 @@ class PipelineTianjin(object):
                     if item[key]:
                         value = str(item[key])
                         item[key] = value.replace(' ', '').replace('\r', '') \
-                            .replace('\t', '').replace('\n', '').replace('　', '').replace('/','').strip()
+                            .replace('\t', '').replace('\n', '').replace('　', '').strip('\\')
                     else:
                         item[key] = ''
                 except:
