@@ -61,6 +61,9 @@ spider_settings = {
         'HouseCrawler.SpiderMiddleWares.SpiderMiddleWaresDG.BuildingListHandleMiddleware': 104,
         'HouseCrawler.SpiderMiddleWares.SpiderMiddleWaresDG.HouseInfoHandleMiddleware': 105,
     },
+    'EXTENSIONS': {
+        # 'HouseCrawler.Extensions.responselog.ResponseLog': 301,
+    },
     'RETRY_ENABLE': True,
     'CLOSESPIDER_TIMEOUT': 3600 * 7.5,
     'CONCURRENT_REQUESTS': 64,
