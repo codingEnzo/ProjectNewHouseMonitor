@@ -65,7 +65,7 @@ spider_settings = {
         'HouseCrawler.SpiderMiddleWares.SpiderMiddleWaresZQ.ProjectIndexHandleMiddleware': 108,
     },
     'EXTENSIONS': {
-        'HouseCrawler.Extensions.responselog.ResponseLog': 301,
+        # 'HouseCrawler.Extensions.responselog.ResponseLog': 301,
     },
     'RETRY_ENABLE': True,
     'CLOSESPIDER_TIMEOUT': 3600 * 7.5,

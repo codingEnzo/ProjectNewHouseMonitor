@@ -86,7 +86,7 @@ spider_settings = {
         'HouseCrawler.DownloadMiddleWares.ProxyMiddleWares.ProxyMiddleware': None,
     },
     'EXTENSIONS': {
-        'HouseCrawler.Extensions.responselog.ResponseLog': 301,
+        # 'HouseCrawler.Extensions.responselog.ResponseLog': 301,
     },
     'DEPTH_PRIORITY': 1,
     'SCHEDULER_DISK_QUEUE': 'scrapy.squeue.PickleFifoDiskQueue',
