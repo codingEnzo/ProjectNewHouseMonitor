@@ -120,7 +120,7 @@ class BuildingInfoItem(DjangoItem):
                   'OnTheGroundFloor': '',
                   'TheGroundFloor': '',
                   'EstimatedCompletionDate': '',
-                  'HousingCount': '',
+                  'HousingCount': 'TotalAmount',
                   'Floors': '',
                   'ElevatorHouse': '',
                   'IsHasElevator': '',
