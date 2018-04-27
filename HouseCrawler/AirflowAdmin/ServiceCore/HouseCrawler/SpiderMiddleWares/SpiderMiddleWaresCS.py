@@ -116,7 +116,7 @@ class ProjectBaseHandleMiddleware(object):
             base_url = 'http://www.cszjw.net/sfloor?'
             req_dict = {'page': 0}
             total_page = int(response.xpath(
-                '//div[@class="div_cutPage"]/a[text()!="»"]/text()').extract()[-1])
+                '//div[@class="div_cutPage"]/a[text()!=">"]/text()').extract()[-1])
             for page in range(1, total_page + 1):
                 req_dict['page'] = page
                 url = base_url + urlparse.urlencode(req_dict)
