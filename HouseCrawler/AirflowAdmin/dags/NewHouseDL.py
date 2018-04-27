@@ -90,7 +90,7 @@ t1 = PythonOperator(
     python_callable=spider_call,
     op_kwargs={'spiderName': 'DefaultCrawler',
                'settings': spider_settings,
-               'urlList': [{'source_url': 'http://www.dlfd.gov.cn/fdc/D01XmxxAction.do?Control=select',
+               'urlList': [{'source_url': 'http://old.gtfwj.dl.gov.cn/bd/tgxm',
                             'meta': {'PageType': 'ProjectBase'}}]},
     dag=dag)
 
