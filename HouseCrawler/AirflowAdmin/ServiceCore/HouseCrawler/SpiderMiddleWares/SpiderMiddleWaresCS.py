@@ -369,11 +369,11 @@ class HouseInfoHandleMiddleware(object):
                     hinfo['HouseFloor'] = json.loads('{"foo":"%s"}' % house.xpath(
                         './td[2]/text()').extract_first() or '').get('foo')
                     hinfo['HouseBuildingArea'] = json.loads('{"foo":"%s"}' % house.xpath(
-                        './td[5]/text()').extract_first() or '').get('foo')
-                    hinfo['HouseInnerArea'] = json.loads('{"foo":"%s"}' % house.xpath(
                         './td[6]/text()').extract_first() or '').get('foo')
-                    hinfo['HouseShareArea'] = json.loads('{"foo":"%s"}' % house.xpath(
+                    hinfo['HouseInnerArea'] = json.loads('{"foo":"%s"}' % house.xpath(
                         './td[7]/text()').extract_first() or '').get('foo')
+                    hinfo['HouseShareArea'] = json.loads('{"foo":"%s"}' % house.xpath(
+                        './td[8]/text()').extract_first() or '').get('foo')
                     hinfo['HouseType'] = json.loads('{"foo":"%s"}' % house.xpath(
                         './td[4]/text()').extract_first() or '').get('foo')
                     hinfo['HouseUsage'] = json.loads('{"foo":"%s"}' % house.xpath(
