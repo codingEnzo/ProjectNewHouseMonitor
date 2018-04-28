@@ -220,7 +220,7 @@ class BuildingListHandleMiddleware(object):
                 b_info['BuildingURL'] = urlparse.urljoin(
                     'http://old.gtfwj.dl.gov.cn', building_info.xpath('./td[1]/a/@href').extract_first())
                 b_info['BuildingUUID'] = uuid.uuid3(uuid.NAMESPACE_DNS,
-                                                    p_name + p_uuid + b_info['BuildingURL'] + b_info['BuildingRegName'] + b_info['BuildingName'])
+                                                    str(p_name) + str(p_uuid) + str(b_info['BuildingURL']) + str(b_info['BuildingRegName']) + str(b_info['BuildingName']))
                 result.append(b_info)
         return result
 
