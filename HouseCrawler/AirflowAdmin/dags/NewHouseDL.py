@@ -123,7 +123,7 @@ def cacheLoader(key=REDIS_CACHE_KEY):
     for item in cur:
         try:
             if item['BuildingURL']:
-                if True:
+                if item['CurTimeStamp'] >= "2018-04-01 00:00:00":
                     building_info = {'source_url': item['BuildingURL'],
                                      'meta': {'PageType': 'HouseInfo',
                                               'ProjectName': item['ProjectName'],
