@@ -153,7 +153,7 @@ class ProjectInfoHandleMiddleware(object):
                 if key:
                     sale_sum[key] = td.xpath(
                         './following-sibling::td[1]/text()').extract_first(default='')
-            pinfo['ProjectSaleSum'] = sale_sum or {{'Null': True}}
+            pinfo['ProjectSaleSum'] = sale_sum or {'Null': True}
             result.append(pinfo)
 
             req_dict = {'xmid': get_mxid(response.body_as_unicode()),
