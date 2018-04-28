@@ -95,7 +95,7 @@ t1 = PythonOperator(
     dag=dag)
 
 project_info_list = []
-cur = ProjectBaseDalian.objects.filter(CurTimeStamp_gt="2018-04-01 00:00:00")
+cur = ProjectBaseDalian.objects.filter(CurTimeStamp__gte="2018-04-01 00:00:00")
 for item in cur:
     project_info = {'source_url': item.ProjectURL,
                     'meta': {'PageType': 'ProjectInfo'}}
