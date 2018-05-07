@@ -112,7 +112,15 @@ t1 = PythonOperator(
     dag=dag
 )
 
-cur = ProjectInfoGuangzhou.objects.aggregate(*[{
+cur = ProjectInfoGuangzhou.objects.aggregate(*[
+{
+    "$match":{
+        "CurTimeStamp": {
+            "$gte":'2018-04-04'
+        }
+    }
+},
+{
     "$sort": {
         "CurTimeStamp": -1
     }
