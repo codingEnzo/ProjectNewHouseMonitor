@@ -83,19 +83,19 @@ spider_settings = {
 
 
 dag = DAG('NewHouseDL', default_args=default_args,
-          schedule_interval="30 */12 * * *")
+          schedule_interval="45 */12 * * *")
 
 t1 = PythonOperator(
     task_id='LoadProjectBaseDL',
     python_callable=spider_call,
     op_kwargs={'spiderName': 'DefaultCrawler',
                'settings': spider_settings,
-               'urlList': [{'source_url': 'http://www.dlfd.gov.cn/fdc/D01XmxxAction.do?Control=select',
+               'urlList': [{'source_url': 'http://old.gtfwj.dl.gov.cn/bd/tgxm',
                             'meta': {'PageType': 'ProjectBase'}}]},
     dag=dag)
 
 project_info_list = []
-cur = ProjectBaseDalian.objects.all()
+cur = ProjectBaseDalian.objects.filter(CurTimeStamp__gte="2018-04-01 00:00:00")
 for item in cur:
     project_info = {'source_url': item.ProjectURL,
                     'meta': {'PageType': 'ProjectInfo'}}
@@ -123,7 +123,7 @@ def cacheLoader(key=REDIS_CACHE_KEY):
     for item in cur:
         try:
             if item['BuildingURL']:
-                if True:
+                if item['CurTimeStamp'] >= "2018-04-01 00:00:00":
                     building_info = {'source_url': item['BuildingURL'],
                                      'meta': {'PageType': 'HouseInfo',
                                               'ProjectName': item['ProjectName'],

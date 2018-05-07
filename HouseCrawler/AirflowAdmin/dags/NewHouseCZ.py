@@ -71,7 +71,7 @@ default_args = {
 spider_settings = {
     'ITEM_PIPELINES': {
         'HouseCrawler.Pipelines.PipelinesUtils.PipelinesCheck.CheckPipeline': 299,
-        'HouseCrawler.Pipelines.PipelinesUtils.PipelinesKafka.KafkaPipeline': 301,
+        # 'HouseCrawler.Pipelines.PipelinesUtils.PipelinesKafka.KafkaPipeline': 301,
         'HouseCrawler.Pipelines.PipelinesCZ.CZPipeline': 300,
     },
     'SPIDER_MIDDLEWARES': {
