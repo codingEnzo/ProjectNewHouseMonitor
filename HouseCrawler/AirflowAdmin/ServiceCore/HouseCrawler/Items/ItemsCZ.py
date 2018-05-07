@@ -157,7 +157,7 @@ class HouseInfoItem(DjangoItem):
                   'IsSharedPublicMatching': '',
                   'SellState': '',
                   'SellSchedule': '',
-                  'HouseState': 'HouseSaleState',
+                  'HouseState': 'HouseSaleStatus',
                   'HouseStateLatest': 'HouseSaleStateLatest',
                   'HouseLabel': '',
                   'HouseLabelLatest': '',
