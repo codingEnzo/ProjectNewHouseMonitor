@@ -116,6 +116,7 @@ class HouseInfoDalian(Document):
     HouseSaleStateLatest = fields.StringField(
         default='', max_length=1024, null=False)
     HouseInfoStr = fields.StringField(default='', max_length=1024, null=False)
+    SourceUrl = fields.StringField(default='', max_length=1024, null=False)
     meta = {
         'indexes': [
             'CurTimeStamp',

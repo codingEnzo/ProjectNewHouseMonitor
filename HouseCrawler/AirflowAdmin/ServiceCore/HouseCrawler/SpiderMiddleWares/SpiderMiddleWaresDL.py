@@ -289,7 +289,7 @@ class HouseInfoHandleMiddleware(object):
                     hinfo['ProjectUUID'] = response.meta.get('ProjectUUID')
                     hinfo['BuildingUUID'] = response.meta.get('BuildingUUID')
                     hinfo['HouseName'] = house.xpath(
-                        './text()').extract_first(default='')
+                        './text()').extract_first(default='').strip()
                     hinfo['HouseUUID'] = uuid.uuid3(uuid.NAMESPACE_DNS, hinfo[
                                                     'HouseName'] + hinfo['BuildingUUID'] + hinfo['ProjectUUID'])
                     hinfo['HouseFloor'] = cur_floor
@@ -297,6 +297,7 @@ class HouseInfoHandleMiddleware(object):
                         house.xpath('./@style').extract_first())
                     hinfo['HouseInfoStr'] = house.xpath(
                         './@title').extract_first() or ''
+                    hinfo['SourceUrl'] = response.url
                     result.append(hinfo)
 
         return result
