@@ -111,7 +111,8 @@ t2 = PythonOperator(
 
 def cacheLoader(key=REDIS_CACHE_KEY):
     r = dj_settings.REDIS_CACHE
-    cur = BuildingInfoDalian.objects.aggregate(*[{"$sort": {"CurTimeStamp": -1}},
+    cur = BuildingInfoDalian.objects.aggregate(*[{'$match': {'score': {'$gt': "2018-04-01 00:00:00"}}},
+                                                 {"$sort": {"CurTimeStamp": -1}},
                                                  {'$group': {
                                                      '_id': "$BuildingUUID",
                                                      'ProjectName': {'$first': '$ProjectName'},
@@ -123,7 +124,7 @@ def cacheLoader(key=REDIS_CACHE_KEY):
     for item in cur:
         try:
             if item['BuildingURL']:
-                if item['CurTimeStamp'] >= "2018-04-01 00:00:00":
+                if True:
                     building_info = {'source_url': item['BuildingURL'],
                                      'meta': {'PageType': 'HouseInfo',
                                               'ProjectName': item['ProjectName'],
