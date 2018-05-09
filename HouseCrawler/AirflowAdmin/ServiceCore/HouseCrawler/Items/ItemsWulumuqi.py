@@ -15,7 +15,7 @@ class ProjectInfoItem(DjangoItem):
                   'ProjectAddress': 'ProjectAddress',
                   'ProjectType': '',
                   'OnSaleState': 'OnSaleState',
-                  'LandUse': 'LandUsePermit',
+                  'LandUse': 'LandUse',
                   'HousingCount': 'HousingCount',
                   'Developer': 'Developer',
                   'FloorArea': 'FloorArea',
