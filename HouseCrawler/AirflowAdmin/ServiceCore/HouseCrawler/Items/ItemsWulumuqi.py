@@ -105,7 +105,7 @@ class BuildingInfoItem(DjangoItem):
                   'RealEstateProjectID': '',
                   'ProjectUUID': 'ProjectUUID',
                   'BuildingName': 'BuildingName',
-                  'BuildingID': 'BuildingID',
+                  'BuildingID': '',
                   'BuildingUUID': 'BuildingUUID',
                   'UnitName': '',
                   'UnitID': '',
