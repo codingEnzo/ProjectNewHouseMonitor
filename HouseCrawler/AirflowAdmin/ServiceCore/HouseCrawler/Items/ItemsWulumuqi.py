@@ -3,7 +3,7 @@ from scrapy_djangoitem import DjangoItem
 from HouseNew.models import *
 
 
-class ProjectBaseItem(DjangoItem):
+class ProjectInfoItem(DjangoItem):
     django_model = ProjectBaseWulumuqi
     fields_map = {'RecordTime': 'CurTimeStamp',
                   'ProjectName': 'ProjectName',
