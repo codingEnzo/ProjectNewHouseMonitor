@@ -53,7 +53,7 @@ spider_settings = {
     'ITEM_PIPELINES': {
         'HouseCrawler.Pipelines.PipelinesZQ.ZQPipeline': 300,
         'HouseCrawler.Pipelines.PipelinesUtils.PipelinesCheck.CheckPipeline': 299,
-        'HouseCrawler.Pipelines.PipelinesUtils.PipelinesKafka.KafkaPipeline': 301,
+        # 'HouseCrawler.Pipelines.PipelinesUtils.PipelinesKafka.KafkaPipeline': 301,
     },
     'SPIDER_MIDDLEWARES': {
         'HouseCrawler.SpiderMiddleWares.SpiderMiddleWaresZQ.ProjectBaseHandleMiddleware': 102,
@@ -63,6 +63,9 @@ spider_settings = {
         'HouseCrawler.SpiderMiddleWares.SpiderMiddleWaresZQ.CompanyInfoHandleMiddleware': 106,
         'HouseCrawler.SpiderMiddleWares.SpiderMiddleWaresZQ.PreSellInfoHandleMiddleware': 107,
         'HouseCrawler.SpiderMiddleWares.SpiderMiddleWaresZQ.ProjectIndexHandleMiddleware': 108,
+    },
+    'EXTENSIONS': {
+        # 'HouseCrawler.Extensions.responselog.ResponseLog': 301,
     },
     'RETRY_ENABLE': True,
     'CLOSESPIDER_TIMEOUT': 3600 * 7.5,

@@ -53,13 +53,16 @@ spider_settings = {
     'ITEM_PIPELINES': {
         'HouseCrawler.Pipelines.PipelinesDG.DGPipeline': 300,
         'HouseCrawler.Pipelines.PipelinesUtils.PipelinesCheck.CheckPipeline': 299,
-        'HouseCrawler.Pipelines.PipelinesUtils.PipelinesKafka.KafkaPipeline': 301,
+        # 'HouseCrawler.Pipelines.PipelinesUtils.PipelinesKafka.KafkaPipeline': 301,
     },
     'SPIDER_MIDDLEWARES': {
         'HouseCrawler.SpiderMiddleWares.SpiderMiddleWaresDG.ProjectBaseHandleMiddleware': 102,
         'HouseCrawler.SpiderMiddleWares.SpiderMiddleWaresDG.ProjectInfoHandleMiddleware': 103,
         'HouseCrawler.SpiderMiddleWares.SpiderMiddleWaresDG.BuildingListHandleMiddleware': 104,
         'HouseCrawler.SpiderMiddleWares.SpiderMiddleWaresDG.HouseInfoHandleMiddleware': 105,
+    },
+    'EXTENSIONS': {
+        # 'HouseCrawler.Extensions.responselog.ResponseLog': 301,
     },
     'RETRY_ENABLE': True,
     'CLOSESPIDER_TIMEOUT': 3600 * 7.5,

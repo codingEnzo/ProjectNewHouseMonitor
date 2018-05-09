@@ -4,6 +4,7 @@ import logging
 import os
 import sys
 import uuid
+from scrapy.exceptions import DropItem
 
 from HouseCrawler.Items.ItemsCZ import *
 
@@ -123,6 +124,8 @@ class CZPipeline(object):
                     logger.debug("item: %(item)s changed",
                                  {'item': item})
                     self.storage_item(item)
+                else:
+                    raise DropItem('Drop no change item')
             else:
                 logger.debug("item: %(item)s met first",
                              {'item': item})

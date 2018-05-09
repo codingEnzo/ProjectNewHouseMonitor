@@ -70,6 +70,8 @@ default_args = {
 
 spider_settings = {
     'ITEM_PIPELINES': {
+        'HouseCrawler.Pipelines.PipelinesUtils.PipelinesCheck.CheckPipeline': 299,
+        # 'HouseCrawler.Pipelines.PipelinesUtils.PipelinesKafka.KafkaPipeline': 301,
         'HouseCrawler.Pipelines.PipelinesCZ.CZPipeline': 300,
     },
     'SPIDER_MIDDLEWARES': {
@@ -78,7 +80,8 @@ spider_settings = {
         'HouseCrawler.SpiderMiddleWares.SpiderMiddleWaresCZ.BuildingInfoHandleMiddleware': 104,
     },
     'RETRY_ENABLE': True,
-    'CLOSESPIDER_TIMEOUT': 3600 * 5.5
+    'CLOSESPIDER_TIMEOUT': 3600 * 5.5,
+    'CITY': '常州'
 }
 
 dag = DAG('NewHouseCZ', default_args=default_args,
@@ -147,7 +150,6 @@ t3 = PythonOperator(
     python_callable=cacheLoader,
     op_kwargs={'key': REDIS_CACHE_KEY},
     dag=dag)
-
 
 building_info_list = list(map(lambda x: json.loads(
     x.decode()), dj_settings.REDIS_CACHE.smembers(REDIS_CACHE_KEY)))

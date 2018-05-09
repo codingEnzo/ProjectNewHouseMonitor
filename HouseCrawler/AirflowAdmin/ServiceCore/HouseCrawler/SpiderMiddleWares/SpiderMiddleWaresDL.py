@@ -7,39 +7,27 @@ from scrapy import Request
 from scrapy import Selector
 from HouseNew.models import *
 from HouseCrawler.Items.ItemsDL import *
-from requests_toolbelt.multipart.encoder import MultipartEncoder
 if sys.version_info.major >= 3:
     import urllib.parse as urlparse
 else:
     import urlparse
 
 
-boundary_text = "----WebKitFormBoundaryLnjCII2eV7SFAauA"
-headers = {'Host': 'www.dlfd.gov.cn',
-                'Connection': 'keep-alive',
-                'Cache-Control': 'max-age=0',
-                'Origin': 'http://www.bjjs.gov.cn',
-                'Upgrade-Insecure-Requests': 1,
-                'Content-Type': 'multipart/form-data; boundary={boundary_text}'.format(boundary_text=boundary_text),
-                'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8',
-                'Accept-Encoding': 'gzip, deflate',
-                'Accept-Language': 'zh-CN,zh;q=0.8'}
+headers = {'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+           'Accept-Encoding': 'gzip, deflate',
+           'Accept-Language': 'en-US,en;q=0.5',
+           'Connection': 'keep-alive',
+           'Content-Type': 'application/x-www-form-urlencoded',
+           'Host': 'old.gtfwj.dl.gov.cn',
+           'Upgrade-Insecure-Requests': '1'}
 
 
-def get_url_id(strUrl):
+def get_mxid(string):
     res_id = '0'
-    match_res = re.search(r'id=(\d+)', str(strUrl))
+    match_res = re.search(r"xmid: '(.+)'", str(string))
     if match_res:
         res_id = match_res.group(1)
     return res_id
-
-
-def get_href(strHref):
-    res_href = ''
-    match_res = re.search(r"'(.+)','_blank'", str(strHref))
-    if match_res:
-        res_href = match_res.group(1)
-    return res_href
 
 
 class ProjectBaseHandleMiddleware(object):
@@ -69,34 +57,33 @@ class ProjectBaseHandleMiddleware(object):
         print('ProjectBaseHandleMiddleware')
 
         if response.request.method == 'GET':
-            req_dict = {'tree_id': '',
-                        'newsId': '',
-                        'QY': '',
-                        'XMMC': '',
-                        'KFSMC': '',
-                        'pageNo': '',
-                        'next': ''}
-            try:
-                total_page = int(re.search(r'共(\d+)页', response.body_as_unicode()).group(1))
-            except Exception:
-                total_page = 62
-            for pageNo in range(1, total_page + 1):
-                req_dict['pageNo'] = str(pageNo)
-                req_body = MultipartEncoder(fields=req_dict, boundary=boundary_text).to_string()
-                result.append(Request(url=response.url, body=req_body, method='POST',
-                                headers=headers, meta={'PageType': 'ProjectBase'}))
+            req_dict = {'kfs.kfsmc': '',
+                        'pageNo': '1',
+                        'pageSize': '99999',
+                        'xmmc': '',
+                        'xzqh': ''
+                        }
+            req_body = urlparse.urlencode(req_dict)
+            result.append(Request(url=response.url, body=req_body, method='POST',
+                                  headers=headers, meta={'PageType': 'ProjectBase'}))
         elif response.request.method == 'POST':
-            print('current page', re.search(r'第(\d+)页', response.body_as_unicode()).group(1))
-            project_list = Selector(response).xpath('//tr[not(@id) and @bgcolor="#FFFFFF" or @bgcolor="#e6f1ff"]')[:-1]
+            project_list = Selector(response).xpath(
+                '//tr[@class="info"]')[:-1]
             for p in project_list:
-                p_district = (p.xpath('./td[1]/text()').extract_first() or '').replace('\xa0', '')
-                p_name = (p.xpath('./td[2]/a/text()').extract_first() or '').replace('\xa0', '')
+                p_district = (
+                    p.xpath('./td[1]/text()').extract_first() or '')
+                p_name = (
+                    p.xpath('./td[2]/a/text()').extract_first() or '')
                 p_href = urlparse.urljoin(response.url,
-                            get_href(p.xpath('./td[2]/a/@href').extract_first()))
-                p_address = (p.xpath('./td[3]/text()').extract_first() or '').replace('\xa0', '')
-                p_company = (p.xpath('./td[4]/text()').extract_first() or '').replace('\xa0', '')
-                pb = copy.deepcopy(response.meta.get('item') or ProjectBaseItem())
-                pb['ProjectUUID'] = uuid.uuid3(uuid.NAMESPACE_DNS, p_name + get_url_id(p_href))
+                                          p.xpath('./td[2]/a/@href').extract_first())
+                p_address = (
+                    p.xpath('./td[3]/text()').extract_first() or '')
+                p_company = (
+                    p.xpath('./td[4]/text()').extract_first() or '')
+                pb = copy.deepcopy(response.meta.get(
+                    'item') or ProjectBaseItem())
+                pb['ProjectUUID'] = uuid.uuid3(
+                    uuid.NAMESPACE_DNS, p_name + p_href)
                 pb['ProjectName'] = p_name
                 pb['ProjectDistrict'] = p_district
                 pb['ProjectURL'] = p_href
@@ -143,23 +130,38 @@ class ProjectInfoHandleMiddleware(object):
         if response.meta.get('PageType') == 'ProjectInfo':
             info_sel = Selector(response)
             pinfo = ProjectInfoItem()
-            pinfo['ProjectName'] = info_sel.xpath('//form/table[3]/tr/td/table/tr/td/table/tr[2]/td/table/tr[1]/td/table/tr[1]/td[2]/text()').extract_first().strip()
-            pinfo['ProjectAddress'] = info_sel.xpath('//form/table[3]/tr/td/table/tr/td/table/tr[2]/td/table/tr[1]/td/table/tr[3]/td[2]/text()').extract_first().strip()
-            pinfo['ProjectCompany'] = info_sel.xpath('//form/table[3]/tr/td/table/tr/td/table/tr[2]/td/table/tr[1]/td/table/tr[2]/td[2]/text()').extract_first().strip()
-            pinfo['ProjectRegName'] = info_sel.xpath('//form/table[3]/tr/td/table/tr/td/table/tr[2]/td/table/tr[1]/td/table/tr[1]/td[4]/text()').extract_first().strip()
-            pinfo['ProjectAreaPlanLicenseCode'] = info_sel.xpath('//form/table[3]/tr/td/table/tr/td/table/tr[2]/td/table/tr[1]/td/table/tr[2]/td[4]/text()').extract_first().strip()
-            pinfo['ProjectPlanLicenseCode'] = info_sel.xpath('//form/table[3]/tr/td/table/tr/td/table/tr[2]/td/table/tr[1]/td/table/tr[3]/td[4]/text()').extract_first().strip()
-            pinfo['ProjectUUID'] = uuid.uuid3(uuid.NAMESPACE_DNS, pinfo['ProjectName'] + get_url_id(response.url))
-            sale_tr = info_sel.xpath('//form/table[3]/tr/td/table/tr/td/table/tr[2]/td/table/tr[1]/td/table/tr[4]/td/table/tr')
+            pinfo['ProjectName'] = info_sel.xpath(
+                '//td[b[text()="项目名称："]]/following-sibling::td[1]/text()').extract_first().strip()
+            pinfo['ProjectAddress'] = info_sel.xpath(
+                '//td[b[text()="项目地址："]]/following-sibling::td[1]/text()').extract_first().strip()
+            pinfo['ProjectCompany'] = info_sel.xpath(
+                '//td[b[text()="开发单位："]]/following-sibling::td[1]/text()').extract_first().strip()
+            pinfo['ProjectRegName'] = info_sel.xpath(
+                '//td[b[text()="预售许可证："]]/following-sibling::td[1]/text()').extract_first().strip()
+            pinfo['ProjectAreaPlanLicenseCode'] = info_sel.xpath(
+                '//td[b[text()="国有土地使用证："]]/following-sibling::td[1]/text()').extract_first().strip()
+            pinfo['ProjectPlanLicenseCode'] = info_sel.xpath(
+                '//td[b[text()="工程规划许可证："]]/following-sibling::td[1]/text()').extract_first().strip()
+            pinfo['ProjectUUID'] = uuid.uuid3(uuid.NAMESPACE_DNS, pinfo[
+                                              'ProjectName'] + response.url)
             sale_sum = {}
-            for tr in sale_tr:
-                key_name = tr.xpath('./td[1]/strong/text()').extract_first().replace('套数：', '').strip()
-                sale_sum[key_name] = {'numSum': tr.xpath('./td[2]/span/text()').extract_first().replace('套', '').strip(),
-                        'areaSum': tr.xpath('./td[4]/span/text()').extract_first().replace('平米', '').strip(),
-                        'numSaling': tr.xpath('./td[6]/span/text()').extract_first().replace('套', '').strip(),
-                        'areaSaling': tr.xpath('./td[8]/span/text()').extract_first().replace('平米', '').strip()}
-            pinfo['ProjectSaleSum'] = sale_sum
+            sale_tds = info_sel.xpath(
+                '//table[@class="table table-bordered FCtable mar-bo"]/tr/td[@class="info"]')
+            for td in sale_tds:
+                key = td.xpath(
+                    './b/text()').extract_first(default='').replace('：', '').strip()
+                if key:
+                    sale_sum[key] = td.xpath(
+                        './following-sibling::td[1]/text()').extract_first(default='')
+            pinfo['ProjectSaleSum'] = sale_sum or {'Null': True}
             result.append(pinfo)
+
+            req_dict = {'xmid': get_mxid(response.body_as_unicode()),
+                        'pageNo': '1',
+                        'pageSize': '999'}
+            req_body = urlparse.urlencode(req_dict)
+            result.append(Request(url='http://old.gtfwj.dl.gov.cn/bd/tgxm/LAjax', body=req_body, method='POST',
+                                  headers=headers, meta={'PageType': 'BuildingInfo', 'ProjectName': pinfo['ProjectName'], 'ProjectUUID': pinfo['ProjectUUID']}))
         return result
 
     def process_spider_exception(self, response, exception, spider):
@@ -191,43 +193,34 @@ class BuildingListHandleMiddleware(object):
             if result:
                 return result
             return []
-        if response.meta.get('PageType') not in ('ProjectInfo', 'BuildingInfo'):
+        if response.meta.get('PageType') not in ('BuildingInfo'):
             if result:
                 return result
             return []
         print('BuildingListHandleMiddleware')
 
         building_base_sel = Selector(response)
-        if response.meta.get('PageType') == 'ProjectInfo':
-            req_dict = {'XMBH': '',
-                        'XMID': '',
-                        'pageNo': '',
-                        'next': ''}
-            try:
-                total_page = int(re.search(r'共(\d+)页', response.body_as_unicode()).group(1))
-            except Exception:
-                total_page = 62
-            for pageNo in range(1, total_page + 1):
-                req_dict['pageNo'] = str(pageNo)
-                req_dict['XMBH'] = building_base_sel.xpath('//input[@name="XMBH"]/@value').extract_first() or '0'
-                req_dict['XMID'] = building_base_sel.xpath('//input[@name="XMID"]/@value').extract_first() or '0'
-                req_body = MultipartEncoder(fields=req_dict, boundary=boundary_text).to_string()
-                result.append(Request(url=response.url, body=req_body, method='POST',
-                                headers=headers, meta={'PageType': 'BuildingInfo'}))
-        elif response.meta.get('PageType') == 'BuildingInfo':
-            p_name = building_base_sel.xpath('//form/table[3]/tr/td/table/tr/td/table/tr[2]/td/table/tr[1]/td/table/tr[1]/td[2]/text()').extract_first().strip()
-            for building_info in building_base_sel.xpath('//form/table[3]//tr/td/table//tr/td/table//tr[2]/td/table//tr[3]/td/table//tr[3]/td/table//tr/td/table//tr/td/table/tr')[1:-2]:
+        if response.meta.get('PageType') == 'BuildingInfo':
+            p_name = response.meta.get('ProjectName', '')
+            p_uuid = response.meta.get('ProjectUUID', '')
+            for building_info in building_base_sel.xpath('//table[@class="table table-bordered FCtable mar-bo"]/tr[not(@class) and td[a]]')[1:-2]:
                 b_info = BuildingInfoItem()
                 b_info['ProjectName'] = p_name
-                b_info['ProjectUUID'] = uuid.uuid3(uuid.NAMESPACE_DNS, p_name + get_url_id(response.url))
-                b_info['BuildingName'] = building_info.xpath('./td[1]/@title').extract_first() or ''
-                b_info['BuildingRegName'] = building_info.xpath('./td[2]/@title').extract_first() or ''
-                b_info['BuildingHouseNum'] = (building_info.xpath('./td[4]/text()').extract_first() or '').replace('套', '').strip()
-                b_info['BuildingAddress'] = building_info.xpath('./td[3]/@title').extract_first() or ''
-                b_info['BuildingArea'] = (building_info.xpath('./td[5]/text()').extract_first() or '').replace('平米', '').strip()
-                b_info['BuildingURL'] = urlparse.urljoin(response.url, building_info.xpath('./td[1]/a/@href').extract_first())
+                b_info['ProjectUUID'] = p_uuid
+                b_info['BuildingName'] = building_info.xpath(
+                    './td[1]/a/text()').extract_first() or ''
+                b_info['BuildingRegName'] = building_info.xpath(
+                    './td[2]/text()').extract_first() or ''
+                b_info['BuildingHouseNum'] = (building_info.xpath(
+                    './td[4]/text()').extract_first() or '').replace('套', '').strip()
+                b_info['BuildingAddress'] = building_info.xpath(
+                    './td[3]/text()').extract_first() or ''
+                b_info['BuildingArea'] = (building_info.xpath(
+                    './td[5]/text()').extract_first() or '').replace('平方米', '').strip()
+                b_info['BuildingURL'] = urlparse.urljoin(
+                    'http://old.gtfwj.dl.gov.cn', building_info.xpath('./td[1]/a/@href').extract_first())
                 b_info['BuildingUUID'] = uuid.uuid3(uuid.NAMESPACE_DNS,
-                        p_name + get_url_id(response.url) + get_url_id(b_info['BuildingURL']) + b_info['BuildingRegName'] + b_info['BuildingName'])
+                                                    str(p_name) + str(p_uuid) + str(b_info['BuildingURL']) + str(b_info['BuildingRegName']) + str(b_info['BuildingName']))
                 result.append(b_info)
         return result
 
@@ -256,10 +249,10 @@ class HouseInfoHandleMiddleware(object):
     def process_spider_output(self, response, result, spider):
 
         def get_house_state(string):
-            STATE_TAB = {'red': '不可售（因超建、查封、物业用房、回迁安置等原因）',
-                            'black': '可售',
-                            '#00CC00': '已售',
-                            'blue': '已被开发企业抵押给金融机构，暂不可售'}
+            STATE_TAB = {'color: red': '不可售（因超建、查封、物业用房、回迁安置等原因）',
+                         'color: black': '可售',
+                         'color: #00CC00': '已售',
+                         'color: blue': '已被开发企业抵押给金融机构，暂不可售'}
             state = ''
             for key in STATE_TAB:
                 if key in string:
@@ -280,32 +273,31 @@ class HouseInfoHandleMiddleware(object):
 
         if response.meta.get('PageType') == 'HouseInfo':
             if (not response.meta.get('ProjectName')) or (not response.meta.get('BuildingName'))\
-            or (not response.meta.get('ProjectUUID')) or (not response.meta.get('BuildingUUID')):
+                    or (not response.meta.get('ProjectUUID')) or (not response.meta.get('BuildingUUID')):
                 if result:
                     return result
                 return []
-            iframe_src = Selector(response).xpath('//iframe/@src').extract_first()
-            houseinfodetail_href = urlparse.urljoin(response.url, iframe_src)
-            response.meta.update({'PageType': 'HouseInfoDetail'})
-            houseinfodetail_req = Request(url=houseinfodetail_href, method='GET',
-                                            headers=headers, meta=response.meta)
-            result.append(houseinfodetail_req)
-
-        elif response.meta.get('PageType') == 'HouseInfoDetail':
-            houseinfodetail_tr = Selector(response).xpath('//table[@class="table_lb1"]/tr')
+            houseinfodetail_tr = Selector(response).xpath(
+                '//table[@class="table table-bordered FCtable"]/tr')
             for tr in houseinfodetail_tr:
-                cur_floor = tr.xpath('./td[1]/text()').extract_first().replace('第[', '').replace(']层', '')
-                for house in tr.xpath('./td[@style="cursor:hand"]'):
+                cur_floor = tr.xpath(
+                    './td[1]/b/text()').extract_first(default='').replace('第[', '').replace(']层', '').strip()
+                for house in tr.xpath('./td[@style]')[1:]:
                     hinfo = HouseInfoItem()
                     hinfo['ProjectName'] = response.meta.get('ProjectName')
                     hinfo['BuildingName'] = response.meta.get('BuildingName')
                     hinfo['ProjectUUID'] = response.meta.get('ProjectUUID')
                     hinfo['BuildingUUID'] = response.meta.get('BuildingUUID')
-                    hinfo['HouseName'] = house.xpath('./font/text()').extract_first() or ''
-                    hinfo['HouseUUID'] = uuid.uuid3(uuid.NAMESPACE_DNS, hinfo['HouseName'] + hinfo['BuildingUUID'] + get_url_id(response.url))
+                    hinfo['HouseName'] = house.xpath(
+                        './text()').extract_first(default='').strip().translate(str.maketrans('', '', ' \n\r'))
+                    hinfo['HouseUUID'] = uuid.uuid3(uuid.NAMESPACE_DNS, hinfo[
+                                                    'HouseName'] + hinfo['BuildingUUID'] + hinfo['ProjectUUID'])
                     hinfo['HouseFloor'] = cur_floor
-                    hinfo['HouseSaleState'] = get_house_state(house.xpath('./font/@color').extract_first())
-                    hinfo['HouseInfoStr'] = house.xpath('./@title').extract_first() or ''
+                    hinfo['HouseSaleState'] = get_house_state(
+                        house.xpath('./@style').extract_first())
+                    hinfo['HouseInfoStr'] = house.xpath(
+                        './@title').extract_first() or ''
+                    hinfo['SourceUrl'] = response.url
                     result.append(hinfo)
 
         return result

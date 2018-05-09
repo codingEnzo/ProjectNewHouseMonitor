@@ -49,7 +49,7 @@ spider_settings = {
     'ITEM_PIPELINES': {
         'HouseCrawler.Pipelines.PipelinesGuangzhou.PipelineGuangzhou': 300,
         'HouseCrawler.Pipelines.PipelinesUtils.PipelinesCheck.CheckPipeline': 299,
-        'HouseCrawler.Pipelines.PipelinesUtils.PipelinesKafka.KafkaPipeline': 301,
+        # 'HouseCrawler.Pipelines.PipelinesUtils.PipelinesKafka.KafkaPipeline': 301,
     },
     'SPIDER_MIDDLEWARES': {
         'HouseCrawler.SpiderMiddleWares.SpiderMiddleWaresGuangzhou.ProjectBaseHandleMiddleware': 103,
@@ -85,6 +85,9 @@ spider_settings = {
         'scrapy.downloadermiddlewares.httpproxy.HttpProxyMiddleware': None,
         'HouseCrawler.DownloadMiddleWares.ProxyMiddleWares.ProxyMiddleware': None,
     },
+    'EXTENSIONS': {
+        # 'HouseCrawler.Extensions.responselog.ResponseLog': 301,
+    },
     'DEPTH_PRIORITY': 1,
     'SCHEDULER_DISK_QUEUE': 'scrapy.squeue.PickleFifoDiskQueue',
     'SCHEDULER_MEMORY_QUEUE': 'scrapy.squeue.FifoMemoryQueue',
@@ -109,7 +112,15 @@ t1 = PythonOperator(
     dag=dag
 )
 
-cur = ProjectInfoGuangzhou.objects.aggregate(*[{
+cur = ProjectInfoGuangzhou.objects.aggregate(*[
+{
+    "$match":{
+        "CurTimeStamp": {
+            "$gte":'2018-04-04'
+        }
+    }
+},
+{
     "$sort": {
         "CurTimeStamp": -1
     }
