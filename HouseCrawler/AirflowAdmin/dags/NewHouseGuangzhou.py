@@ -137,18 +137,16 @@ cur = ProjectInfoGuangzhou.objects.aggregate(*[
 }])
 buildingList_info_list = []
 for item in cur:
-    if item['TotalUnsoldAmount'] != '0' or \
-            item['CurTimeStamp'] >= str(datetime.datetime.now().date()):
-        url = 'http://www.gzcc.gov.cn/data/laho/sellForm.aspx?pjID={ProjectID}&presell={PresalePermitNumber}&chnlname=fdcxmxx'
-        buildingList_info = {'source_url': url.format(ProjectID=item['ProjectID'],
-                                                      PresalePermitNumber=item['PresalePermitNumber']),
-                             'meta': {'PageType': 'BuildingList',
-                                      'ProjectID': item['ProjectID'],
-                                      'ProjectUUID': str(item['ProjectUUID']),
-                                      'ProjectName': item['ProjectName'],
-                                      }
-                             }
-        buildingList_info_list.append(buildingList_info)
+    url = 'http://www.gzcc.gov.cn/data/laho/sellForm.aspx?pjID={ProjectID}&presell={PresalePermitNumber}&chnlname=fdcxmxx'
+    buildingList_info = {'source_url': url.format(ProjectID=item['ProjectID'],
+                                                  PresalePermitNumber=item['PresalePermitNumber']),
+                         'meta': {'PageType': 'BuildingList',
+                                  'ProjectID': item['ProjectID'],
+                                  'ProjectUUID': str(item['ProjectUUID']),
+                                  'ProjectName': item['ProjectName'],
+                                  }
+                         }
+    buildingList_info_list.append(buildingList_info)
 
 index_skip = int(math.ceil(len(buildingList_info_list) / float(11))) + 1
 for cur, index in enumerate(list(range(0, len(buildingList_info_list), index_skip))):
