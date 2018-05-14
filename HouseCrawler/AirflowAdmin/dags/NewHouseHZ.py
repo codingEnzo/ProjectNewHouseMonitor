@@ -11,12 +11,9 @@ from airflow.operators.python_operator import PythonOperator
 
 BASE_DIR = os.path.abspath(os.environ.get('AIRFLOW_HOME'))
 HOUSESERVICECORE_DIR = os.path.abspath(os.path.join(BASE_DIR, 'ServiceCore'))
-HOUSEADMIN_DIR = os.path.abspath(
-    os.path.join(BASE_DIR, 'ServiceCore/HouseAdmin'))
-HOUSECRAWLER_DIR = os.path.abspath(
-    os.path.join(BASE_DIR, 'ServiceCore/HouseCrawler'))
-HOUSESERVICE_DIR = os.path.abspath(
-    os.path.join(BASE_DIR, 'ServiceCore/SpiderService'))
+HOUSEADMIN_DIR = os.path.abspath(os.path.join(BASE_DIR, 'ServiceCore/HouseAdmin'))
+HOUSECRAWLER_DIR = os.path.abspath(os.path.join(BASE_DIR, 'ServiceCore/HouseCrawler'))
+HOUSESERVICE_DIR = os.path.abspath(os.path.join(BASE_DIR, 'ServiceCore/SpiderService'))
 
 sys.path.append(BASE_DIR)
 sys.path.append(HOUSEADMIN_DIR)
@@ -32,6 +29,7 @@ from services.spider_service import spider_call
 from django.conf import settings as dj_settings
 
 REDIS_CACHE_KEY = "NewHouseHZ"
+REDIS_BUILDING_CACHE_KEY = 'NewHouseBuildingHZ'
 
 
 def just_one_instance(func):
@@ -51,7 +49,7 @@ def just_one_instance(func):
     return f
 
 
-STARTDATE = datetime.datetime.now() - datetime.timedelta(hours=10)
+STARTDATE = datetime.datetime.now() - datetime.timedelta(hours = 10)
 
 default_args = {
     'owner': 'airflow',
@@ -61,7 +59,7 @@ default_args = {
     'email_on_retry': False,
     'depends_on_past': False,
     'retries': 1,
-    'retry_delay': datetime.timedelta(minutes=1),
+    'retry_delay': datetime.timedelta(minutes = 1),
     # 'queue': 'bash_queue',
     # 'pool': 'backfill',
     # 'priority_weight': 10,
@@ -92,33 +90,27 @@ spider_settings = {
     'CITY': '杭州'
 }
 
-dag = DAG('NewHouseHZ', default_args=default_args,
-          schedule_interval="25 */8 * * *")
+dag = DAG('NewHouseHZ', default_args = default_args,
+          schedule_interval = "25 */8 * * *")
 
 t1 = PythonOperator(
-    task_id='LoadProjectBaseHZ',
-    python_callable=spider_call,
-    op_kwargs={'spiderName': 'DefaultCrawler',
-               'settings': spider_settings,
-               'urlList': [{'source_url': 'http://www.tmsf.com/newhouse/property_searchall.htm?sid=&districtid=',
-                            'meta': {'PageType': 'ProjectBase', 'curPage': 1}}]},
-    dag=dag)
+        task_id = 'LoadProjectBaseHZ',
+        python_callable = spider_call,
+        op_kwargs = {'spiderName': 'DefaultCrawler',
+                     'settings': spider_settings,
+                     'urlList': [{'source_url': 'http://www.tmsf.com/newhouse/property_searchall.htm?sid=&districtid=',
+                                  'meta': {'PageType': 'ProjectBase', 'curPage': 1}}]},
+        dag = dag)
 
 
-def cacheLoader(key=REDIS_CACHE_KEY):
+def cacheLoader(key = REDIS_CACHE_KEY):
     r = dj_settings.REDIS_CACHE
     cur = ProjectBaseHangzhou.objects.aggregate(*[
         {"$sort":
             {
                 "CurTimeStamp": 1
             }},
-        {
-            '$match': {
-                'OnSaleState': {
-                    '$ne': '售完'
-                }
-            }
-        }, {'$group':
+        {'$group':
             {
                 '_id': "$ProjectUUID",
                 'ProjectName': {'$first': '$ProjectName'},
@@ -137,7 +129,7 @@ def cacheLoader(key=REDIS_CACHE_KEY):
                                 'sid': item['sid'],
                                 'PropertyID': item['PropertyID'],
                                 'RegionName': item['RegionName'],
-            }}
+                            }}
             r.sadd(key, json.dumps(project_info))
         except Exception:
             import traceback
@@ -145,22 +137,65 @@ def cacheLoader(key=REDIS_CACHE_KEY):
     r.expire(key, int(spider_settings.get('CLOSESPIDER_TIMEOUT')))
 
 
-t_cache = PythonOperator(
-    task_id='LoadProjectInfoCache',
-    python_callable=cacheLoader,
-    op_kwargs={'key': REDIS_CACHE_KEY},
-    dag=dag)
+def buildingCacheLoad(key = REDIS_BUILDING_CACHE_KEY):
+    r = dj_settings.REDIS_CACHE
+    cur = PresellInfoHangzhou.objects.aggregate(*[
+        {"$sort":
+            {
+                "CurTimeStamp": 1
+            }},
+        {'$group':
+            {
+                '_id': "$PresellUUID",
+                'PresellUUID': {'$first': '$PresellUUID'},
+                'PresellName': {'$first': '$PresellName'},
+                'ProjectName': {'$first': '$ProjectName'},
+                'sid': {'$first': '$sid'},
+                'PropertyID': {'$first': '$PropertyID'},
+                'ProjectUUID': {'$first': '$ProjectUUID'},
+                'PresellID': {'$first': '$PresellID'},
+            }}
+    ])
+    for item in cur:
+        try:
+            building_req_url = 'http://www.tmsf.com/newhouse/property_{sid}_{propertyID}_price.htm?' \
+                               'isopen=&presellid={presellID}&buildingid=&area=&allprice=&housestate=&housetype=&page='
+            buildingList_base = {
+                'source_url': building_req_url.format(sid = item['sid'], propertyID = item['PropertyID'],
+                                                      presellID = item['PresellID']),
+                'meta': {'PageType': 'BuildingList',
+                         'sid': item['sid'],
+                         'PropertyID': item['PropertyID'],
+                         'PresellID': item['PresellID'],
+                         'PresellName': item['PresellName'],
+                         'ProjectName': item['ProjectName'],
+                         'ProjectUUID': str(item['ProjectUUID']),
+                         'PresellUUID': str(item['PresellUUID']),
+                         }
 
+            }
+            r.sadd(key, json.dumps(buildingList_base))
+        except Exception:
+            import traceback
+            traceback.print_exc()
+    r.expire(key, int(spider_settings.get('CLOSESPIDER_TIMEOUT')))
+
+
+t_cache = PythonOperator(
+        task_id = 'LoadProjectInfoCache',
+        python_callable = cacheLoader,
+        op_kwargs = {'key': REDIS_CACHE_KEY},
+        dag = dag)
 
 project_info_list = list(map(lambda x: json.loads(
-    x.decode()), dj_settings.REDIS_CACHE.smembers(REDIS_CACHE_KEY)))
+        x.decode()), dj_settings.REDIS_CACHE.smembers(REDIS_CACHE_KEY)))
 t2 = PythonOperator(
-    task_id='MonitProjectInfoHZ',
-    python_callable=spider_call,
-    op_kwargs={'spiderName': 'DefaultCrawler',
-               'settings': spider_settings,
-               'urlList': project_info_list},
-    dag=dag
+        task_id = 'MonitProjectInfoHZ',
+        python_callable = spider_call,
+        op_kwargs = {'spiderName': 'DefaultCrawler',
+                     'settings': spider_settings,
+                     'urlList': project_info_list},
+        dag = dag
 )
 t2.set_upstream(t_cache)
 
@@ -169,10 +204,28 @@ index_base = {
     'meta': {'PageType': 'IndexInfo'}}
 
 t3 = PythonOperator(
-    task_id='LoadIndexInfoHZ',
-    python_callable=spider_call,
-    op_kwargs={'spiderName': 'DefaultCrawler',
-               'settings': spider_settings,
-               'urlList': [index_base, ]},
-    dag=dag
+        task_id = 'LoadIndexInfoHZ',
+        python_callable = spider_call,
+        op_kwargs = {'spiderName': 'DefaultCrawler',
+                     'settings': spider_settings,
+                     'urlList': [index_base, ]},
+        dag = dag
 )
+
+t4 = PythonOperator(
+        task_id = 'LoadBuildingListCacheHZ',
+        python_callable = buildingCacheLoad,
+        op_kwargs = {'key': REDIS_BUILDING_CACHE_KEY},
+        dag = dag)
+
+building_info_list = list(map(lambda x: json.loads(
+        x.decode()), dj_settings.REDIS_CACHE.smembers(REDIS_BUILDING_CACHE_KEY)))
+t5 = PythonOperator(
+        task_id = 'LoadBuildingListHZ',
+        python_callable = spider_call,
+        op_kwargs = {'spiderName': 'DefaultCrawler',
+                     'settings': spider_settings,
+                     'urlList': building_info_list},
+        dag = dag
+)
+t5.set_upstream(t4)

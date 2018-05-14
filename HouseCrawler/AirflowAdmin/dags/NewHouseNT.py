@@ -121,7 +121,7 @@ def cacheLoader(key=REDIS_CACHE_KEY):
         except Exception:
             import traceback
             traceback.print_exc()
-        r.expire(key, 3600)
+        r.expire(key, int(spider_settings.get('CLOSESPIDER_TIMEOUT')))
 
 t1 = PythonOperator(
     task_id='LoadProjectBaseNT',
@@ -141,11 +141,11 @@ t1 = PythonOperator(
 t2 = PythonOperator(
     task_id='LoadHouseNTCache',
     python_callable=cacheLoader,
+    op_kwargs = {'key': REDIS_CACHE_KEY},
     dag=dag
 )
 
-building_generator = map(lambda x: pickle.loads(
-    x), dj_settings.REDIS_CACHE.smembers(REDIS_CACHE_KEY))
+building_generator = map(lambda x: pickle.loads(x), dj_settings.REDIS_CACHE.smembers(REDIS_CACHE_KEY))
 t3 = PythonOperator(
     task_id='LoadHouseInfoNT',
     python_callable=spider_call,
