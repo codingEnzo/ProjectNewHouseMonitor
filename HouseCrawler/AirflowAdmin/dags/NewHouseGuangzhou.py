@@ -113,28 +113,28 @@ t1 = PythonOperator(
 )
 
 cur = ProjectInfoGuangzhou.objects.aggregate(*[
-{
-    "$match":{
-        "CurTimeStamp": {
-            "$gte":'2018-04-04'
+    {
+        "$match": {
+            "CurTimeStamp": {
+                "$gte": '2018-04-04'
+            }
         }
-    }
-},
-{
-    "$sort": {
-        "CurTimeStamp": -1
-    }
-}, {
-    '$group': {
-        '_id': '$ProjectUUID',
-        'ProjectUUID': {'$first': '$ProjectUUID'},
-        'ProjectID': {'$first': '$ProjectID'},
-        'ProjectName': {'$first': '$ProjectName'},
-        'PresalePermitNumber': {'$first': '$PresalePermitNumber'},
-        'TotalUnsoldAmount': {'$first': '$TotalUnsoldAmount'},
-        'CurTimeStamp': {'$first': '$CurTimeStamp'},
-    }
-}])
+    },
+    {
+        "$sort": {
+            "CurTimeStamp": -1
+        }
+    }, {
+        '$group': {
+            '_id': '$ProjectUUID',
+            'ProjectUUID': {'$first': '$ProjectUUID'},
+            'ProjectID': {'$first': '$ProjectID'},
+            'ProjectName': {'$first': '$ProjectName'},
+            'PresalePermitNumber': {'$first': '$PresalePermitNumber'},
+            'TotalUnsoldAmount': {'$first': '$TotalUnsoldAmount'},
+            'CurTimeStamp': {'$first': '$CurTimeStamp'},
+        }
+    }])
 buildingList_info_list = []
 for item in cur:
     if item['TotalUnsoldAmount'] != '0' or \
