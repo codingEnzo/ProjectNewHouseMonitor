@@ -48,6 +48,8 @@ default_args = {
 spider_settings = {
     'ITEM_PIPELINES': {
         'HouseCrawler.Pipelines.PipelinesWulumuqi.PipelineWulumuqi': 300,
+        'HouseCrawler.Pipelines.PipelinesUtils.PipelinesCheck.CheckPipeline': 299,
+        'HouseCrawler.Pipelines.PipelinesUtils.PipelinesKafka.KafkaPipeline': 301,
     },
     'SPIDER_MIDDLEWARES': {
         'HouseCrawler.SpiderMiddleWares.SpiderMiddleWaresWulumuqi.ProjectBaseHandleMiddleware': 102,
@@ -80,7 +82,8 @@ spider_settings = {
     'DOWNLOADER_MIDDLEWARES': {
         'scrapy.downloadermiddlewares.httpproxy.HttpProxyMiddleware': None,
         'HouseCrawler.DownloadMiddleWares.ProxyMiddleWares.ProxyMiddleware': None,
-    }
+    },
+    'CITY':'乌鲁木齐'
 }
 
 dag = DAG('NewHouseWulumuqi', default_args=default_args,

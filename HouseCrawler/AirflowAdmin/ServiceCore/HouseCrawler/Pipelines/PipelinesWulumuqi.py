@@ -7,7 +7,7 @@ import datetime
 
 import django_mongoengine
 from HouseCrawler.Items.ItemsWulumuqi import *
-
+from scrapy.exceptions import DropItem
 sys.path.append(os.path.abspath('.'))
 sys.path.append(os.path.abspath('..'))
 sys.path.append(os.path.abspath('../..'))
@@ -158,6 +158,8 @@ class PipelineWulumuqi(object):
                 if diff_result:
                     logger.debug("item: %(item)s changed", {'item': item})
                     self.storage_item(item)
+                else:
+                    raise DropItem('Drop no change item')
             else:
                 logger.debug("item: %(item)s met first", {'item': item})
                 self.storage_item(item)
