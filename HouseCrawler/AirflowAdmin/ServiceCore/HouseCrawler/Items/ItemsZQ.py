@@ -176,7 +176,7 @@ class CompanyInfoItem(DjangoItem):
     django_model = CompanyInfoZhaoqing
 
 
-class PreSellInfoItem(DjangoItem):
+class PresellInfoItem(DjangoItem):
     django_model = PreSellInfoZhaoqing
     fields_map = {'RecordTime': '',
                   'ProjectName': '',
@@ -217,6 +217,7 @@ class PreSellInfoItem(DjangoItem):
                   'SourceUrl': '',
                   'ExtraJson': '',
                   }
+PreSellInfoItem = PresellInfoItem
 
 
 class IndexInfoItem(DjangoItem):
