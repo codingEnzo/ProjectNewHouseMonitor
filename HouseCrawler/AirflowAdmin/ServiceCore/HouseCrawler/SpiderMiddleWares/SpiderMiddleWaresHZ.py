@@ -173,14 +173,8 @@ class TemplateInfoHandleMiddleware(object):
         m = response.xpath('//li[@id="siteother"]').extract()
         if len(m) > 0:  # 分站模板
             projectBase['ManagementCompany'] = ''
-            try:
-                projectBase['ProjectAddress'] = response.xpath('//span[text()="物业地址："]/../text()').extract()[1]
-            except:
-                projectBase['ProjectAddress'] = ''
-            try:
-                projectBase['Developer'] = response.xpath('//span[text()="项目公司："]/../text()').extract()[1]
-            except:
-                projectBase['Developer'] = ''
+            projectBase['ProjectAddress'] = response.xpath('//span[text()="物业地址："]/../text()').extract_first('')
+            projectBase['Developer'] = response.xpath('//span[text()="项目公司："]/../text()').extract_first('')
             stateDict = {'b1': '打折', 'b2': '在售', 'b3': '尾盘', 'b4': '售完', 'b5': '待售'}
             css = response.xpath('//*[@id="head"]/ul/li[2]/@class').extract_first()
             projectBase['OnSaleState'] = stateDict[css]

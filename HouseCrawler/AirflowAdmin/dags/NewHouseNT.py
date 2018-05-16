@@ -4,6 +4,7 @@ import os
 import sys
 
 import django
+import pickle
 from airflow import DAG
 from airflow.operators.python_operator import PythonOperator
 
@@ -24,7 +25,9 @@ django.setup()
 
 from HouseNew.models import *
 from services.spider_service import spider_call
+from django.conf import settings as dj_settings
 
+REDIS_CACHE_KEY = 'NewHouseNT'
 STARTDATE = datetime.datetime.now() - datetime.timedelta(hours=14)
 
 default_args = {
@@ -90,6 +93,36 @@ spider_settings = dict(
 
 dag = DAG('NewHouseNT', default_args=default_args, schedule_interval="15 */12 * * *")
 
+
+def cacheLoader(key=REDIS_CACHE_KEY):
+    r = dj_settings.REDIS_CACHE
+    cur = BuildingInfoNantong.objects.aggregate(*[{"$sort": {"CurTimeStamp": 1}},
+                                                    {'$group':
+                                                     {'_id': "$BuildingUUID",
+                                                      'CurTimeStamp': {'$last': '$CurTimeStamp'},
+                                                      'ProjectUUID': {'$last': '$ProjectUUID'},
+                                                      'ProjectName': {'$last': '$ProjectName'},
+                                                      'BuildingUUID': {'$last': '$BuildingUUID'},
+                                                      'SourceUrl': {'$last': '$SourceUrl'}
+                                                      }
+                                                     }], allowDiskUse=True)
+    for item in cur:
+        try:
+            building = {
+                    'source_url': item['SourceUrl'],
+                    'meta': {
+                        'PageType': 'HouseList',
+                        'ProjectUUID': item['ProjectUUID'],
+                        'ProjectName': item['ProjectName'],
+                        'BuildingUUID': item['BuildingUUID']
+                    }
+                }
+            r.sadd(key, pickle.dumps(building))
+        except Exception:
+            import traceback
+            traceback.print_exc()
+        r.expire(key, int(spider_settings.get('CLOSESPIDER_TIMEOUT')))
+
 t1 = PythonOperator(
     task_id='LoadProjectBaseNT',
     python_callable=spider_call,
@@ -103,3 +136,24 @@ t1 = PythonOperator(
     },
     dag=dag
 )
+
+
+t2 = PythonOperator(
+    task_id='LoadHouseNTCache',
+    python_callable=cacheLoader,
+    op_kwargs = {'key': REDIS_CACHE_KEY},
+    dag=dag
+)
+
+building_generator = map(lambda x: pickle.loads(x), dj_settings.REDIS_CACHE.smembers(REDIS_CACHE_KEY))
+t3 = PythonOperator(
+    task_id='LoadHouseInfoNT',
+    python_callable=spider_call,
+    op_kwargs={
+        'spiderName': 'DefaultCrawler',
+        'settings': spider_settings,
+        'urlList': building_generator
+    },
+    dag=dag
+)
+t3.set_upstream(t2)

@@ -52,25 +52,6 @@ class HZPipeline(object):
                 pass
         return str(value)
 
-    def pushBuildingListQueue(self, item, spider):
-        building_req_url = 'http://www.tmsf.com/newhouse/property_{sid}_{propertyID}_price.htm?' \
-                           'isopen=&presellid={presellID}&buildingid=&area=&allprice=&housestate=&housetype=&page='
-        buildingList_base = {
-            'source_url': building_req_url.format(sid=item['sid'], propertyID=item['PropertyID'],
-                                                  presellID=item['PresellID']),
-            'meta': {'PageType': 'BuildingList',
-                     'sid': item['sid'],
-                     'PropertyID': item['PropertyID'],
-                     'PresellID': item['PresellID'],
-                     'PresellName': item['PresellName'],
-                     'ProjectName': item['ProjectName'],
-                     'ProjectUUID': str(item['ProjectUUID']),
-                     'PresellUUID': str(item['PresellUUID']),
-                     }
-
-        }
-        spider.crawler.engine.crawl(Request(url=buildingList_base.get('source_url'), meta=buildingList_base.get('meta')), spider)
-
     def check_item_exist(self, item, spider):
         exist_flag = False
         q_object = item.django_model.objects
@@ -80,8 +61,6 @@ class HZPipeline(object):
         elif isinstance(item, PresellInfoItem):
             if q_object.filter(PresellUUID=item['PresellUUID']).latest(field_name='CurTimeStamp'):
                 exist_flag = True
-            else:
-                self.pushBuildingListQueue(item, spider)
         elif isinstance(item, BuildingInfoItem):
             if q_object.filter(BuildingUUID=item['BuildingUUID']).latest(field_name='CurTimeStamp'):
                 exist_flag = True
@@ -119,9 +98,6 @@ class HZPipeline(object):
                 if self.safe_format_value(item.get(key)) != self.safe_format_value(getattr(res_object, key)):
                     diff_flag = True
                     break
-            if diff_flag:
-                # 预售证变了才爬楼栋
-                self.pushBuildingListQueue(item, spider)
         elif isinstance(item, BuildingInfoItem):
             res_object = q_object.filter(BuildingUUID=item['BuildingUUID']).latest(field_name='CurTimeStamp')
             for key in item:

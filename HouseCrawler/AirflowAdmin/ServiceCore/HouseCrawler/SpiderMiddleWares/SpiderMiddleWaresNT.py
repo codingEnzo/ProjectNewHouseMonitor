@@ -13,10 +13,7 @@ debug = False
 
 def get_projectState(string):
     state_arr = {'NewEstate': '新盘', 'newestate': '新盘', 'SoldOutEstate': '售罄', 'HotEstate': '热销', 'LateEstate': '尾盘', }
-    try:
-        return state_arr[string]
-    except:
-        return ''
+    return state_arr.get(string,'')
 
 
 class ProjectBaseHandleMiddleware(object):
@@ -62,7 +59,7 @@ class ProjectBaseHandleMiddleware(object):
                 result.append(base_req)
         else:
             li_arr = response.xpath('//div[@class="lplist"]/ul/li')
-            req_list = []
+
             for li in li_arr:
                 # 获取列表每一行信息
                 projectBaseItem = ProjectBaseItem()
@@ -84,19 +81,11 @@ class ProjectBaseHandleMiddleware(object):
                 result.append(projectBaseItem)
 
                 # 获取项目信息
-                # projectInfo_req = Request(url = projectBaseItem['SourceUrl'],
-                #                           headers = self.settings.get('DEFAULT_REQUEST_HEADERS'),
-                #                           dont_filter = True,
-                #                           meta = {'PageType': 'ProjectInfo'})
-                # result.append(projectInfo_req)
-                projectInfo_base = {
-                    'source_url': projectBaseItem['SourceUrl'],
-                    'meta': {'PageType': 'ProjectInfo'}
-                }
-                # projectInfo_base_json = json.dumps(projectInfo_base, sort_keys=True)
-                # r.sadd(self.settings.get('REDIS_KEY'), projectInfo_base_json)
-                req_list.append(Request(projectInfo_base.get('source_url'), meta=projectInfo_base.get('meta')))
-            result.extend(req_list)
+                projectInfo_req = Request(url = projectBaseItem['SourceUrl'],
+                                          headers = self.settings.get('DEFAULT_REQUEST_HEADERS'),
+                                          dont_filter = True,
+                                          meta = {'PageType': 'ProjectInfo'})
+                result.append(projectInfo_req)
         return result
 
 
@@ -265,16 +254,16 @@ class BuildingListHandleMiddleware(object):
                 buildingInfoItem['BuildingUUID'] = uuid.uuid3(uuid.NAMESPACE_DNS, href)
                 result.append(buildingInfoItem)
 
-                houseList_req = Request(url=href,
-                                        headers=self.settings.get('DEFAULT_REQUEST_HEADERS'),
-                                        dont_filter=True,
-                                        meta={
-                                            'PageType': 'HouseList',
-                                            'ProjectUUID': ProjectUUID,
-                                            'ProjectName': ProjectName,
-                                            'BuildingUUID': str(buildingInfoItem['BuildingUUID']),
-                                        })
-                result.append(houseList_req)
+                # houseList_req = Request(url=href,
+                #                         headers=self.settings.get('DEFAULT_REQUEST_HEADERS'),
+                #                         dont_filter=True,
+                #                         meta={
+                #                             'PageType': 'HouseList',
+                #                             'ProjectUUID': ProjectUUID,
+                #                             'ProjectName': ProjectName,
+                #                             'BuildingUUID': str(buildingInfoItem['BuildingUUID']),
+                #                         })
+                # result.append(houseList_req)
         return result
 
 
@@ -299,7 +288,6 @@ class HouseListHandleMiddleware(object):
         ProjectName = response.meta.get('ProjectName')
         BuildingUUID = response.meta.get('BuildingUUID')
         div_arr = response.xpath('//div[@class="line"]')
-        req_list = []
         for div in div_arr:
             FloorName = div.xpath('./div[1]/text()').extract_first()
             a_arr = div.xpath('./div[2]/div/a')
@@ -331,10 +319,9 @@ class HouseListHandleMiddleware(object):
                     }
                     # house_base_json = json.dumps(house_base, sort_keys=True)
                     # r.sadd(self.settings.get('REDIS_KEY'), house_base_json)
-                    req_list.append(Request(house_base.get('source_url'), meta=house_base.get('meta')))
+                    result.append(Request(house_base.get('source_url'), meta=house_base.get('meta')))
                 except:
                     pass
-        result.extend(req_list)
         return result
 
 
