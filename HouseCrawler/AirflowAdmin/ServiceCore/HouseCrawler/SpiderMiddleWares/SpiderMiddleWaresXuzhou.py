@@ -213,6 +213,7 @@ class PresellInfoHandleMiddleware(object):
                         presellInfoItem['SoldAmount'] = xsqk['cjts']
                         presellInfoItem['UnsoldAmount'] = xsqk['kxsts']
                         presellInfoItem['TotalArea'] = xsqk['TotalArea']
+                        presellInfoItem['LssueDate'] = xsqk['CertificateTime']
                         result.append(presellInfoItem)
                 except:
                     traceback.print_exc()
