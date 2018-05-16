@@ -201,7 +201,7 @@ class PresellInfoItem(DjangoItem):
                   'PresaleHousingLandIsMortgage': '',
                   'ValidityDateStartDate': '',
                   'ValidityDateClosingDate': '',
-                  'LssueDate': '',
+                  'LssueDate': 'PreOpenDate',
                   'LssuingAuthority': '',
                   'PresaleRegistrationManagementDepartment': '',
                   'ValidityDateDescribe': 'PreLimitDate',
