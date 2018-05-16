@@ -281,15 +281,15 @@ class HouseInfoHandleMiddleware(object):
                 '//table[@class="table table-bordered FCtable"]/tr')
             for tr in houseinfodetail_tr:
                 cur_floor = tr.xpath(
-                    './td[1]/text()').extract_first(default='').replace('第[', '').replace(']层', '').strip()
-                for house in tr.xpath('./td[@style]'):
+                    './td[1]/b/text()').extract_first(default='').replace('第[', '').replace(']层', '').strip()
+                for house in tr.xpath('./td[@style]')[1:]:
                     hinfo = HouseInfoItem()
                     hinfo['ProjectName'] = response.meta.get('ProjectName')
                     hinfo['BuildingName'] = response.meta.get('BuildingName')
                     hinfo['ProjectUUID'] = response.meta.get('ProjectUUID')
                     hinfo['BuildingUUID'] = response.meta.get('BuildingUUID')
                     hinfo['HouseName'] = house.xpath(
-                        './text()').extract_first(default='')
+                        './text()').extract_first(default='').strip().translate(str.maketrans('', '', ' \n\r'))
                     hinfo['HouseUUID'] = uuid.uuid3(uuid.NAMESPACE_DNS, hinfo[
                                                     'HouseName'] + hinfo['BuildingUUID'] + hinfo['ProjectUUID'])
                     hinfo['HouseFloor'] = cur_floor
@@ -297,6 +297,7 @@ class HouseInfoHandleMiddleware(object):
                         house.xpath('./@style').extract_first())
                     hinfo['HouseInfoStr'] = house.xpath(
                         './@title').extract_first() or ''
+                    hinfo['SourceUrl'] = response.url
                     result.append(hinfo)
 
         return result

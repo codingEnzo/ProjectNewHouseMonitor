@@ -13,12 +13,12 @@ else:
     import urlparse
 
 
-headers = {'Host': 'www.zqjs.gov.cn',
+headers = {'Host': '61.146.213.163',
            'Connection': 'keep-alive',
            'Cache-Control': 'max-age=0',
            'Upgrade-Insecure-Requests': 1,
            'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8',
-           'Referer': 'http://www.zqjs.gov.cn/',
+           'Referer': 'http://61.146.213.163:8011/',
            'Accept-Encoding': 'gzip, deflate',
            'Accept-Language': 'zh-CN,zh;q=0.9'}
 
