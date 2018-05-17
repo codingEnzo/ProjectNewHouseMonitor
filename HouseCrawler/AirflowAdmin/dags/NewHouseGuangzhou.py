@@ -3,6 +3,7 @@ import datetime
 import os
 import sys
 import math
+import random
 import django
 from airflow import DAG
 from airflow.operators.python_operator import PythonOperator
@@ -148,6 +149,7 @@ for item in cur:
                          }
     buildingList_info_list.append(buildingList_info)
 
+random.shuffle(buildingList_info)
 index_skip = int(math.ceil(len(buildingList_info_list) / float(11))) + 1
 for cur, index in enumerate(list(range(0, len(buildingList_info_list), index_skip))):
     t2 = PythonOperator(
