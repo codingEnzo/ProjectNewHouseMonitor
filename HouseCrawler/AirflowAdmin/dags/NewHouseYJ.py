@@ -72,11 +72,11 @@ spider_settings = {
 dag = DAG('NewHouseYJ', default_args=default_args,
           schedule_interval="15 */12 * * *")
 
-project_base_urls = ['http://219.129.189.12:8090/JHHouseWeb/user_kfs.aspx?lid=a88b3b89-472c-493b-9b4b-970f7848114f',
-                     'http://219.129.189.12:8090/JHHouseWeb/user_kfs.aspx?lid=c4407134-22b9-4a2e-9556-9df063088aca',
-                     'http://219.129.189.12:8090/JHHouseWeb/user_kfs.aspx?lid=caf441f1-a969-4682-8e63-4586ffe5caa8',
-                     'http://219.129.189.12:8090/JHHouseWeb/user_kfs.aspx?lid=fefe5706-0b08-42a1-bbe6-78c5d54d4dba',
-                     'http://219.129.189.12:8090/JHHouseWeb/user_kfs.aspx?lid=acf37d73-3bf0-4819-9f55-3a9279f54ab8']
+project_base_urls = ['http://219.129.189.10:8098/user_kfs.aspx?lid=a88b3b89-472c-493b-9b4b-970f7848114f',
+                     'http://219.129.189.10:8098/user_kfs.aspx?lid=c4407134-22b9-4a2e-9556-9df063088aca',
+                     'http://219.129.189.10:8098/user_kfs.aspx?lid=caf441f1-a969-4682-8e63-4586ffe5caa8',
+                     'http://219.129.189.10:8098/user_kfs.aspx?lid=fefe5706-0b08-42a1-bbe6-78c5d54d4dba',
+                     'http://219.129.189.10:8098/user_kfs.aspx?lid=acf37d73-3bf0-4819-9f55-3a9279f54ab8']
 project_base_list = []
 for url in project_base_urls:
     project_base = {'source_url': url,
@@ -93,7 +93,7 @@ t1 = PythonOperator(
 )
 
 project_info_list = []
-cur = ProjectBaseYangjiang.objects.all()
+cur = ProjectBaseYangjiang.objects.filter(CurTimeStamp__gte='2018-05-18')
 for item in cur:
     project_info = {'source_url': item.ProjectURL,
                     'meta': {'PageType': 'ProjectInfo'}}
@@ -111,15 +111,22 @@ t2 = PythonOperator(
 
 def cacheLoader(key=REDIS_CACHE_KEY):
     r = dj_settings.REDIS_CACHE
-    cur = BuildingInfoYangjiang.objects.aggregate(*[{"$sort": {"CurTimeStamp": -1}},
-                                                    {'$group': {
-                                                        '_id': "$BuildingUUID",
-                                                        'ProjectName': {'$first': '$ProjectName'},
-                                                        'ProjectUUID': {'$first': '$ProjectUUID'},
-                                                        'BuildingName': {'$first': '$BuildingName'},
-                                                        'BuildingUUID': {'$first': '$BuildingUUID'},
-                                                        'BuildingURL': {'$first': '$BuildingURL'},
-                                                    }}])
+    cur = BuildingInfoYangjiang.objects.aggregate(*[{
+        "$match": {
+            "CurTimeStamp": {
+                "$gte": '2018-05-14'
+            }
+        }
+    },
+        {"$sort": {"CurTimeStamp": -1}},
+        {'$group': {
+            '_id': "$BuildingUUID",
+            'ProjectName': {'$first': '$ProjectName'},
+            'ProjectUUID': {'$first': '$ProjectUUID'},
+            'BuildingName': {'$first': '$BuildingName'},
+            'BuildingUUID': {'$first': '$BuildingUUID'},
+            'BuildingURL': {'$first': '$BuildingURL'},
+        }}])
     for item in cur:
         try:
             if item['BuildingURL']:
