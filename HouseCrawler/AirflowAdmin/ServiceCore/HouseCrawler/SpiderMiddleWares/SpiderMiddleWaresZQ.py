@@ -36,7 +36,7 @@ class ProjectIndexHandleMiddleware(object):
 
     def process_spider_output(self, response, result, spider):
         result = list(result)
-        if not(200 <= response.status < 300):  # common case
+        if not(200 <= response.status < 303):  # common case
             if result:
                 return result
             return []
@@ -90,7 +90,7 @@ class ProjectBaseHandleMiddleware(object):
     def process_spider_output(self, response, result, spider):
 
         result = list(result)
-        if not(200 <= response.status < 300):  # common case
+        if not(200 <= response.status < 303):  # common case
             if result:
                 return result
             return []
@@ -166,7 +166,7 @@ class ProjectInfoHandleMiddleware(object):
     def process_spider_output(self, response, result, spider):
 
         result = list(result)
-        if not(200 <= response.status < 300):  # common case
+        if not(200 <= response.status < 303):  # common case
             if result:
                 return result
             return []
@@ -268,7 +268,7 @@ class CompanyInfoHandleMiddleware(object):
     def process_spider_output(self, response, result, spider):
 
         result = list(result)
-        if not(200 <= response.status < 300):  # common case
+        if not(200 <= response.status < 303):  # common case
             if result:
                 return result
             return []
@@ -332,7 +332,7 @@ class BuildingListHandleMiddleware(object):
     def process_spider_output(self, response, result, spider):
 
         result = list(result)
-        if not(200 <= response.status < 300):  # common case
+        if not(200 <= response.status < 303):  # common case
             if result:
                 return result
             return []
@@ -431,7 +431,7 @@ class PreSellInfoHandleMiddleware(object):
             return (area_num, house_num)
 
         result = list(result)
-        if not(200 <= response.status < 300):  # common case
+        if not(200 <= response.status < 303):  # common case
             if result:
                 return result
             return []
@@ -534,7 +534,7 @@ class HouseInfoHandleMiddleware(object):
 
         result = list(result)
         print(response.status, response.url, response.meta.get('PageType'))
-        if not(200 <= response.status < 300):  # common case
+        if not(200 <= response.status < 303):  # common case
             if result:
                 return result
             return []
