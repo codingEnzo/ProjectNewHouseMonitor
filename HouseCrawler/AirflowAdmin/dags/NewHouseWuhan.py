@@ -109,8 +109,8 @@ cur = ProjectBaseWuhan.objects
 for item in cur:
     project_info = {'source_url': item.ProjectUrl,
                     'meta': {'PageType': 'ProjectInfo',
-                             'pjname': item.ProjectUUID,
-                             'pjuuid': item.ProjectName}}
+                             'pjname': item.ProjectName,
+                             'pjuuid': item.ProjectUUID}}
     project_info_list.append(project_info)
 t2 = PythonOperator(
     task_id='LoadProjectInfoWuhan',

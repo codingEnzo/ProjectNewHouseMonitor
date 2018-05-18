@@ -124,11 +124,10 @@ class ProjectInfoHandleMiddleware(object):
                 uu = urllib.parse.quote(info_code.encode('gbk', 'replace'))
                 sphref = href.split('=')[0] + '=' + uu
                 part_http = "http://scxx.fgj.wuhan.gov.cn/" + sphref
-                result.append(url=part_http,
+                result.append(Request(url=part_http,
                               meta={'PageType': 'BuildingInfo',
                                     'pjuuid': response.meta.get('pjuuid') or '',
-                                    'pjname': response.meta.get('pjname') or ''})
-            item = ProjectInfoItem()
+                                    'pjname': response.meta.get('pjname') or ''}))
             item['ProjectName'] = response.meta.get('pjname') or ''
             item['location'] = (response.xpath(
                 '//table[2]/tbody/tr[2]/td[2]/text()').extract_first() or '').strip()
