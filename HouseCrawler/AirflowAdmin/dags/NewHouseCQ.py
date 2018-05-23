@@ -95,20 +95,18 @@ t1 = PythonOperator(
                             'meta': {'PageType': 'ProjectBase'}}]},
     dag=dag)
 
-def get_project_list():
-    cur = ProjectBaseChongqing.objects
-    for item in cur:
-        project_info = {'source_url': item.ProjectURL,
-                        'meta': {'PageType': 'ProjectInfo'}}
-        yield project_info
-
-
+project_info_list = []
+cur = ProjectBaseChongqing.objects
+for item in cur:
+    project_info = {'source_url': item.ProjectURL,
+                    'meta': {'PageType': 'ProjectInfo'}}
+    project_info_list.append(project_info)
 t2 = PythonOperator(
     task_id='LoadProjectInfoCQ',
     python_callable=spider_call,
     op_kwargs={'spiderName': 'DefaultCrawler',
                'settings': spider_settings,
-               'urlList': get_project_list()},
+               'urlList': project_info_list},
     dag=dag)
 
 
