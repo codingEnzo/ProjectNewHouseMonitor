@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-import pickle
+import json
 import datetime
 import os
 import sys
@@ -61,10 +61,10 @@ spider_settings = {
 dag = DAG(
     'NewHouseZS', default_args=default_args, schedule_interval="15 */4 * * *")
 
-cache_dag = DAG(
-    'NewHouseZSCache',
-    default_args=default_args,
-    schedule_interval="45 23 * * *")
+# cache_dag = DAG(
+#     'NewHouseZSCache',
+#     default_args=default_args,
+#     schedule_interval="45 23 * * *")
 
 
 def init_request_generator(key=REDIS_CACHE_KEY):
@@ -172,7 +172,7 @@ def init_request_generator(key=REDIS_CACHE_KEY):
                     'ProjectAdminAreaNum': _area_id
                 }
             }
-            r.sadd(key, pickle.dumps(project_base))
+            r.sadd(key, json.dumps(project_base))
     except Exception:
         import traceback
         traceback.print_exc()
@@ -181,9 +181,9 @@ def init_request_generator(key=REDIS_CACHE_KEY):
 t1 = PythonOperator(
     task_id='LoadProjectBaseInitCache',
     python_callable=init_request_generator,
-    dag=cache_dag)
+    dag=dag)
 
-project_base_generator = map(lambda x: pickle.loads(x),
+project_base_generator = map(lambda x: json.loads(x),
                              dj_settings.REDIS_CACHE.smembers(REDIS_CACHE_KEY))
 
 t2 = PythonOperator(
@@ -194,4 +194,4 @@ t2 = PythonOperator(
         'settings': spider_settings,
         'urlList': project_base_generator
     },
-    dag=cache_dag)
+    dag=dag)

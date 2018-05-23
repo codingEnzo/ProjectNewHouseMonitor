@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+import uuid
+import regex
 import urllib.parse as urlparse
 
 from scrapy import Selector
