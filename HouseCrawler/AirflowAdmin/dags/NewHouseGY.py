@@ -95,7 +95,7 @@ t1 = PythonOperator(
     dag=dag)
 
 project_info_list = []
-cur = ProjectBaseGuiyang.objects.all()
+cur = ProjectBaseGuiyang.objects
 for item in cur:
     project_info = {'source_url': item.ProjectURL,
                     'meta': {'PageType': 'ProjectInfo'}}

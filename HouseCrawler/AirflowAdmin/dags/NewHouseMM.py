@@ -93,7 +93,7 @@ t1 = PythonOperator(
 )
 
 project_info_list = []
-cur = ProjectBaseMaoming.objects.all()
+cur = ProjectBaseMaoming.objects
 for item in cur:
     project_info = {'source_url': item.ProjectURL,
                     'meta': {'PageType': 'ProjectInfo'}}

@@ -101,7 +101,7 @@ t1 = PythonOperator(
 )
 
 project_info_list = []
-cur = ProjectBaseJinan.objects.all()
+cur = ProjectBaseJinan.objects
 
 for item in cur:
     project_info = {

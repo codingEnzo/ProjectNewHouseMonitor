@@ -83,7 +83,7 @@ t1 = PythonOperator(
 )
 
 project_info_list = []
-cur = ProjectBaseJiujiang.objects.all()
+cur = ProjectBaseJiujiang.objects
 
 for item in cur:
     project_info = {'source_url': item.ProjectURL,

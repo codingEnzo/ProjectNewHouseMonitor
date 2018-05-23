@@ -92,7 +92,7 @@ t1 = PythonOperator(
 
 project_info_list = []
 cur = ProjectBaseDongguan.objects.filter(
-    ProjectURLCurTimeStamp__gte=str(datetime.datetime.now().date())).all()
+    ProjectURLCurTimeStamp__gte=str(datetime.datetime.now().date()))
 for item in cur:
     if datetime.datetime.now().hour >= 8 and int(item.ProjectSaleSum) == 0:
         continue

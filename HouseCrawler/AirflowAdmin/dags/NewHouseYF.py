@@ -93,7 +93,7 @@ t1 = PythonOperator(
 )
 
 project_info_list = []
-cur = ProjectBaseYunfu.objects.all()
+cur = ProjectBaseYunfu.objects
 for item in cur:
     project_info = {'source_url': item.ProjectURL,
                     'meta': {'PageType': 'ProjectInfo'}}

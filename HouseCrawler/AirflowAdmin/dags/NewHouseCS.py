@@ -82,7 +82,7 @@ t1 = PythonOperator(
 )
 
 project_info_list = []
-cur = ProjectBaseChangsha.objects.all()
+cur = ProjectBaseChangsha.objects
 for item in cur:
     project_info = {'source_url': item.ProjectURL,
                     'meta': {'PageType': 'ProjectInfo',
