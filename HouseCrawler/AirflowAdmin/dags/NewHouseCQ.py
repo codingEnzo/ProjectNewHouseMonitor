@@ -95,19 +95,37 @@ t1 = PythonOperator(
                             'meta': {'PageType': 'ProjectBase'}}]},
     dag=dag)
 
-project_info_list = []
-cur = ProjectBaseChongqing.objects
-for item in cur:
-    project_info = {'source_url': item.ProjectURL,
-                    'meta': {'PageType': 'ProjectInfo'}}
-    project_info_list.append(project_info)
+
+def get_project_list(**kwargs):
+    project_info_list = []
+    cur = ProjectBaseChongqing.objects
+    for item in cur:
+        project_info = {'source_url': item.ProjectURL,
+                        'meta': {'PageType': 'ProjectInfo'}}
+        project_info_list.append(project_info)
+    return project_info_list
+
+
+t2_cache = PythonOperator(
+    task_id='LoadProjectInfoCQCache',
+    python_callable=get_project_list,
+    dag=dag)
+
+
+def crawl(spiderName, settings, **kwargs):
+    urlList = kwargs['ti'].xcom_pull(task_ids='LoadProjectInfoCQCache')
+    spider_call(spiderName='DefaultCrawler',
+                settings=settings,
+                urlList=urlList)
+
+
 t2 = PythonOperator(
     task_id='LoadProjectInfoCQ',
-    python_callable=spider_call,
+    python_callable=crawl,
     op_kwargs={'spiderName': 'DefaultCrawler',
-               'settings': spider_settings,
-               'urlList': project_info_list},
+               'settings': spider_settings},
     dag=dag)
+t2.set_upstream(t2_cache)
 
 
 def cacheLoader(key=REDIS_CACHE_KEY):
