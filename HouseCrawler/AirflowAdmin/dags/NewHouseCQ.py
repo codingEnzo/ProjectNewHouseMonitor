@@ -97,13 +97,15 @@ t1 = PythonOperator(
 
 
 def get_project_list(**kwargs):
-    project_info_list = []
+    key = "test_airflow_cq"
+    r = dj_settings.REDIS_CACHE
     cur = ProjectBaseChongqing.objects
     for item in cur:
         project_info = {'source_url': item.ProjectURL,
                         'meta': {'PageType': 'ProjectInfo'}}
-        project_info_list.append(project_info)
-    return project_info_list
+        r.sadd(key, json.dumps(project_info))
+    r.expire(key, int(spider_settings.get('CLOSESPIDER_TIMEOUT')))
+    return key
 
 
 t2_cache = PythonOperator(
@@ -113,7 +115,8 @@ t2_cache = PythonOperator(
 
 
 def crawl(spiderName, settings, **kwargs):
-    urlList = kwargs['ti'].xcom_pull(task_ids='LoadProjectInfoCQCache')
+    urlList = list(map(lambda x: json.loads(
+        x.decode()), dj_settings.REDIS_CACHE.smembers(kwargs['ti'].xcom_pull(task_ids='LoadProjectInfoCQCache'))))
     spider_call(spiderName='DefaultCrawler',
                 settings=settings,
                 urlList=urlList)
