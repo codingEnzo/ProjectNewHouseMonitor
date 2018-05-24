@@ -116,7 +116,7 @@ t2_cache = PythonOperator(
 
 def crawl(spiderName, settings, **kwargs):
     urlList = list(map(lambda x: json.loads(
-        x.decode()), dj_settings.REDIS_CACHE.smembers(kwargs['ti'].xcom_pull(task_ids='LoadProjectInfoCQCache'))))
+        x.decode()), dj_settings.REDIS_CACHE.smembers(kwargs['task_instance'].xcom_pull(task_ids='LoadProjectInfoCQCache'))))
     spider_call(spiderName='DefaultCrawler',
                 settings=settings,
                 urlList=urlList)
