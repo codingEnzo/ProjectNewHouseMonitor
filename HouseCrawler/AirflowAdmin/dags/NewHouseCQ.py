@@ -62,6 +62,7 @@ default_args = {
     'depends_on_past': False,
     'retries': 1,
     'retry_delay': datetime.timedelta(minutes=1),
+    'provide_context': True
     # 'queue': 'bash_queue',
     # 'pool': 'backfill',
     # 'priority_weight': 10,
