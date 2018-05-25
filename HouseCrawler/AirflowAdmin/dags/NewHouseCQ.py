@@ -123,6 +123,7 @@ t2.set_upstream(t2_cache)
 
 def cacheLoader(**kwargs):
     key = uuid.uuid1().hex
+    r = dj_settings.REDIS_CACHE
     cur = BuildingInfoChongqing.objects.aggregate(*[{"$sort": {"CurTimeStamp": -1}},
                                                     {'$group': {
                                                         '_id': "$BuildingUUID",
