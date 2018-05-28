@@ -33,7 +33,7 @@ from django.conf import settings as dj_settings
 
 REDIS_CACHE_KEY = "NewHouseZQ"
 
-STARTDATE = datetime.datetime.now() - datetime.timedelta(hours=10)
+STARTDATE = datetime.datetime.now() - datetime.timedelta(hours=8)
 
 default_args = {
     'owner': 'airflow',
@@ -77,7 +77,7 @@ spider_settings = {
 }
 
 dag = DAG('NewHouseZQ', default_args=default_args,
-          schedule_interval="15 */8 * * *")
+          schedule_interval="15 */6 * * *")
 
 project_base_urls = ['http://61.146.213.163:8011/user_kfs.aspx?lid=1db4a74a-946d-4d8c-868d-af15a23b2ff3',
                      'http://61.146.213.163:8011/user_kfs.aspx?lid=f96ea453-7c8f-488c-beb4-a696849bba06',
