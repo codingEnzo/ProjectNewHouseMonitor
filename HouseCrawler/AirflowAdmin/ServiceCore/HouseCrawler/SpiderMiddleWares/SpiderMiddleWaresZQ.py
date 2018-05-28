@@ -559,6 +559,7 @@ class HouseInfoHandleMiddleware(object):
             for floor in floor_list:
                 cur_floor = floor.xpath('./td[1]/text()').extract_first() or ''
                 house_list = floor.xpath('./td[2]/table/tr/td')
+                print(len(house_list))
                 for house in house_list:
                     hinfo = HouseInfoItem()
                     hinfo['ProjectName'] = response.meta.get(
