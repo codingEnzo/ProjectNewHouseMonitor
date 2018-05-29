@@ -42,14 +42,18 @@ class KeyWordRetryMiddleware(object):
                            IOError, TunnelError)
 
     def __init__(self, crawler):
-        self.settings = settings = crawler.settings
-        self.signals = crawler.signals
-        if not settings.getbool('RETRY_ENABLED'):
-            raise NotConfigured
-        self.max_retry_times = settings.getint('RETRY_TIMES')
-        self.retry_keyword = set(int(x)
-                                 for x in settings.getlist('RETRY_KEYWORD'))
-        self.priority_adjust = settings.getint('RETRY_PRIORITY_ADJUST')
+        try:
+            self.settings = settings = crawler.settings
+            self.signals = crawler.signals
+            if not settings.getbool('RETRY_ENABLED'):
+                raise NotConfigured
+            self.max_retry_times = settings.getint('RETRY_TIMES')
+            self.retry_keyword = set(int(x)
+                                     for x in settings.getlist('RETRY_KEYWORD'))
+            self.priority_adjust = settings.getint('RETRY_PRIORITY_ADJUST')
+        except Exception:
+            import traceback
+            traceback.print_exc()
 
     @classmethod
     def from_crawler(cls, crawler):
