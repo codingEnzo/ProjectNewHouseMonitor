@@ -99,7 +99,6 @@ class ProjectBaseHandleMiddleware(object):
                 return result
             return []
         print('ProjectBaseHandleMiddleware', response.meta.get('PageType'))
-        print(response.body_as_unicode())
 
         if response.meta.get('PageType') == "ProjectBase":
             result.append(Request(url=response.url,

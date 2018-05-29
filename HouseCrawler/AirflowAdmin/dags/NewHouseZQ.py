@@ -65,6 +65,9 @@ spider_settings = {
         'HouseCrawler.SpiderMiddleWares.SpiderMiddleWaresZQ.PreSellInfoHandleMiddleware': 107,
         'HouseCrawler.SpiderMiddleWares.SpiderMiddleWaresZQ.ProjectIndexHandleMiddleware': 108,
     },
+    'DOWNLOADER_MIDDLEWARES': {
+        'HouseCrawler.DownloadMiddleWares.KeyWordRetryMiddleWares.KeyWordRetryMiddleware': 121,
+    },
     'EXTENSIONS': {
         # 'HouseCrawler.Extensions.responselog.ResponseLog': 301,
     },
@@ -72,6 +75,7 @@ spider_settings = {
     'CLOSESPIDER_TIMEOUT': 3600 * 7.5,
     'CONCURRENT_REQUESTS': 8,
     'RETRY_TIMES': 30,
+    'RETRY_KEYWORD': "window.location.href='..//Error.aspx",
     'REDIRECT_ENABLED': True,
     'CITY': "肇庆"
 }
@@ -80,13 +84,13 @@ dag = DAG('NewHouseZQ', default_args=default_args,
           schedule_interval="15 */6 * * *")
 
 project_base_urls = [
-    # 'http://61.146.213.163:8011/user_kfs.aspx?lid=1db4a74a-946d-4d8c-868d-af15a23b2ff3',
+    'http://61.146.213.163:8011/user_kfs.aspx?lid=1db4a74a-946d-4d8c-868d-af15a23b2ff3',
     'http://61.146.213.163:8011/user_kfs.aspx?lid=f96ea453-7c8f-488c-beb4-a696849bba06',
-    # 'http://61.146.213.163:8011/user_kfs.aspx?lid=a0dd416b-ab92-49cd-ad3b-43cabc8d9486',
-    # 'http://61.146.213.163:8011/user_kfs.aspx?lid=75edcefe-ed69-4ee0-99c8-1d490faf7d8c',
-    # 'http://61.146.213.163:8011/user_kfs.aspx?lid=87372051-2f41-4972-b7f6-cb536e7fbed0',
-    # 'http://61.146.213.163:8011/user_kfs.aspx?lid=68ffd485-47e3-40b5-9874-d34892587390',
-    # 'http://61.146.213.163:8011/user_kfs.aspx?lid=52f3f3cc-68a0-46dd-92a3-1fb39e36184e'
+    'http://61.146.213.163:8011/user_kfs.aspx?lid=a0dd416b-ab92-49cd-ad3b-43cabc8d9486',
+    'http://61.146.213.163:8011/user_kfs.aspx?lid=75edcefe-ed69-4ee0-99c8-1d490faf7d8c',
+    'http://61.146.213.163:8011/user_kfs.aspx?lid=87372051-2f41-4972-b7f6-cb536e7fbed0',
+    'http://61.146.213.163:8011/user_kfs.aspx?lid=68ffd485-47e3-40b5-9874-d34892587390',
+    'http://61.146.213.163:8011/user_kfs.aspx?lid=52f3f3cc-68a0-46dd-92a3-1fb39e36184e'
 ]
 project_base_list = []
 for url in project_base_urls:
