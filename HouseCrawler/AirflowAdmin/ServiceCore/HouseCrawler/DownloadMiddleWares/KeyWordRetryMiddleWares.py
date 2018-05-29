@@ -48,7 +48,7 @@ class KeyWordRetryMiddleware(object):
             if not settings.getbool('RETRY_ENABLED'):
                 raise NotConfigured
             self.max_retry_times = settings.getint('RETRY_TIMES')
-            self.retry_keyword = set(int(x)
+            self.retry_keyword = set(str(x)
                                      for x in settings.getlist('RETRY_KEYWORD'))
             self.priority_adjust = settings.getint('RETRY_PRIORITY_ADJUST')
         except Exception:
