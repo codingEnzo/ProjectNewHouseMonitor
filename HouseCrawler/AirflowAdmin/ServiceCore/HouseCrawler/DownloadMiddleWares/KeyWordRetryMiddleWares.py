@@ -91,6 +91,7 @@ class KeyWordRetryMiddleware(object):
             retryreq.dont_filter = True
             retryreq.priority = request.priority + self.priority_adjust
             del request
+            print('retry %s times' % retries)
             return retryreq
         else:
             self.signals.send_catch_log(signal=signals.request_dropped,
