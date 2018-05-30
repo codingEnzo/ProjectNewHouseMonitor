@@ -33,7 +33,7 @@ from django.conf import settings as dj_settings
 
 REDIS_CACHE_KEY = "NewHouseZQ"
 
-STARTDATE = datetime.datetime.now() - datetime.timedelta(hours=8)
+STARTDATE = datetime.datetime.now() - datetime.timedelta(hours=6)
 
 default_args = {
     'owner': 'airflow',
@@ -72,7 +72,7 @@ spider_settings = {
         # 'HouseCrawler.Extensions.responselog.ResponseLog': 301,
     },
     'RETRY_ENABLE': True,
-    'CLOSESPIDER_TIMEOUT': 3600 * 5.5,
+    'CLOSESPIDER_TIMEOUT': 3600 * 3.5,
     'CONCURRENT_REQUESTS': 8,
     'PROXY_LEVEL': 'high',
     'RETRY_TIMES': 60,
@@ -82,7 +82,7 @@ spider_settings = {
 }
 
 dag = DAG('NewHouseZQ', default_args=default_args,
-          schedule_interval="15 */6 * * *")
+          schedule_interval="15 */4 * * *")
 
 project_base_urls = [
     'http://61.146.213.163:8011/user_kfs.aspx?lid=1db4a74a-946d-4d8c-868d-af15a23b2ff3',
