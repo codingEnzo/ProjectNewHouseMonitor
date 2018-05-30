@@ -75,7 +75,7 @@ spider_settings = {
     'CLOSESPIDER_TIMEOUT': 3600 * 5.5,
     'CONCURRENT_REQUESTS': 8,
     'PROXY_LEVEL': 'high',
-    'RETRY_TIMES': 40,
+    'RETRY_TIMES': 60,
     'RETRY_KEYWORD': "window.location.href='..//Error.aspx",
     'REDIRECT_ENABLED': True,
     'CITY': "肇庆"
