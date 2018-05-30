@@ -5,6 +5,7 @@ import os
 import sys
 import uuid
 import django
+import urllib.parse as urlparse
 
 from airflow import DAG
 from airflow.operators.python_operator import PythonOperator
