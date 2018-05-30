@@ -11,10 +11,11 @@ except Exception:
 class HouseInfoDownloaderMiddlerware(object):
 
     def process_request(self, request, spider):
-        verify_sign = request.meta.get('PageType')
-        if verify_sign == 'HouseInfo':
-            referer = request.meta.get('referer')
-            if referer:
-                import requests as req
-                req.get(referer, cookies=request.meta.get('cookie'))
-                logger.debug('Activate On HouseInfoZS')
+        pass
+        # verify_sign = request.meta.get('PageType')
+        # if verify_sign == 'HouseInfo':
+        #     referer = request.meta.get('referer')
+        #     if referer:
+        #         import requests as req
+        #         req.get(referer, cookies=request.meta.get('cookie'))
+        #         logger.debug('Activate On HouseInfoZS')
