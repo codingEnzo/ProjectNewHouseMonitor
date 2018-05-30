@@ -1,7 +1,11 @@
 # -*- coding: utf-8 -*-
-import logging
+try:
+    import logging
 
-logger = logging.getLogger(__name__)
+    logger = logging.getLogger(__name__)
+except Exception:
+    import traceback
+    traceback.print_exc()
 
 
 class HouseInfoDownloaderMiddlerware(object):
