@@ -340,7 +340,7 @@ class BuildingListHandleMiddleware(object):
             if result:
                 return result
             return []
-        print('BuildingListHandleMiddleware', response.body_as_unicode())
+        print('BuildingListHandleMiddleware')
 
         if response.meta.get('PageType') == 'ProjectInfoUse':
             b_sell_list = response.xpath(

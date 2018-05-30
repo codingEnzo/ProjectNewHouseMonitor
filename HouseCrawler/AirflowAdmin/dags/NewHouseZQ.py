@@ -74,6 +74,7 @@ spider_settings = {
     'RETRY_ENABLE': True,
     'CLOSESPIDER_TIMEOUT': 3600 * 7.5,
     'CONCURRENT_REQUESTS': 8,
+    'PROXY_LEVEL': 'high',
     'RETRY_TIMES': 40,
     'RETRY_KEYWORD': "window.location.href='..//Error.aspx",
     'REDIRECT_ENABLED': True,
