@@ -1,15 +1,19 @@
 # -*- coding: utf-8 -*-
-import urllib.parse as urlparse
-import uuid
+try:
+    import urllib.parse as urlparse
+    import uuid
 
-import demjson
+    import demjson
 
-import regex
-from scrapy import Selector
-from scrapy.http import Request
+    import regex
+    from scrapy import Selector
+    from scrapy.http import Request
 
-from HouseCrawler.Items.ItemsZS import (BuildingInfoItem, HouseInfoItem, ProjectBaseItem,
-                             ProjectInfoItem)
+    from HouseCrawler.Items.ItemsZS import (BuildingInfoItem, HouseInfoItem, ProjectBaseItem,
+                                 ProjectInfoItem)
+except Exception:
+    import traceback
+    traceback.print_exc()
 
 
 class BaseMiddleware(object):
