@@ -9,6 +9,10 @@ except Exception:
 
 
 class HouseInfoDownloaderMiddlerware(object):
+
+    def __init__(self, settings):
+        self.settings = settings
+
     @classmethod
     def from_crawler(cls, crawler):
         return cls(crawler.settings)
