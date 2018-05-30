@@ -10,6 +10,13 @@ except Exception:
 
 class HouseInfoDownloaderMiddlerware(object):
 
+    def __init__(self, crawler):
+        self.settings = settings = crawler.settings
+
+    @classmethod
+    def from_crawler(cls, crawler):
+        return cls(crawler)
+
     def process_request(self, request, spider):
         pass
         # verify_sign = request.meta.get('PageType')
