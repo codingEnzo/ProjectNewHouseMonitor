@@ -4,14 +4,10 @@ import json
 import os
 import sys
 import uuid
+import django
 
 from airflow import DAG
 from airflow.operators.python_operator import PythonOperator
-
-import django
-from django.conf import settings as dj_settings
-from HouseNew.models import *
-from services.spider_service import spider_call
 
 BASE_DIR = os.path.abspath(os.environ.get('AIRFLOW_HOME'))
 HOUSESERVICECORE_DIR = os.path.abspath(os.path.join(BASE_DIR, 'ServiceCore'))
@@ -30,6 +26,11 @@ sys.path.append(HOUSESERVICECORE_DIR)
 
 os.environ['DJANGO_SETTINGS_MODULE'] = 'HouseAdmin.settings'
 django.setup()
+
+from django.conf import settings as dj_settings
+from HouseNew.models import *
+from services.spider_service import spider_call
+
 
 STARTDATE = datetime.datetime.now() - datetime.timedelta(hours=6)
 REDIS_CACHE_KEY = "NewHouseZS"
