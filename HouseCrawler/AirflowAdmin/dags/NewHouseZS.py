@@ -65,14 +65,14 @@ spider_settings = {
         119
     },
     'SPIDER_MIDDLEWARES': {
-        'HouseCrawler.SpiderMiddleWares.SpiderMiddleWaresZS.ProjectBaseHandleMiddleware':
-        102,
-        'HouseCrawler.SpiderMiddleWares.SpiderMiddleWaresZS.ProjectInfoHandleMiddleware':
-        103,
-        'HouseCrawler.SpiderMiddleWares.SpiderMiddleWaresZS.PresaleLicenceHandleMiddleware':
-        104,
-        'HouseCrawler.SpiderMiddleWares.SpiderMiddleWaresZS.HouseInfoHandleMiddleware':
-        105,
+        # 'HouseCrawler.SpiderMiddleWares.SpiderMiddleWaresZS.ProjectBaseHandleMiddleware':
+        # 102,
+        # 'HouseCrawler.SpiderMiddleWares.SpiderMiddleWaresZS.ProjectInfoHandleMiddleware':
+        # 103,
+        # 'HouseCrawler.SpiderMiddleWares.SpiderMiddleWaresZS.PresaleLicenceHandleMiddleware':
+        # 104,
+        # 'HouseCrawler.SpiderMiddleWares.SpiderMiddleWaresZS.HouseInfoHandleMiddleware':
+        # 105,
     },
     'RETRY_ENABLE': True,
     'CLOSESPIDER_TIMEOUT': 3600 * 3.5,
