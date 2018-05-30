@@ -62,7 +62,7 @@ spider_settings = {
         'HouseCrawler.DownloadMiddleWares.RetryMiddleWares.RetryMiddleware':
         120,
         'HouseCrawler.DownloadMiddleWares.DownloaderMiddleWareZS.HouseInfoDownloaderMiddlerware':
-        119
+        121
     },
     'SPIDER_MIDDLEWARES': {
         'HouseCrawler.SpiderMiddleWares.SpiderMiddleWaresZS.ProjectBaseHandleMiddleware':
