@@ -44,6 +44,7 @@ default_args = {
     'email_on_retry': False,
     'depends_on_past': False,
     'retries': 1,
+    'provide_context': True,
     'retry_delay': datetime.timedelta(minutes=1),
 }
 
