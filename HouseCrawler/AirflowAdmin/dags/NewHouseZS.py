@@ -1,11 +1,17 @@
 # -*- coding: utf-8 -*-
-import json
 import datetime
+import json
 import os
 import sys
-import django
+import uuid
+
 from airflow import DAG
 from airflow.operators.python_operator import PythonOperator
+
+import django
+from django.conf import settings as dj_settings
+from HouseNew.models import *
+from services.spider_service import spider_call
 
 BASE_DIR = os.path.abspath(os.environ.get('AIRFLOW_HOME'))
 HOUSESERVICECORE_DIR = os.path.abspath(os.path.join(BASE_DIR, 'ServiceCore'))
@@ -25,10 +31,6 @@ sys.path.append(HOUSESERVICECORE_DIR)
 os.environ['DJANGO_SETTINGS_MODULE'] = 'HouseAdmin.settings'
 django.setup()
 
-from HouseNew.models import *
-from services.spider_service import spider_call
-from django.conf import settings as dj_settings
-
 STARTDATE = datetime.datetime.now() - datetime.timedelta(hours=6)
 REDIS_CACHE_KEY = "NewHouseZS"
 
@@ -47,12 +49,27 @@ spider_settings = {
     'ITEM_PIPELINES': {
         'HouseCrawler.Pipelines.PipelinesZS.ZSPipeline': 300,
     },
+    'DOWNLOADER_MIDDLEWARES': {
+        'scrapy.downloadermiddlewares.httpproxy.HttpProxyMiddleware':
+        110,
+        'HouseCrawler.DownloadMiddleWares.ProxyMiddleWares.RandomUserAgent':
+        1,
+        'HouseCrawler.DownloadMiddleWares.ProxyMiddleWares.ProxyMiddleware':
+        100,
+        'HouseCrawler.DownloadMiddleWares.RetryMiddleWares.RetryMiddleware':
+        120,
+        'HouseCrawler.DownloadMiddleWares.DownloaderMiddleWareZS.HouseInfoDownloaderMiddlerware':
+        119
+    },
     'SPIDER_MIDDLEWARES': {
         'HouseCrawler.SpiderMiddleWares.SpiderMiddleWaresZS.ProjectBaseHandleMiddleware':
         102,
-    # 'HouseCrawler.SpiderMiddleWares.SpiderMiddleWaresZS.ProjectInfoHandleMiddleware': 103,
-    # 'HouseCrawler.SpiderMiddleWares.SpiderMiddleWaresZS.PresaleLicenceHandleMiddleware': 104,
-    # 'HouseCrawler.SpiderMiddleWares.SpiderMiddleWaresZS.HouseInfoHandleMiddleware': 105,
+        'HouseCrawler.SpiderMiddleWares.SpiderMiddleWaresZS.ProjectInfoHandleMiddleware':
+        103,
+        'HouseCrawler.SpiderMiddleWares.SpiderMiddleWaresZS.PresaleLicenceHandleMiddleware':
+        104,
+        'HouseCrawler.SpiderMiddleWares.SpiderMiddleWaresZS.HouseInfoHandleMiddleware':
+        105,
     },
     'RETRY_ENABLE': True,
     'CLOSESPIDER_TIMEOUT': 3600 * 3.5,
@@ -61,13 +78,8 @@ spider_settings = {
 dag = DAG(
     'NewHouseZS', default_args=default_args, schedule_interval="15 */4 * * *")
 
-# cache_dag = DAG(
-#     'NewHouseZSCache',
-#     default_args=default_args,
-#     schedule_interval="45 23 * * *")
 
-
-def init_request_generator(key=REDIS_CACHE_KEY):
+def get_project_base_list(**kwargs):
     headers = {
         "Accept":
         "text/html,application/xhtml+xml,application/xml;q=0.9,image"
@@ -151,47 +163,230 @@ def init_request_generator(key=REDIS_CACHE_KEY):
         "ctl00$ContentPlaceHolder1$newPage":
         "",
     }
-    try:
-        r = dj_settings.REDIS_CACHE
-        for i, _area in enumerate(zs_areas):
-            _area_id, _area_name = _area
-            post_data["ctl00$ContentPlaceHolder1$ddlDistrict"] = _area_id
-            body = urlparse.urlencode(post_data)
-            project_base = {
-                'source_url':
-                "http://www.zsfdc.gov.cn:9043/pub_ProjectQuery.aspx",
-                'method':
-                'POST',
-                'body':
-                body,
-                'headers':
-                headers,
-                'meta': {
-                    'PageType': 'ProjectInitial',
-                    'ProjectAdminArea': _area_name,
-                    'ProjectAdminAreaNum': _area_id
-                }
+    r = dj_settings.REDIS_CACHE
+    key = uuid.uuid1().hex
+    for i, _area in enumerate(zs_areas):
+        _area_id, _area_name = _area
+        post_data["ctl00$ContentPlaceHolder1$ddlDistrict"] = _area_id
+        body = urlparse.urlencode(post_data)
+        project_base = {
+            'source_url': "http://www.zsfdc.gov.cn:9043/pub_ProjectQuery.aspx",
+            'method': 'GET',
+            'body': body,
+            'headers': headers,
+            'meta': {
+                'PageType': 'ProjectInitial',
+                'ProjectAdminArea': _area_name,
+                'ProjectAdminAreaNum': _area_id
             }
-            r.sadd(key, json.dumps(project_base))
-    except Exception:
-        import traceback
-        traceback.print_exc()
+        }
+        r.sadd(key, json.dumps(project_base))
+    r.expire(key, int(spider_settings.get('CLOSESPIDER_TIMEOUT')))
+    return key
 
 
-t1 = PythonOperator(
-    task_id='LoadProjectBaseInitCache',
-    python_callable=init_request_generator,
+def crawl(spiderName='DefaultCrawler',
+          settings=None,
+          fromTask=None,
+          urlList=None,
+          **kwargs):
+    if fromTask or urlList:
+        if not urlList:
+            urlList = list(
+                map(lambda x: json.loads(x.decode()),
+                    dj_settings.REDIS_CACHE.smembers(
+                        kwargs['ti'].xcom_pull(task_ids=fromTask))))
+        spider_call(
+            spiderName='DefaultCrawler', settings=settings, urlList=urlList)
+
+
+t1_cache = PythonOperator(
+    task_id='LoadProjectBaseZSCache',
+    python_callable=get_project_base_list,
     dag=dag)
 
-project_base_generator = map(lambda x: json.loads(x),
-                             dj_settings.REDIS_CACHE.smembers(REDIS_CACHE_KEY))
-
-t2 = PythonOperator(
-    task_id='LoadProjectBaseCache',
-    python_callable=spider_call,
+t1 = PythonOperator(
+    task_id='LoadProjectBaseZS',
+    python_callable=crawl,
     op_kwargs={
         'spiderName': 'DefaultCrawler',
         'settings': spider_settings,
-        'urlList': project_base_generator
+        'fromTask': 'LoadProjectBaseZSCache'
     },
     dag=dag)
+
+t1.set_upstream(t1_cache)
+
+
+def get_project_info_list(**kwargs):
+    key = uuid.uuid1().hex
+    r = dj_settings.REDIS_CACHE
+    cur = ProjectBaseZhongshan.objects
+    for item in cur:
+        project_info = {
+            'source_url': item.ProjectInfoURL,
+            'meta': {
+                'PageType': 'ProjectInfo',
+                'ProjectUUID': item.ProjectUUID.hex,
+                'ProjectName': item.ProjectName,
+                'PresaleNum': item.PresaleNum,
+                'ProjectPermitDate': item.ProjectPermitDate
+            }
+        }
+        project_info_json = json.dumps(project_info, sort_keys=True)
+        r.sadd(key, project_info_json)
+    r.expire(key, int(spider_settings.get('CLOSESPIDER_TIMEOUT')))
+    return key
+
+
+t2_cache = PythonOperator(
+    task_id='LoadProjectInfoZSCache',
+    python_callable=get_project_info_list,
+    dag=dag)
+
+t2 = PythonOperator(
+    task_id='LoadProjectInfoZS',
+    python_callable=crawl,
+    op_kwargs={
+        'spiderName': 'DefaultCrawler',
+        'settings': spider_settings,
+        'fromTask': 'LoadProjectInfoZSCache'
+    },
+    dag=dag)
+
+t2.set_upstream(t2_cache)
+
+
+def get_cookies_list(**kwargs):
+    key = uuid.uuid1().hex
+    r = dj_settings.REDIS_CACHE
+    headers = {
+        'Host':
+        'www.zsfdc.gov.cn:9043',
+        'Connection':
+        'keep-alive',
+        'Pragma':
+        'no-cache',
+        'Cache-Control':
+        'no-cache',
+        'Accept':
+        'text/html, */*',
+        'Origin':
+        'http://www.zsfdc.gov.cn:9043',
+        'X-Requested-With':
+        'XMLHttpRequest',
+        'User-Agent':
+        'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/66.0.3359.181 Safari/537.36',
+        'Content-Type':
+        'application/x-www-form-urlencoded',
+        'Accept-Encoding':
+        'gzip, deflate',
+        'Accept-Language':
+        'zh-CN,zh;q=0.9'
+    }
+    headers_housemain = {
+        'Accept':
+        'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8',
+        'Accept-Encoding':
+        'gzip, deflate',
+        'Accept-Language':
+        'zh-CN,zh;q=0.9',
+        'Cache-Control':
+        'no-cache',
+        'Connection':
+        'keep-alive',
+        'Host':
+        'www.zsfdc.gov.cn:9043',
+        'Pragma':
+        'no-cache',
+        'Upgrade-Insecure-Requests':
+        '1',
+        'User-Agent':
+        'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/66.0.3359.181 Safari/537.36'
+    }
+    cur = BuildingInfoZhongshan.objects.aggregate(*[{
+        "$sort": {
+            "CurTimeStamp": 1
+        }
+    }, {
+        '$group': {
+            '_id': "$BuildingUUID",
+            'ProjectName': {
+                '$first': '$ProjectName'
+            },
+            'ProjectUUID': {
+                '$first': '$ProjectUUID'
+            },
+            'BuildingName': {
+                '$first': '$BuildingName'
+            },
+            'BuildingUUID': {
+                '$first': '$BuildingUUID'
+            },
+            'HouseInfoURLArgs': {
+                '$first': '$HouseInfoURLArgs'
+            },
+        }
+    }])
+    for item in cur:
+        try:
+            if item['HouseInfoURLArgs']:
+                args = item['HouseInfoURLArgs'].split(';')
+                if len(args) == 5:
+                    rec, bnum, sbk, addr, sid = args
+                    referer = 'http://www.zsfdc.gov.cn:9043/Housemain.aspx?recnumgather={}&buildnum={}'.format(
+                        rec, bnum)
+                    cookies = {'ASP.NET_SessionId': sid, 'sbk': sbk}
+                    headers['Referer'] = referer
+                    url = 'http://www.zsfdc.gov.cn:9043/build.axd'
+                    post_data = {
+                        'task': 'buildtable',
+                        'recnumgather': rec,
+                        'buildnum': bnum,
+                        'sbk': sbk,
+                        'generate': 'false'
+                    }
+                    body = urlparse.urlencode(post_data)
+                    building_info = {
+                        'source_url': url,
+                        'meta': {
+                            'PageType': 'HouseInfo',
+                            'ProjectName': item['ProjectName'],
+                            'BuildingName': item['BuildingName'],
+                            'ProjectUUID': str(item['ProjectUUID']),
+                            'BuildingUUID': str(item['BuildingUUID']),
+                            'cookies': cookies,
+                            'referer': referer
+                        },
+                        'method': 'POST',
+                        'headers': headers,
+                        'body': body,
+                        'cookies': cookies,
+                        'referer': referer
+                    }
+                    building_info_json = json.dumps(
+                        building_info, sort_keys=True)
+                    r.sadd(key, building_info_json)
+        except Exception as e:
+            import traceback
+            traceback.print_exc()
+    r.expire(key, int(spider_settings.get('CLOSESPIDER_TIMEOUT')))
+    return key
+
+
+t3_cache = PythonOperator(
+    task_id='LoadBuildingInfoZSCache',
+    python_callable=get_cookies_list,
+    dag=dag)
+
+t3 = PythonOperator(
+    task_id='LoadBuildingInfoZS',
+    python_callable=crawl,
+    op_kwargs={
+        'spiderName': 'DefaultCrawler',
+        'settings': spider_settings,
+        'fromTask': 'LoadBuildingInfoZSCache'
+    },
+    dag=dag)
+
+t3.set_upstream(t3_cache)

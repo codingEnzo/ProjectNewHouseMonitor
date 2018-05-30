@@ -7,35 +7,6 @@ from django_mongoengine import fields
 
 
 # Zhongshan Model
-class ProjectBaseZhongshan(Document):
-    RecordID = fields.UUIDField(
-        default=uuid.uuid1(), binary=True, primary_key=True, null=False)
-    CurTimeStamp = fields.StringField(
-        default=str(datetime.datetime.now()), index=True)
-    ProjectUUID = fields.UUIDField(
-        default=uuid.uuid3(uuid.NAMESPACE_DNS, ''), binary=False, null=False)
-    ProjectName = fields.StringField(default='', max_length=255, null=False)
-    ProjectAdminArea = fields.StringField(
-        default='', max_length=255, null=False)
-    PresaleNum = fields.StringField(default='', max_length=255, null=False)
-    ProjectPermitDate = fields.StringField(
-        default='', max_length=255, null=False)
-    ProjectPermitFlat = fields.StringField(
-        default='', max_length=255, null=False)
-    ProjectForsaleFlat = fields.StringField(
-        default='', max_length=255, null=False)
-    ProjectInfoURL = fields.StringField(default='', max_length=255, null=False)
-    ProjectSaleHistoryURL = fields.StringField(
-        default='', max_length=255, null=False)
-
-    meta = {
-        'indexes': [
-            'CurTimeStamp', 'ProjectUUID', 'ProjectName', 'PresaleNum',
-            'ProjectInfoURL', 'ProjectSaleHistoryURL'
-        ]
-    }
-
-
 class ProjectInfoZhongshan(Document):
     RecordID = fields.UUIDField(
         default=uuid.uuid1(), binary=True, primary_key=True, null=False)
@@ -48,6 +19,7 @@ class ProjectInfoZhongshan(Document):
     ProjectCompany = fields.StringField(default='', max_length=255, null=False)
     ProjectPermitDate = fields.StringField(
         default='', max_length=255, null=False)
+    PresaleNum = fields.StringField(default='', max_length=255, null=False)
     ProjectPresaleValid = fields.StringField(
         default='', max_length=255, null=False)
     ProjectTerminateCount = fields.StringField(
@@ -88,7 +60,7 @@ class BuildingInfoZhongshan(Document):
     BuildingTerminateCounts = fields.StringField(
         default='', max_length=255, null=False)
     # Tmp Testing
-    BuildingHouseInfoURLArgs = fields.StringField(
+    HouseInfoURLArgs = fields.StringField(
         default='', max_length=255, null=False)
 
     meta = {
