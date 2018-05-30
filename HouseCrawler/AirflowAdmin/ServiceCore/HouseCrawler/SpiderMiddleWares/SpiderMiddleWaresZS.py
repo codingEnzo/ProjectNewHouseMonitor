@@ -8,7 +8,7 @@ import regex
 from scrapy import Selector
 from scrapy.http import Request
 
-from ..Items.ItemsZS import (BuildingInfoItem, HouseInfoItem, ProjectBaseItem,
+from HouseCrawler.Items.ItemsZS import (BuildingInfoItem, HouseInfoItem, ProjectBaseItem,
                              ProjectInfoItem)
 
 
