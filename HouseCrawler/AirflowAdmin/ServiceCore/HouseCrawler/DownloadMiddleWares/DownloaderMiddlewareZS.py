@@ -19,5 +19,5 @@ class HouseInfoDownloaderMiddlerware(object):
             referer = request.meta.get('referer')
             if referer:
                 import requests as req
-                req.get(referer, cookies=request.meta.get('Cookie'))
+                req.get(referer, cookies=request.meta.get('cookie'))
                 logger.debug('Activate On HouseInfoZS')
