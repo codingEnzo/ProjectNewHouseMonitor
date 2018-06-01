@@ -48,6 +48,7 @@ default_args = {
 spider_settings = {
     'ITEM_PIPELINES': {
         'HouseCrawler.Pipelines.PipelinesXA.XAPipeline': 300,
+        'HouseCrawler.Pipelines.PipelinesUtils.PipelinesCheck.CheckPipeline': 299,
     },
     'SPIDER_MIDDLEWARES': {
         'HouseCrawler.SpiderMiddleWares.SpiderMiddleWaresXA.ProjectBaseHandleMiddleware': 102,
@@ -55,9 +56,7 @@ spider_settings = {
         'HouseCrawler.SpiderMiddleWares.SpiderMiddleWaresXA.PresaleLicenceHandleMiddleware': 104,
         'HouseCrawler.SpiderMiddleWares.SpiderMiddleWaresXA.HouseInfoHandleMiddleware': 105,
     },
-    'RETRY_ENABLE': True,
     'CLOSESPIDER_TIMEOUT': 3600 * 3.5,
-    'REDIRECT_ENABLED': True,
     'RETRY_HTTP_CODES': [500, 403, 404, 501, 502, 503, 504, 400, 408, 411, 413, 302, 301, 407, 303, 304, 305, 306, 307],
     'DEFAULT_REQUEST_HEADERS': {
         'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8',
@@ -77,8 +76,13 @@ spider_settings = {
         "Mozilla/5.0 (Windows; U; Windows NT 6.0; en-US) AppleWebKit/534.14 (KHTML, like Gecko) Chrome/9.0.601.0 Safari/534.14",
         "Mozilla/5.0 (Windows; U; Windows NT 6.1; en-US) AppleWebKit/534.14 (KHTML, like Gecko) Chrome/10.0.601.0 Safari/534.14",
     ],
-    'CONCURRENT_REQUESTS':32,
-    'DOWNLOAD_TIMEOUT':60
+    'CONCURRENT_REQUESTS': 32,
+    'DOWNLOAD_TIMEOUT': 60,
+    'DOWNLOADER_MIDDLEWARES': {
+        'scrapy.downloadermiddlewares.httpproxy.HttpProxyMiddleware': None,
+        'HouseCrawler.DownloadMiddleWares.ProxyMiddleWares.ProxyMiddleware': None,
+    },
+    'CITY': '西安'
 
 }
 
