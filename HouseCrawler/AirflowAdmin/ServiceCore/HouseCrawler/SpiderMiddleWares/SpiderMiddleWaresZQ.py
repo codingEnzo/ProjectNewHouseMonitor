@@ -20,7 +20,8 @@ headers = {'Host': '61.146.213.163',
            'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8',
            'Referer': 'http://61.146.213.163:8011/',
            'Accept-Encoding': 'gzip, deflate',
-           'Accept-Language': 'zh-CN,zh;q=0.9'}
+           'Accept-Language': 'zh-CN,zh;q=0.9',
+           'Cookie': 'ASP.NET_SessionId=ib5doi554mnu3g550vvattmf;'}
 
 
 class ProjectIndexHandleMiddleware(object):
