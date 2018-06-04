@@ -29,3 +29,4 @@ from HouseNew.HouseNewModels.WuhanModels import *
 from HouseNew.HouseNewModels.XuzhouModels import *
 from HouseNew.HouseNewModels.TianjinModels import *
 from HouseNew.HouseNewModels.ZhongshanModels import *
+from HouseNew.HouseNewModels.XianModels import *

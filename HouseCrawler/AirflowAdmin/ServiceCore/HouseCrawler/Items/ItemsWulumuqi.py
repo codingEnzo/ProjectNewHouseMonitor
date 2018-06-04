@@ -55,6 +55,7 @@ class ProjectInfoItem(DjangoItem):
                   'Remarks': '',
                   'ExtraJson': '',
                   }
+ProjectBaseItem = ProjectInfoItem
 
 class PresellInfoItem(DjangoItem):
     django_model = PresellInfoWulumuqi
