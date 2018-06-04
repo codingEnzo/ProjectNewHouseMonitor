@@ -99,7 +99,7 @@ t1 = PythonOperator(
 )
 
 project_info_list = []
-cur = ProjectBaseChangzhou.objects.all()
+cur = ProjectBaseChangzhou.objects
 
 for i, item in enumerate(cur):
     project_info = {

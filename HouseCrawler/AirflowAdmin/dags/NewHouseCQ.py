@@ -3,9 +3,8 @@ import os
 import sys
 import django
 import json
-import math
 import datetime
-import functools
+import uuid
 from airflow import DAG
 from airflow.operators.python_operator import PythonOperator
 
@@ -34,23 +33,6 @@ from django.conf import settings as dj_settings
 
 REDIS_CACHE_KEY = "NewHouseCQ"
 
-
-def just_one_instance(func):
-    @functools.wraps(func)
-    def f(*args, **kwargs):
-        import socket
-        try:
-            global s
-            s = socket.socket()
-            host = socket.gethostname()
-            s.bind((host, 60223))
-        except Exception:
-            print('already has an instance')
-            return None
-        return func(*args, **kwargs)
-    return f
-
-
 STARTDATE = datetime.datetime.now() - datetime.timedelta(hours=14)
 
 default_args = {
@@ -62,6 +44,7 @@ default_args = {
     'depends_on_past': False,
     'retries': 1,
     'retry_delay': datetime.timedelta(minutes=1),
+    'provide_context': True
     # 'queue': 'bash_queue',
     # 'pool': 'backfill',
     # 'priority_weight': 10,
@@ -83,34 +66,63 @@ spider_settings = {
 }
 
 
+def crawl(spiderName='DefaultCrawler',
+          settings=None,
+          fromTask=None,
+          urlList=[],
+          **kwargs):
+    if fromTask or urlList:
+        if not urlList:
+            urlList = list(map(lambda x: json.loads(
+                x.decode()), dj_settings.REDIS_CACHE.smembers(kwargs['ti'].xcom_pull(task_ids=fromTask))))
+        spider_call(spiderName='DefaultCrawler',
+                    settings=settings,
+                    urlList=urlList)
+
+
 dag = DAG('NewHouseCQ', default_args=default_args,
           schedule_interval="15 */12 * * *")
 
 t1 = PythonOperator(
     task_id='LoadProjectBaseCQ',
-    python_callable=spider_call,
+    python_callable=crawl,
     op_kwargs={'spiderName': 'DefaultCrawler',
                'settings': spider_settings,
                'urlList': [{'source_url': 'http://www.cq315house.com/315web/HtmlPage/SpfQuery.htm',
                             'meta': {'PageType': 'ProjectBase'}}]},
     dag=dag)
 
-project_info_list = []
-cur = ProjectBaseChongqing.objects.all()
-for item in cur:
-    project_info = {'source_url': item.ProjectURL,
-                    'meta': {'PageType': 'ProjectInfo'}}
-    project_info_list.append(project_info)
-t2 = PythonOperator(
-    task_id='LoadProjectInfoCQ',
-    python_callable=spider_call,
-    op_kwargs={'spiderName': 'DefaultCrawler',
-               'settings': spider_settings,
-               'urlList': project_info_list},
+
+def get_project_list(**kwargs):
+    key = uuid.uuid1().hex
+    r = dj_settings.REDIS_CACHE
+    cur = ProjectBaseChongqing.objects
+    for item in cur:
+        project_info = {'source_url': item.ProjectURL,
+                        'meta': {'PageType': 'ProjectInfo'}}
+        r.sadd(key, json.dumps(project_info))
+    r.expire(key, int(spider_settings.get('CLOSESPIDER_TIMEOUT')))
+    return key
+
+
+t2_cache = PythonOperator(
+    task_id='LoadProjectInfoCQCache',
+    python_callable=get_project_list,
     dag=dag)
 
 
-def cacheLoader(key=REDIS_CACHE_KEY):
+t2 = PythonOperator(
+    task_id='LoadProjectInfoCQ',
+    python_callable=crawl,
+    op_kwargs={'spiderName': 'DefaultCrawler',
+               'settings': spider_settings,
+               'fromTask': 'LoadProjectInfoCQCache'},
+    dag=dag)
+t2.set_upstream(t2_cache)
+
+
+def cacheLoader(**kwargs):
+    key = uuid.uuid1().hex
     r = dj_settings.REDIS_CACHE
     cur = BuildingInfoChongqing.objects.aggregate(*[{"$sort": {"CurTimeStamp": -1}},
                                                     {'$group': {
@@ -135,22 +147,20 @@ def cacheLoader(key=REDIS_CACHE_KEY):
         except Exception:
             import traceback
             traceback.print_exc()
-        r.expire(key, int(spider_settings.get('CLOSESPIDER_TIMEOUT')))
+    r.expire(key, int(spider_settings.get('CLOSESPIDER_TIMEOUT')))
+    return key
 
 
 t3 = PythonOperator(
     task_id='LoadBuildingInfoCache',
     python_callable=cacheLoader,
-    op_kwargs={'key': REDIS_CACHE_KEY},
     dag=dag)
 
-building_info_list = list(map(lambda x: json.loads(
-    x.decode()), dj_settings.REDIS_CACHE.smembers(REDIS_CACHE_KEY)))
 t4 = PythonOperator(
     task_id='LoadBuildingInfoCQ',
-    python_callable=spider_call,
+    python_callable=crawl,
     op_kwargs={'spiderName': 'DefaultCrawler',
                'settings': spider_settings,
-               'urlList': building_info_list},
+               'fromTask': 'LoadBuildingInfoCache'},
     dag=dag)
 t4.set_upstream(t3)

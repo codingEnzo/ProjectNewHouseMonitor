@@ -139,7 +139,7 @@ class ProjectBaseHandleMiddleware(object):
                 pb['ProjectDistrict'] = p.xpath(
                     './td[3]/text()').extract_first() or ''
                 pb['ProjectURL'] = (urlparse.urljoin(
-                    response.url, p.xpath('./td[1]/a/@href').extract_first() or '')).replace(' ', '').strip()
+                    response.url, p.xpath('./td[1]/a/@data-href').extract_first() or '')).replace(' ', '').strip()
                 pb['ProjectUUID'] = uuid.uuid3(
                     uuid.NAMESPACE_DNS, pb['ProjectName'] + pb['ProjectURL'])
                 result.append(pb)

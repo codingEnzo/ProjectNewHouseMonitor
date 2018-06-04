@@ -96,7 +96,7 @@ t1 = PythonOperator(
 
 def project_cacheLoader(key=REDIS_CACHE_PROJECTINFO_KEY):
     r = dj_settings.REDIS_CACHE
-    cur = ProjectBaseHeyuan.objects.all()
+    cur = ProjectBaseHeyuan.objects
     for item in cur:
         try:
             project_info = {'source_url': item.ProjectURL,

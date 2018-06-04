@@ -4,6 +4,7 @@ import os
 import sys
 import json
 import math
+import random
 import django
 from airflow import DAG
 from airflow.operators.python_operator import PythonOperator
@@ -32,7 +33,7 @@ from django.conf import settings as dj_settings
 
 REDIS_CACHE_KEY = "NewHouseZQ"
 
-STARTDATE = datetime.datetime.now() - datetime.timedelta(hours=10)
+STARTDATE = datetime.datetime.now() - datetime.timedelta(hours=5)
 
 default_args = {
     'owner': 'airflow',
@@ -53,7 +54,7 @@ spider_settings = {
     'ITEM_PIPELINES': {
         'HouseCrawler.Pipelines.PipelinesZQ.ZQPipeline': 300,
         'HouseCrawler.Pipelines.PipelinesUtils.PipelinesCheck.CheckPipeline': 299,
-        # 'HouseCrawler.Pipelines.PipelinesUtils.PipelinesKafka.KafkaPipeline': 301,
+        'HouseCrawler.Pipelines.PipelinesUtils.PipelinesKafka.KafkaPipeline': 301,
     },
     'SPIDER_MIDDLEWARES': {
         'HouseCrawler.SpiderMiddleWares.SpiderMiddleWaresZQ.ProjectBaseHandleMiddleware': 102,
@@ -64,27 +65,34 @@ spider_settings = {
         'HouseCrawler.SpiderMiddleWares.SpiderMiddleWaresZQ.PreSellInfoHandleMiddleware': 107,
         'HouseCrawler.SpiderMiddleWares.SpiderMiddleWaresZQ.ProjectIndexHandleMiddleware': 108,
     },
+    'DOWNLOADER_MIDDLEWARES': {
+        'HouseCrawler.DownloadMiddleWares.KeyWordRetryMiddleWares.KeyWordRetryMiddleware': 121,
+    },
     'EXTENSIONS': {
         # 'HouseCrawler.Extensions.responselog.ResponseLog': 301,
     },
     'RETRY_ENABLE': True,
-    'CLOSESPIDER_TIMEOUT': 3600 * 7.5,
+    'CLOSESPIDER_TIMEOUT': 3600 * 2.7,
     'CONCURRENT_REQUESTS': 8,
-    'RETRY_TIMES': 30,
+    'PROXY_LEVEL': 'high',
+    'RETRY_TIMES': 75,
+    'RETRY_KEYWORD': "Error.aspx",
     'REDIRECT_ENABLED': True,
     'CITY': "肇庆"
 }
 
 dag = DAG('NewHouseZQ', default_args=default_args,
-          schedule_interval="15 */8 * * *")
+          schedule_interval="15 */3 * * *")
 
-project_base_urls = ['http://61.146.213.163:8011/user_kfs.aspx?lid=1db4a74a-946d-4d8c-868d-af15a23b2ff3',
-                     'http://61.146.213.163:8011/user_kfs.aspx?lid=f96ea453-7c8f-488c-beb4-a696849bba06',
-                     'http://61.146.213.163:8011/user_kfs.aspx?lid=a0dd416b-ab92-49cd-ad3b-43cabc8d9486',
-                     'http://61.146.213.163:8011/user_kfs.aspx?lid=75edcefe-ed69-4ee0-99c8-1d490faf7d8c',
-                     'http://61.146.213.163:8011/user_kfs.aspx?lid=87372051-2f41-4972-b7f6-cb536e7fbed0',
-                     'http://61.146.213.163:8011/user_kfs.aspx?lid=68ffd485-47e3-40b5-9874-d34892587390',
-                     'http://61.146.213.163:8011/user_kfs.aspx?lid=52f3f3cc-68a0-46dd-92a3-1fb39e36184e']
+project_base_urls = [
+    'http://61.146.213.163:8011/user_kfs.aspx?lid=1db4a74a-946d-4d8c-868d-af15a23b2ff3',
+    'http://61.146.213.163:8011/user_kfs.aspx?lid=f96ea453-7c8f-488c-beb4-a696849bba06',
+    'http://61.146.213.163:8011/user_kfs.aspx?lid=a0dd416b-ab92-49cd-ad3b-43cabc8d9486',
+    'http://61.146.213.163:8011/user_kfs.aspx?lid=75edcefe-ed69-4ee0-99c8-1d490faf7d8c',
+    'http://61.146.213.163:8011/user_kfs.aspx?lid=87372051-2f41-4972-b7f6-cb536e7fbed0',
+    'http://61.146.213.163:8011/user_kfs.aspx?lid=68ffd485-47e3-40b5-9874-d34892587390',
+    'http://61.146.213.163:8011/user_kfs.aspx?lid=52f3f3cc-68a0-46dd-92a3-1fb39e36184e'
+]
 project_base_list = []
 for url in project_base_urls:
     project_base = {'source_url': url,
@@ -108,6 +116,7 @@ for item in cur:
                              'ProjectName': item.ProjectName,
                              'ProjectUUID': str(item.ProjectUUID)}}
     project_info_list.append(project_info)
+random.shuffle(project_info_list)
 t2 = PythonOperator(
     task_id='LoadProjectInfoZQ',
     python_callable=spider_call,
@@ -163,6 +172,7 @@ t3 = PythonOperator(
 
 building_info_list = list(map(lambda x: json.loads(
     x.decode()), dj_settings.REDIS_CACHE.smembers(REDIS_CACHE_KEY)))
+random.shuffle(building_info_list)
 index_skip = int(math.ceil(len(building_info_list) / float(5))) + 1
 for cur, index in enumerate(list(range(0, len(building_info_list), index_skip))):
     t4 = PythonOperator(

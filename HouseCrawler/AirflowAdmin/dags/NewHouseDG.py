@@ -4,6 +4,7 @@ import os
 import sys
 import math
 import json
+import random
 import django
 from airflow import DAG
 from airflow.operators.python_operator import PythonOperator
@@ -53,7 +54,7 @@ spider_settings = {
     'ITEM_PIPELINES': {
         'HouseCrawler.Pipelines.PipelinesDG.DGPipeline': 300,
         'HouseCrawler.Pipelines.PipelinesUtils.PipelinesCheck.CheckPipeline': 299,
-        # 'HouseCrawler.Pipelines.PipelinesUtils.PipelinesKafka.KafkaPipeline': 301,
+        'HouseCrawler.Pipelines.PipelinesUtils.PipelinesKafka.KafkaPipeline': 301,
     },
     'SPIDER_MIDDLEWARES': {
         'HouseCrawler.SpiderMiddleWares.SpiderMiddleWaresDG.ProjectBaseHandleMiddleware': 102,
@@ -91,7 +92,7 @@ t1 = PythonOperator(
 
 project_info_list = []
 cur = ProjectBaseDongguan.objects.filter(
-    ProjectURLCurTimeStamp__gte=str(datetime.datetime.now().date())).all()
+    ProjectURLCurTimeStamp__gte=str(datetime.datetime.now().date()))
 for item in cur:
     if datetime.datetime.now().hour >= 8 and int(item.ProjectSaleSum) == 0:
         continue
@@ -100,6 +101,7 @@ for item in cur:
                              'ProjectName': item['ProjectName'],
                              'ProjectUUID': str(item['ProjectUUID'])}}
     project_info_list.append(project_info)
+random.shuffle(project_info_list)
 t2 = PythonOperator(
     task_id='LoadProjectInfoDG',
     python_callable=spider_call,
@@ -149,6 +151,7 @@ t3 = PythonOperator(
 
 building_info_list = list(map(lambda x: json.loads(
     x.decode()), dj_settings.REDIS_CACHE.smembers(REDIS_CACHE_KEY)))
+random.shuffle(building_info_list)
 index_skip = int(math.ceil(len(building_info_list) / float(5))) + 1
 for cur, index in enumerate(list(range(0, len(building_info_list), index_skip))):
     t4 = PythonOperator(

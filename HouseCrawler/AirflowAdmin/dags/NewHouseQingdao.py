@@ -101,7 +101,7 @@ t1 = PythonOperator(
     dag=dag)
 
 building_list = []
-cur = PresellInfoQingdao.objects.all()
+cur = PresellInfoQingdao.objects
 url = 'https://www.qdfd.com.cn/qdweb/realweb/fh/FhBuildingList.jsp?preid={PresellID}'
 for item in cur:
     building_info = {'source_url': url.format(PresellID=item['PresellID']),

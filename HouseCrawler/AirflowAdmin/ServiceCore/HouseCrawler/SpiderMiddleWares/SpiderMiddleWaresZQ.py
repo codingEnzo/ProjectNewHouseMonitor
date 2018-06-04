@@ -20,7 +20,8 @@ headers = {'Host': '61.146.213.163',
            'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8',
            'Referer': 'http://61.146.213.163:8011/',
            'Accept-Encoding': 'gzip, deflate',
-           'Accept-Language': 'zh-CN,zh;q=0.9'}
+           'Accept-Language': 'zh-CN,zh;q=0.9',
+           'Cookie': 'ASP.NET_SessionId=ib5doi554mnu3g550vvattmf;'}
 
 
 class ProjectIndexHandleMiddleware(object):
@@ -36,7 +37,7 @@ class ProjectIndexHandleMiddleware(object):
 
     def process_spider_output(self, response, result, spider):
         result = list(result)
-        if not(200 <= response.status < 300):  # common case
+        if not(200 <= response.status < 303):  # common case
             if result:
                 return result
             return []
@@ -90,7 +91,7 @@ class ProjectBaseHandleMiddleware(object):
     def process_spider_output(self, response, result, spider):
 
         result = list(result)
-        if not(200 <= response.status < 300):  # common case
+        if not(200 <= response.status < 303):  # common case
             if result:
                 return result
             return []
@@ -98,7 +99,7 @@ class ProjectBaseHandleMiddleware(object):
             if result:
                 return result
             return []
-        print('ProjectBaseHandleMiddleware')
+        print('ProjectBaseHandleMiddleware', response.meta.get('PageType'))
 
         if response.meta.get('PageType') == "ProjectBase":
             result.append(Request(url=response.url,
@@ -166,7 +167,7 @@ class ProjectInfoHandleMiddleware(object):
     def process_spider_output(self, response, result, spider):
 
         result = list(result)
-        if not(200 <= response.status < 300):  # common case
+        if not(200 <= response.status < 303):  # common case
             if result:
                 return result
             return []
@@ -268,7 +269,7 @@ class CompanyInfoHandleMiddleware(object):
     def process_spider_output(self, response, result, spider):
 
         result = list(result)
-        if not(200 <= response.status < 300):  # common case
+        if not(200 <= response.status < 303):  # common case
             if result:
                 return result
             return []
@@ -332,7 +333,7 @@ class BuildingListHandleMiddleware(object):
     def process_spider_output(self, response, result, spider):
 
         result = list(result)
-        if not(200 <= response.status < 300):  # common case
+        if not(200 <= response.status < 303):  # common case
             if result:
                 return result
             return []
@@ -431,7 +432,7 @@ class PreSellInfoHandleMiddleware(object):
             return (area_num, house_num)
 
         result = list(result)
-        if not(200 <= response.status < 300):  # common case
+        if not(200 <= response.status < 303):  # common case
             if result:
                 return result
             return []
@@ -534,7 +535,7 @@ class HouseInfoHandleMiddleware(object):
 
         result = list(result)
         print(response.status, response.url, response.meta.get('PageType'))
-        if not(200 <= response.status < 300):  # common case
+        if not(200 <= response.status < 303):  # common case
             if result:
                 return result
             return []
@@ -559,6 +560,7 @@ class HouseInfoHandleMiddleware(object):
             for floor in floor_list:
                 cur_floor = floor.xpath('./td[1]/text()').extract_first() or ''
                 house_list = floor.xpath('./td[2]/table/tr/td')
+                print(len(house_list))
                 for house in house_list:
                     hinfo = HouseInfoItem()
                     hinfo['ProjectName'] = response.meta.get(
