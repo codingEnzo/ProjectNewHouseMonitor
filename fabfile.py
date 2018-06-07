@@ -1,5 +1,4 @@
 # -*- coding:utf-8 -*-
-
 from fabric.api import run, env, parallel, cd, put
 from fabric.decorators import hosts
 
