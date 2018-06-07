@@ -59,9 +59,9 @@ class ProjectBaseHandleMiddleware(object):
                 for i in range(1, page_count + 1):
                     page_url = "http://www.fang99.com/buycenter/buildingsearch.aspx?page={}".format(i)
                     result.append(
-                            Request(url = page_url, method = 'GET',
-                                    headers = self.settings.get('DEFAULT_REQUEST_HEADERS'),
-                                    meta = {'PageType': 'ProjectBase'}))
+                        Request(url=page_url, method='GET',
+                                headers=self.settings.get('DEFAULT_REQUEST_HEADERS'),
+                                meta={'PageType': 'ProjectBase'}))
 
 
         elif response.meta.get('PageType') == 'ProjectBase':
@@ -69,11 +69,11 @@ class ProjectBaseHandleMiddleware(object):
             pro_list = response.xpath('//div[@class="sf_xf_prodiv"]')
             for div in pro_list:
                 p_name = div.xpath('div[@class="sf_xf_projj ztys2"]/a[1]/text()').extract_first()
-                room_type = div.xpath('div[@class="sf_xf_projj ztys2"]/font/@title').extract_first(default = "")
-                hot_house = div.xpath('div[@class="sf_xf_projj ztys2"]/text()[3]').extract_first(default = "")
+                room_type = div.xpath('div[@class="sf_xf_projj ztys2"]/font/@title').extract_first(default="")
+                hot_house = div.xpath('div[@class="sf_xf_projj ztys2"]/text()[3]').extract_first(default="")
                 project_address = div.xpath('div[@class="sf_xf_projj ztys2"]/text()[4]').extract_first()
                 development_enterprise = div.xpath('div[@class="sf_xf_projj ztys2"]/div/a/text()').extract_first()
-                telephone = div.xpath('div[@class="sf_xf_tel"]/text()').extract_first(default = "")
+                telephone = div.xpath('div[@class="sf_xf_tel"]/text()').extract_first(default="")
                 price = div.xpath('div[@class="sf_xf_tel"]/font/text()').extract_first()
                 pb_href = div.xpath('div[@class="sf_xf_protp"]/a[1]/@href').extract_first()
                 pb_url = 'http://www.fang99.com/buycenter/' + pb_href
@@ -127,11 +127,11 @@ class ProjectInfoHandleMiddleware(object):
             item = ProjectInfoItem()
 
             hand_tr = response.xpath(
-                    '//*[@id="jfsjdiv"]/table//tr/td[@bgcolor="#ffffff"]/..')
+                '//*[@id="jfsjdiv"]/table//tr/td[@bgcolor="#ffffff"]/..')
             hand_list = []
             for i, hand_build in enumerate(hand_tr):
                 hand_key = hand_build.xpath(
-                        'td[@width="100"]/text()').extract_first('')
+                    'td[@width="100"]/text()').extract_first('')
                 if hand_key:
                     _hand_val = hand_build.xpath('td/a/text()').extract()
                     d = {}
@@ -140,11 +140,12 @@ class ProjectInfoHandleMiddleware(object):
                     hand_list.append(d)
 
             presale_href = response.xpath(
-                    '//*[@id="hplk_ysxkz"]/@href').extract_first()
+                '//*[@id="hplk_ysxkz"]/@href').extract_first()
             company_href = response.xpath(
-                    '//*[@id="kfslb"]/a[not(contains(@href, "javascript"))]/@href').extract_first(default = '')
+                '//*[@id="kfslb"]/a[not(contains(@href, "javascript"))]/@href').extract_first(default='')
             p_info_url = response.xpath(
-                    '//*[@id="bc_body"]/div/div/table/tr/td[@colspan="2"]/a[@style="color:#cd0001"]/@href').extract_first() or ''
+                '//*[@id="bc_body"]/div/div/table/tr/td[@colspan="2"]/a['
+                '@style="color:#cd0001"]/@href').extract_first() or ''
 
             item['ProjectUUID'] = response.meta.get('ProjectUUID', '')
             item['ProjectName'] = response.meta.get('ProjectName', '')
@@ -154,12 +155,13 @@ class ProjectInfoHandleMiddleware(object):
             item['ProjectCompanyURL'] = 'http://www.fang99.com/buycenter/' + company_href
             presale_href = "http://www.fang99.com" + presale_href if presale_href else ''
             item['ProjectPresaleURL'] = presale_href
-            item['Point'] = response.xpath('//*[@id="hid_propoint"]/@value').extract_first('//*[@id="hid_propoint"]/@value')
+            item['Point'] = response.xpath('//*[@id="hid_propoint"]/@value').extract_first(
+                '//*[@id="hid_propoint"]/@value')
             item['ProjectBookingData'] = response.xpath('//*[@id="jfsjtd"]/text()').extract_first('').strip()
             item['AveragePrice'] = response.xpath('//*[@id="Label_AveragePrice"]/text()').extract_first('')
             result.append(Request(item['ProjectInfoURL'],
-                          meta={'PageType': 'ProjectInfo', 'item': item},
-                          headers=self.settings.get('DEFAULT_REQUEST_HEADERS')))
+                                  meta={'PageType': 'ProjectInfo', 'item': item},
+                                  headers=self.settings.get('DEFAULT_REQUEST_HEADERS')))
         elif response.meta.get('PageType') == 'ProjectInfo':
             item = response.meta.get('item')
             # 基本信息
@@ -169,8 +171,8 @@ class ProjectInfoHandleMiddleware(object):
             item['ProjectTradeCircle'] = response.xpath('//*[@id="Label_SQ"]/text()').extract_first() or ''
             item['PropertyType'] = response.xpath('//*[@id="Label_Propertytypename"]/text()').extract_first() or ''
             item['ProjectFirstDueDate'] = response.xpath(
-                    '//*[@id="bc_body"]/div/div/table/tr/td/table/tr/td[@class="sf_xq_jfsj"]/text()').extract_first(
-                    default = '').strip()
+                '//*[@id="bc_body"]/div/div/table/tr/td/table/tr/td[@class="sf_xq_jfsj"]/text()').extract_first(
+                default='').strip()
             item['ProjectMainRoomType'] = response.xpath('//*[@id="Lable_Mainapirl"]/text()').extract_first() or ''
             item['ProjectDekoration'] = response.xpath('//*[@id="Lable_Dekoration"]/text()').extract_first() or ''
             item['ProjectBuildType'] = response.xpath('//*[@id="Lable_ConstructionType"]/text()').extract_first() or ''
@@ -187,13 +189,13 @@ class ProjectInfoHandleMiddleware(object):
             item['LandUseLife'] = response.xpath('//*[@id="lbl_TDSYNX"]/text()').extract_first() or ''
             # 周边配套
             # 单字段有多个属性
-            education = response.xpath('//*[@id="lbl_School"]').extract_first(default = '')
-            commerce = response.xpath('//*[@id="lbl_Shop"]').extract_first(default = '')
-            bank = response.xpath('//*[@id="lbl_Bank"]').extract_first(default = '')
-            hospital = response.xpath('//*[@id="lbl_Hospital"]').extract_first(default = '')
-            traffic = response.xpath('//*[@id="lbl_Traffic"]').extract_first(default = '')
-            restaurant = response.xpath('//*[@id="lbl_CY"]').extract_first(default = '')
-            others = response.xpath('//*[@id="lbl_Others"]').extract_first(default = '')
+            education = response.xpath('//*[@id="lbl_School"]').extract_first(default='')
+            commerce = response.xpath('//*[@id="lbl_Shop"]').extract_first(default='')
+            bank = response.xpath('//*[@id="lbl_Bank"]').extract_first(default='')
+            hospital = response.xpath('//*[@id="lbl_Hospital"]').extract_first(default='')
+            traffic = response.xpath('//*[@id="lbl_Traffic"]').extract_first(default='')
+            restaurant = response.xpath('//*[@id="lbl_CY"]').extract_first(default='')
+            others = response.xpath('//*[@id="lbl_Others"]').extract_first(default='')
             item['PeripheryEducation'] = remove_html_tags_and_extract(education)
             item['PeripheryCommerce'] = remove_html_tags_and_extract(commerce)
             item['PeripheryBank'] = remove_html_tags_and_extract(bank)
@@ -203,10 +205,10 @@ class ProjectInfoHandleMiddleware(object):
             item['PeripheryOthers'] = remove_html_tags_and_extract(others)
             # 建筑形式
             item['BuildingStructure'] = response.xpath('//*[@id="lbl_JZJG"]/text()').extract_first() or ''
-            item['BuildingArea'] = response.xpath('//*[@id="lbl_JZMJ"]/text()').extract_first(default = '').replace('㎡',
-                                                                                                                    '')
+            item['BuildingArea'] = response.xpath('//*[@id="lbl_JZMJ"]/text()').extract_first(default='').replace('㎡',
+                                                                                                                  '')
             item['BuildingFloorSpace'] = response.xpath('//*[@id="lbl_ZDMJ"]/text()').extract_first(
-                    default = '').replace('㎡', '')
+                default='').replace('㎡', '')
             item['MaxBuildingFlats'] = response.xpath('//*[@id="lbl_ZDDJ"]/text()').extract_first() or ''
             item['MinBuildingFlats'] = response.xpath('//*[@id="lbl_ZXDJ"]/text()').extract_first() or ''
             # 相关企业
@@ -250,23 +252,24 @@ class PresaleLicenceHandleMiddleware(object):
                 item = PresaleLicenseInfoItem()
                 item['ProjectUUID'] = project_id
                 item['ProjectName'] = project_name
-                item['PresaleCode'] = _t1.extract_first(default = '')
+                item['PresaleCode'] = _t1.extract_first(default='')
                 item['PresaleUUID'] = uuid.uuid3(
-                        uuid.NAMESPACE_DNS, str(item['ProjectUUID']) + item['PresaleCode'])
+                    uuid.NAMESPACE_DNS, str(item['ProjectUUID']) + item['PresaleCode'])
                 item['BuildingRecordName'] = _t1.pop().extract() or ''
                 item['DevCompany'] = _t2.extract()[0]
                 item['LicenseDate'] = _t2.extract()[1]
                 _t3 = table.xpath(
-                        './tr/td[@style="border-collapse:collapse"]/table/tr/td[contains(@class, "fontYH")]/text()').extract()
+                    './tr/td[@style="border-collapse:collapse"]/table/tr/td[contains(@class, "fontYH")]/text('
+                    ')').extract()
                 item['SuperviseBank'] = _t3[0]
                 item['SuperviseBankAccount'] = _t3[1]
                 building_list = table.xpath(
-                        './tr/td[@bgcolor="#ffffff"]/table/tr/td[contains(@class, "fontYH")]/span/a')
+                    './tr/td[@bgcolor="#ffffff"]/table/tr/td[contains(@class, "fontYH")]/span/a')
                 building_name_list = building_list.xpath('./text()').extract()
                 item['BuildingList'] = ','.join(building_name_list)
                 for j, building in enumerate(building_list):
-                    building_name = building.xpath('./text()').extract_first(default = "")
-                    building_href = building.xpath('./@href').extract_first(default = "")
+                    building_name = building.xpath('./text()').extract_first(default="")
+                    building_href = building.xpath('./@href').extract_first(default="")
                     if building_name:
                         b_item = BuildingInfoItem()
                         b_item['ProjectUUID'] = item['ProjectUUID']
@@ -276,27 +279,28 @@ class PresaleLicenceHandleMiddleware(object):
                         b_item['BuildingName'] = building_name
                         b_item['PresaleCode'] = item['PresaleCode']
                         b_item['BuildingUUID'] = uuid.uuid3(
-                                uuid.NAMESPACE_DNS, str(project_id) + str(item['PresaleUUID']) + building_name)
+                            uuid.NAMESPACE_DNS, str(project_id) + str(item['PresaleUUID']) + building_name)
                         item_list.append(b_item)
                 item_list.append(item)
 
             result.extend(item_list)
             show_more = response.xpath(
-                    '//*[@id="ck_table_0"]/img/@style').extract_first()
+                '//*[@id="ck_table_0"]/img/@style').extract_first()
             if show_more != "display:none; margin-bottom:10px;":
                 req_dict = {"name": project_name, "yszh": "", "dwmc": ""}
                 body = urlparse.urlencode(req_dict)
                 meta = response.meta
                 meta['PageType'] = 'PresaleLicenceInfo'
-                r = Request('http://www.fang99.com/ashx/yszjjg.ashx', method = "POST", body = body, meta = meta,
-                            headers = {
+                r = Request('http://www.fang99.com/ashx/yszjjg.ashx', method="POST", body=body, meta=meta,
+                            headers={
                                 'Accept': 'text/plain, */*; q=0.01',
                                 'Accept-Encoding': 'gzip, deflate',
                                 'Accept-Language': 'zh-CN,zh;q=0.8,zh-TW;q=0.7,zh-HK;q=0.5,en-US;q=0.3,en;q=0.2',
                                 'Connection': 'keep-alive',
                                 'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
                                 'Host': 'www.fang99.com',
-                                'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.13; rv:57.0) Gecko/20100101 Firefox/57.0',
+                                'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.13; rv:57.0) Gecko/20100101 '
+                                              'Firefox/57.0',
                                 'X-Requested-With': 'XMLHttpRequest',
                             })
                 result.append(r)
@@ -309,30 +313,30 @@ class PresaleLicenceHandleMiddleware(object):
             item_list = []
             for i, table in enumerate(table_list):
                 _t1 = table.xpath(
-                        './tr/td[@bgcolor="#ffffff"][@class="fontYH"]/a/text()')
+                    './tr/td[@bgcolor="#ffffff"][@class="fontYH"]/a/text()')
                 _t2 = table.xpath(
-                        '.tr/td[@bgcolor="#ffffff"][@class="fontYH"]/text()')
+                    '.tr/td[@bgcolor="#ffffff"][@class="fontYH"]/text()')
                 item = PresaleLicenseInfoItem()
                 item['ProjectUUID'] = project_id
                 item['ProjectName'] = project_name
-                item['PresaleCode'] = _t1.extract_first(default = '')
+                item['PresaleCode'] = _t1.extract_first(default='')
                 item['PresaleUUID'] = uuid.uuid3(
-                        uuid.NAMESPACE_DNS, str(item['ProjectUUID']) + item['PresaleCode'])
+                    uuid.NAMESPACE_DNS, str(item['ProjectUUID']) + item['PresaleCode'])
                 item['BuildingRecordName'] = _t1.pop().extract() or ''
                 item['DevCompany'] = _t2.extract()[0]
                 item['LicenseDate'] = _t2.extract()[1]
                 building_list = table.xpath(
-                        './tr/td[@bgcolor="#ffffff"]/table/tr/td[contains(@class, "fontYH")]/span/a')
+                    './tr/td[@bgcolor="#ffffff"]/table/tr/td[contains(@class, "fontYH")]/span/a')
                 building_name_list = building_list.xpath('./text()').extract()
                 item['BuildingList'] = ','.join(building_name_list)
                 _t3 = table.xpath(
-                        './tr/td[@bgcolor="#ffffff"]/table/tr/td[contains(@class, "fontYH")]/text()').extract()
+                    './tr/td[@bgcolor="#ffffff"]/table/tr/td[contains(@class, "fontYH")]/text()').extract()
                 _t3 = list(filter(lambda x: x != ',', _t3))
                 item['SuperviseBank'] = _t3[0]
                 item['SuperviseBankAccount'] = _t3[1]
                 for j, building in enumerate(building_list):
-                    building_name = building.xpath('./text()').extract_first(default = "")
-                    building_href = building.xpath('./@href').extract_first(default = "")
+                    building_name = building.xpath('./text()').extract_first(default="")
+                    building_href = building.xpath('./@href').extract_first(default="")
                     if building_name:
                         b_item = BuildingInfoItem()
                         b_item['ProjectUUID'] = item['ProjectUUID']
@@ -342,7 +346,7 @@ class PresaleLicenceHandleMiddleware(object):
                         b_item['BuildingURL'] = regex.sub('buildinglistselect', 'buildinglistselectpm', building_href)
                         b_item['BuildingName'] = building_name
                         b_item['BuildingUUID'] = uuid.uuid3(
-                                uuid.NAMESPACE_DNS, str(project_id) + str(item['PresaleUUID']) + building_name)
+                            uuid.NAMESPACE_DNS, str(project_id) + str(item['PresaleUUID']) + building_name)
 
                         item_list.append(b_item)
             result.extend(item_list)
@@ -389,26 +393,27 @@ class HouseInfoHandleMiddleware(object):
         if response.meta.get('PageType') == 'HouseTable':
             print('HouseInfoHandleMiddleware -- HouseTable')
             pages_obj = response.xpath('//*[@id="Anp_Housepager"]/a/text()')
-            pages_obj.pop()
-            _ = pages_obj.pop()
-            total_page = int(_.get()) if _ else 0
-            req_list = []
-            for page in range(1, total_page + 1):
-                url = response.url + '&page={}'.format(page)
-                meta = response.meta
-                meta['PageType'] = "HouseInfo"
-                r = Request(url, headers = {
-                    'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
-                    'Accept-Encoding': 'gzip, deflate',
-                    'Accept-Language': 'zh-CN,zh;q=0.8,zh-TW;q=0.7,zh-HK;q=0.5,en-US;q=0.3,en;q=0.2',
-                    'Connection': 'keep-alive',
-                    'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
-                    'Host': 'b.fang99.com',
-                    'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.13; rv:57.0) Gecko/20100101 Firefox/57.0',
-                    'X-Requested-With': 'XMLHttpRequest'
-                }, meta = meta)
-                req_list.append(r)
-            result.extend(req_list)
+            if pages_obj:
+                pages_obj.pop()
+                _ = pages_obj.pop()
+                total_page = int(_.get()) if _ else 0
+                req_list = []
+                for page in range(1, total_page + 1):
+                    url = response.url + '&page={}'.format(page)
+                    meta = response.meta
+                    meta['PageType'] = "HouseInfo"
+                    r = Request(url, headers={
+                        'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+                        'Accept-Encoding': 'gzip, deflate',
+                        'Accept-Language': 'zh-CN,zh;q=0.8,zh-TW;q=0.7,zh-HK;q=0.5,en-US;q=0.3,en;q=0.2',
+                        'Connection': 'keep-alive',
+                        'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
+                        'Host': 'b.fang99.com',
+                        'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.13; rv:57.0) Gecko/20100101 Firefox/57.0',
+                        'X-Requested-With': 'XMLHttpRequest'
+                    }, meta=meta)
+                    req_list.append(r)
+                result.extend(req_list)
 
         elif response.meta.get('PageType') == 'HouseInfo':
             print('HouseInfoHandleMiddleware')
@@ -418,7 +423,7 @@ class HouseInfoHandleMiddleware(object):
             building_name = response.meta.get('BuildingName', '')
             item_list = []
             t_row_list = response.xpath(
-                    '//*[@id="div_houselist"]/table/tr[@class="houselist hy"]')
+                '//*[@id="div_houselist"]/table/tr[@class="houselist hy"]')
             for i, row in enumerate(t_row_list):
                 cells = row.xpath('./td/img/@src').re('prarm=(.*?)&')
                 item = HouseInfoItem()
@@ -428,19 +433,19 @@ class HouseInfoHandleMiddleware(object):
                 item['BuildingName'] = building_name
                 room_no = extract_room_label(cells[0])
                 build_no, unit_no = extract_building_and_unit_label(
-                        cells[0])
+                    cells[0])
                 item['HouseRoomNum'] = room_no
                 item['BuildingNum'] = build_no
                 item['HouseUnit'] = unit_no
                 item['HouseUUID'] = uuid.uuid3(
-                        uuid.NAMESPACE_DNS, project_id + building_id + cells[0])
+                    uuid.NAMESPACE_DNS, project_id + building_id + cells[0])
                 item['HouseFloor'] = cells[1]
                 item['HouseRoomType'] = cells[2]
                 item['HouseUsage'] = cells[3]
                 item['HouseType'] = cells[4]
                 item['HouseBuildingArea'] = cells[5].replace('㎡', '')
                 item['HouseSaleState'] = row.xpath(
-                        './td/div[@class="fwzt1_ygsf"]/text()').extract_first(default = '')
+                    './td/div[starts-with(@class,"fwzt")]/text()').extract_first(default='')
                 item_list.append(item)
             result.extend(item_list)
         return result
