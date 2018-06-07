@@ -3,9 +3,9 @@ from scrapy_djangoitem import DjangoItem
 from HouseNew.models import *
 
 
-
 class ProjectBaseItem(DjangoItem):
     django_model = ProjectBaseDalian
+
 
 class ProjectInfoItem(DjangoItem):
     django_model = ProjectInfoDalian
@@ -60,6 +60,7 @@ class ProjectInfoItem(DjangoItem):
                   'ExtraJson': '',
                   }
 
+
 class BuildingInfoItem(DjangoItem):
     django_model = BuildingInfoDalian
     fields_map = {'RecordTime': 'CurTimeStamp',
@@ -95,6 +96,7 @@ class BuildingInfoItem(DjangoItem):
                   'SourceUrl': 'BuildingURL',
                   'ExtraJson': '',
                   }
+
 
 class HouseInfoItem(DjangoItem):
     django_model = HouseInfoDalian
