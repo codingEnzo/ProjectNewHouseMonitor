@@ -5,6 +5,7 @@ import sys
 import math
 import random
 import django
+from datetime import timedelta
 from airflow import DAG
 from airflow.operators.python_operator import PythonOperator
 
@@ -110,7 +111,8 @@ t1 = PythonOperator(
                  'meta': {'PageType': 'ProjectBase', 'GetPage': True}}
             ]
     },
-    dag=dag
+    dag=dag,
+    execution_timeout=timedelta(hours=11)
 )
 
 cur = ProjectInfoGuangzhou.objects.aggregate(*[
@@ -158,6 +160,7 @@ for cur, index in enumerate(list(range(0, len(buildingList_info_list), index_ski
         op_kwargs={'spiderName': 'DefaultCrawler',
                    'settings': spider_settings,
                    'urlList': buildingList_info_list},
-        dag=dag)
+        dag=dag,
+        execution_timeout=timedelta(hours=11))
 
     t2.set_upstream(t1)

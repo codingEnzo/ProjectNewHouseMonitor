@@ -4,6 +4,7 @@ import os
 import sys
 
 import django
+from datetime import timedelta
 from airflow import DAG
 from airflow.operators.python_operator import PythonOperator
 
@@ -101,7 +102,8 @@ t1 = PythonOperator(
                 'CurPage': 1
             }
         }]
-    }, dag=dag
+    }, dag=dag,
+    execution_timeout=timedelta(hours=7)
 )
 
 
@@ -151,7 +153,8 @@ t3 = PythonOperator(
         'settings': spider_settings,
         'urlList': presell_generator
     },
-    dag=dag
+    dag=dag,
+    execution_timeout=timedelta(hours=7)
 )
 t3.set_upstream(t2)
 
@@ -208,7 +211,8 @@ t5 = PythonOperator(
         'settings': spider_settings,
         'urlList': building_generator
     },
-    dag=dag
+    dag=dag,
+    execution_timeout=timedelta(hours=7)
 )
 t5.set_upstream(t4)
 
@@ -267,6 +271,7 @@ t7 = PythonOperator(
         'settings': spider_settings,
         'urlList': house_generator
     },
-    dag=dag
+    dag=dag,
+    execution_timeout=timedelta(hours=7)
 )
 t7.set_upstream(t6)
