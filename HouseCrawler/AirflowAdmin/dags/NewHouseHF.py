@@ -7,6 +7,7 @@ import django
 import random
 import datetime
 import functools
+from datetime import timedelta
 from airflow import DAG
 from airflow.operators.python_operator import PythonOperator
 
@@ -101,7 +102,8 @@ t1 = PythonOperator(
                'settings': spider_settings,
                'urlList': [{'source_url': 'http://real.hffd.gov.cn/',
                             'meta': {'PageType': 'ProjectBase'}}]},
-    dag=dag)
+    dag=dag,
+    execution_timeout=timedelta(hours=11))
 
 
 def cacheLoader(key=REDIS_CACHE_KEY):
@@ -151,5 +153,6 @@ for cur, index in enumerate(list(range(0, len(building_info_list), index_skip)))
                    'settings': spider_settings,
                    'urlList': building_info_list[index:index + index_skip],
                    'spider_count': 128},
-        dag=dag)
+        dag=dag,
+        execution_timeout=timedelta(hours=11))
     t4.set_upstream(t3)

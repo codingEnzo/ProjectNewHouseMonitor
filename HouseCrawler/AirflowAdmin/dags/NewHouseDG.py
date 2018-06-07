@@ -6,6 +6,7 @@ import math
 import json
 import random
 import django
+from datetime import timedelta
 from airflow import DAG
 from airflow.operators.python_operator import PythonOperator
 
@@ -87,7 +88,8 @@ t1 = PythonOperator(
             }
         ]
     },
-    dag=dag
+    dag=dag,
+    execution_timeout=timedelta(hours=7)
 )
 
 project_info_list = []
@@ -161,5 +163,6 @@ for cur, index in enumerate(list(range(0, len(building_info_list), index_skip)))
                    'settings': spider_settings,
                    'urlList': building_info_list[index:index + index_skip],
                    'spider_count': 96},
-        dag=dag)
+        dag=dag,
+        execution_timeout=timedelta(hours=7))
     t4.set_upstream(t3)
