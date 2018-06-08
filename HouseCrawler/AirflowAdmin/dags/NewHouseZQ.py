@@ -66,6 +66,7 @@ spider_settings = {
         'HouseCrawler.SpiderMiddleWares.SpiderMiddleWaresZQ.ProjectIndexHandleMiddleware': 108,
     },
     'DOWNLOADER_MIDDLEWARES': {
+        'HouseCrawler.DownloadMiddleWares.DownloaderMiddlewareZhaoqing.CookiesDownloaderMiddleware': 111,
         'HouseCrawler.DownloadMiddleWares.KeyWordRetryMiddleWares.KeyWordRetryMiddleware': 121,
     },
     'EXTENSIONS': {

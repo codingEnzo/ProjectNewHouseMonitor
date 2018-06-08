@@ -11,7 +11,7 @@ except Exception:
 class HouseInfoDownloaderMiddleware(object):
 
     def __init__(self, crawler):
-        self.settings = settings = crawler.settings
+        self.settings = crawler.settings
 
     @classmethod
     def from_crawler(cls, crawler):
