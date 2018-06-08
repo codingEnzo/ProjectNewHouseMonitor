@@ -201,7 +201,7 @@ class HouseInfoItem(DjangoItem):
                   'Price': 'RoughPrice',
                   'PriceType': '',
                   'DecorationPrice': '',
-                  'Remarks': '',
+                  'Remarks': 'PresellUUID',
                   'SourceUrl': '',
                   'ExtraJson': '',
                   }
