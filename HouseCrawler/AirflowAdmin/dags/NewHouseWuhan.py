@@ -1,5 +1,6 @@
 # -*-coding=utf-8-*-
 import os
+import pickle
 import sys
 import json
 import django
@@ -23,7 +24,6 @@ sys.path.append(HOUSECRAWLER_DIR)
 sys.path.append(HOUSESERVICE_DIR)
 sys.path.append(HOUSESERVICECORE_DIR)
 
-
 os.environ['DJANGO_SETTINGS_MODULE'] = 'HouseAdmin.settings'
 django.setup()
 
@@ -31,7 +31,8 @@ from HouseNew.models import *
 from services.spider_service import spider_call
 from django.conf import settings as dj_settings
 
-REDIS_CACHE_KEY = "NewHouseWuhan"
+REDIS_BUILDING_CACHE_KEY = "NewHouseWuhan_BuildingList"
+REDIS_HOUSE_CACHE_KEY = "NewHouseWuhan_HouseList"
 
 
 def just_one_instance(func):
@@ -47,6 +48,7 @@ def just_one_instance(func):
             print('already has an instance')
             return None
         return func(*args, **kwargs)
+
     return f
 
 
@@ -72,97 +74,127 @@ spider_settings = {
         'HouseCrawler.Pipelines.PipelinesWuhan.WuhanPipeline': 300,
     },
     'SPIDER_MIDDLEWARES': {
-        'HouseCrawler.SpiderMiddleWares.SpiderMiddleWaresWuhan.ProjectBaseHandleMiddleware': 102,
+        'HouseCrawler.SpiderMiddleWares.SpiderMiddleWaresWuhan.ProjectListHandleMiddleware': 102,
         'HouseCrawler.SpiderMiddleWares.SpiderMiddleWaresWuhan.ProjectInfoHandleMiddleware': 103,
         'HouseCrawler.SpiderMiddleWares.SpiderMiddleWaresWuhan.BuildingListHandleMiddleware': 104,
-        'HouseCrawler.SpiderMiddleWares.SpiderMiddleWaresWuhan.HouseInfoHandleMiddleware': 105,
-        'HouseCrawler.SpiderMiddleWares.SpiderMiddleWaresWuhan.SignInfoHandleMiddleware': 106,
+        'HouseCrawler.SpiderMiddleWares.SpiderMiddleWaresWuhan.HouseListHandleMiddleware': 105,
     },
     'RETRY_ENABLE': True,
-    'CLOSESPIDER_TIMEOUT': 3600 * 5.8
+    'CLOSESPIDER_TIMEOUT': 3600 * 5.8,
+    'DEFAULT_REQUEST_HEADERS': {
+        'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8',
+        'Accept-Encoding': 'gzip, deflate',
+        'Accept-Language': 'zh-CN,zh;q=0.9',
+        'Upgrade-Insecure-Requests': '1',
+        'Host': 'fgj.wuhan.gov.cn',
+    },
+    'POST_DEFAULT_REQUEST_HEADERS': {
+        'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8',
+        'Accept-Encoding': 'gzip, deflate',
+        'Accept-Language': 'zh-CN,zh;q=0.9',
+        'Content-Type': 'application/x-www-form-urlencoded',
+        'Host': 'fgj.wuhan.gov.cn',
+    }
 }
-
 
 dag = DAG('NewHouseWuhan', default_args=default_args,
           schedule_interval="15 */12 * * *")
 
 t1 = PythonOperator(
-    task_id='LoadProjectBaseWuhan',
-    python_callable=spider_call,
-    op_kwargs={'spiderName': 'DefaultCrawler',
-               'settings': spider_settings,
-               'urlList': [{'source_url': 'http://scxx.fgj.wuhan.gov.cn/xmqk.asp?page=1&domain=&blname=&bladdr=&prname=',
-                            'meta': {'PageType': 'ProjectBase'}}]},
-    dag=dag)
-
-t_signinfo = PythonOperator(
-    task_id='LoadSignInfoBaseWuhan',
-    python_callable=spider_call,
-    op_kwargs={'spiderName': 'DefaultCrawler',
-               'settings': spider_settings,
-               'urlList': [{'source_url': 'http://scxx.fgj.wuhan.gov.cn/scxxbackstage/whfcj/channels/854.html',
-                            'meta': {'PageType': 'SignInfoBase'}}]},
-    dag=dag)
-
-project_info_list = []
-cur = ProjectBaseWuhan.objects
-for item in cur:
-    project_info = {'source_url': item.ProjectUrl,
-                    'meta': {'PageType': 'ProjectInfo',
-                             'pjname': item.ProjectName,
-                             'pjuuid': item.ProjectUUID}}
-    project_info_list.append(project_info)
-t2 = PythonOperator(
     task_id='LoadProjectInfoWuhan',
     python_callable=spider_call,
     op_kwargs={'spiderName': 'DefaultCrawler',
                'settings': spider_settings,
-               'urlList': project_info_list},
+               'urlList': [{'source_url': 'http://fgj.wuhan.gov.cn/zz_spfxmcx_index.jspx',
+                            'meta': {'PageType': 'ProjectList'}}]},
     dag=dag)
 
 
-def cacheLoader(key=REDIS_CACHE_KEY):
+def query_mongodb(name="BuildingList", key=REDIS_BUILDING_CACHE_KEY):
     r = dj_settings.REDIS_CACHE
-    cur = BuildingInfoWuhan.objects.aggregate(*[{"$sort": {"CurTimeStamp": 1}},
-                                                {'$group':
-                                                 {'_id': "$BuildingUUID",
-                                                  'ProjectName': {'$first': '$ProjectName'},
-                                                  'ProjectUUID': {'$first': '$ProjectUUID'},
-                                                  'BuildingName': {'$first': '$BuildingName'},
-                                                  'BuildingUUID': {'$first': '$BuildingUUID'},
-                                                  'BuildingURL': {'$first': '$BuildingURL'},
-                                                  }
-                                                 }])
-    for item in cur:
-        try:
-            if item['BuildingURL']:
-                if True:
-                    builfing_info = {'source_url': item['BuildingURL'],
-                                     'meta': {'PageType': 'HouseInfo',
-                                              'pjname': item['ProjectName'],
-                                              'BuilName': item['BuildingName'],
-                                              'pjuuid': str(item['ProjectUUID']),
-                                              'builuuid': str(item['BuildingUUID'])}}
-                    r.sadd(key, json.dumps(builfing_info))
-        except Exception:
-            import traceback
-            traceback.print_exc()
-    r.expire(key, 3600)
+    try:
+
+        if name == 'BuildingList':
+            cur = ProjectInfoWuhan.objects.aggregate(*[
+                {'$group':
+                     {'_id': "$ProjectUUID",
+                      'RealEstateProjectID': {'$first': '$RealEstateProjectID'},
+                      'ProjectUUID': {'$first': '$ProjectUUID'},
+                      'ProjectName': {'$first': '$ProjectName'},
+                      }
+                 }
+            ])
+            for item in cur:
+
+                if item['RealEstateProjectID']:
+                    url = 'http://fgj.wuhan.gov.cn/zz_spfxmcx_loupan.jspx?dengJh={id}'.format(
+                        id=item['RealEstateProjectID'])
+                    buildingList_info = {'source_url': url,
+                                         'meta': {
+                                             'PageType': 'BuildingList',
+                                             'ProjectUUID': str(item['ProjectUUID']),
+                                             'ProjectName': str(item['ProjectName'])
+                                         }}
+                    r.sadd(key, pickle.dumps(buildingList_info))
+        elif name == 'HouseList':
+            cur = BuildingInfoWuhan.objects.aggregate(*[
+                {'$group':
+                     {'_id': "$BuildingUUID",
+                      'ProjectUUID': {'$first': '$ProjectUUID'},
+                      'ProjectName': {'$first': '$ProjectName'},
+                      'BuildingUUID': {'$first': '$BuildingUUID'},
+                      'BuildingName': {'$first': '$BuildingName'},
+                      'SourceUrl': {'$first': '$SourceUrl'},
+                      }
+                 }
+            ])
+            for item in cur:
+                houseList_info = {'source_url': item['SourceUrl'],
+                                  'meta': {
+                                      'PageType': 'HouseList',
+                                      'ProjectUUID': str(item['ProjectUUID']),
+                                      'ProjectName': str(item['ProjectName']),
+                                      'BuildingUUID': str(item['BuildingUUID']),
+                                      'BuildingName': str(item['BuildingName']),
+                                  }}
+                r.sadd(key, pickle.dumps(houseList_info))
+        r.expire(key, 86400)
+
+    except Exception:
+        import traceback
+        traceback.print_exc()
 
 
 t3 = PythonOperator(
-    task_id='LoadBuildingInfoCache',
-    python_callable=cacheLoader,
-    op_kwargs={'key': REDIS_CACHE_KEY},
+    task_id='LoadBuildingListWuhanCache',
+    python_callable=query_mongodb,
+    op_kwargs={'name': 'BuildingList', 'key': REDIS_BUILDING_CACHE_KEY},
     dag=dag)
 
 builfing_info_list = list(map(lambda x: json.loads(
-    x.decode()), dj_settings.REDIS_CACHE.smembers(REDIS_CACHE_KEY)))
+    x.decode()), dj_settings.REDIS_CACHE.smembers(REDIS_BUILDING_CACHE_KEY)))
 t4 = PythonOperator(
-    task_id='LoadBuildingInfoWuhan',
+    task_id='LoadBuildingListWuhan',
     python_callable=spider_call,
     op_kwargs={'spiderName': 'DefaultCrawler',
                'settings': spider_settings,
                'urlList': builfing_info_list},
     dag=dag)
 t4.set_upstream(t3)
+
+t5 = PythonOperator(
+    task_id='LoadBuildingListWuhanCache',
+    python_callable=query_mongodb,
+    op_kwargs={'name': 'HouseList', 'key': REDIS_HOUSE_CACHE_KEY},
+    dag=dag)
+
+builfing_info_list = list(map(lambda x: json.loads(
+    x.decode()), dj_settings.REDIS_CACHE.smembers(REDIS_HOUSE_CACHE_KEY)))
+t6 = PythonOperator(
+    task_id='LoadHouseListWuhan',
+    python_callable=spider_call,
+    op_kwargs={'spiderName': 'DefaultCrawler',
+               'settings': spider_settings,
+               'urlList': builfing_info_list},
+    dag=dag)
+t6.set_upstream(t5)

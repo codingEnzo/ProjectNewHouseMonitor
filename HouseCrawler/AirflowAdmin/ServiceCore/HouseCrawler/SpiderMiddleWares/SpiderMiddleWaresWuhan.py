@@ -1,200 +1,158 @@
 # coding = utf-8
+import logging
 import sys
 import uuid
-import urllib
-from scrapy import Request
-from HouseNew.models import *
-from HouseCrawler.Items.ItemsWuhan import *
 
+import regex
+
+from scrapy import Request
+from HouseCrawler.Items.ItemsWuhan import *
 
 if sys.version_info.major >= 3:
     import urllib.parse as urlparse
 else:
     import urlparse
+logger = logging.getLogger(__name__)
+
+debug = False
 
 
-class ProjectBaseHandleMiddleware(object):
-    headers = {
-        'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8',
-        'Accept-Encoding': 'gzip, deflate',
-        'Accept-Language': 'zh-CN,zh;q=0.9',
-        'Cache-Control': 'max-age=0',
-        'Connection': 'keep-alive',
-        'Host': 'scxx.fgj.wuhan.gov.cn',
-        'Upgrade-Insecure-Requests': '1',
-    }
+def getParamsDict(url):
+    query = urlparse.urlparse(url).query
+    return dict([(k, v[0]) for k, v in urlparse.parse_qs(query).items()])
 
+
+class ProjectListHandleMiddleware(object):
     def __init__(self, settings):
         self.settings = settings
 
     @classmethod
     def from_crawler(cls, crawler):
-        # This method is used by Scrapy to create your spiders.
         return cls(crawler.settings)
 
+    def process_spider_exception(self, response, exception, spider):
+        return
+
     def process_spider_output(self, response, result, spider):
-        def get_total_page():  # 获取总页数
-            search_result = response.xpath(
-                '//select[@name="pagemenu"]/option[last()]/text()').extract_first() or '0'
-            return int(search_result)
+        def get_totla_page(response):
+            total_page = 1
+            try:
+                t = response.xpath('//a[starts-with(@href,"javascript:_submit")][last()]/@href').extract_first()
+                total_page = int(regex.search('submit\((?<page>\d+)\)', t).group(1))
+            except Exception:
+                pass
+            if debug:
+                return 1
+            return total_page
 
         result = list(result)
-        if not(200 <= response.status < 300):  # 判断状态码
-            if result:
-                return result
-            return []
+        if not (200 <= response.status < 300):
+            return result if result else []
+        if response.meta.get('PageType') != 'ProjectList':
+            return result if result else []
+        print('ProjectListHandleMiddleware')
+        if response.request.method == 'GET':
+            total_page = get_totla_page(response)
+            for page in range(1, total_page + 1):
+                list_req = Request(url=response.url,
+                                   headers=self.settings.get('POST_DEFAULT_REQUEST_HEADERS'),
+                                   method='POST',
+                                   body=urlparse.urlencode({
+                                       'shiqs': '',
+                                       'xiangMmc': '',
+                                       'menPhm': '',
+                                       'kaifs': '',
+                                       'pageNo': str(page),
+                                   }),
+                                   dont_filter=True,
+                                   meta={'PageType': 'ProjectList'})
+                result.append(list_req)
+        else:
+            tr_arr = response.xpath('//*[@id="jvForm"]/div[2]/table[1]/tr')
+            for tr in tr_arr[1:]:
+                urltext = tr.xpath('td[1]/a/@onclick').extract_first('')
 
-        if response.meta.get('PageType') not in ('ProjectBase', 'ProjectList'):  # 获取一个类型,,标识
-            if result:
-                return result
-            return []
-        print('ProjectBaseHandleMiddleware')
+                c = regex.search("\('(?<url>.*)'\)", urltext)
+                if c:
+                    url = urlparse.urljoin(response.url, c.group(1))
+                    # print(url)
+                    param = getParamsDict(url)
+                    project = ProjectInfoItem()
+                    project['SourceUrl'] = url
+                    project['RealEstateProjectID'] = param.get('dengJh', '')
+                    project['ProjectName'] = tr.xpath('/td[1]/a/text()').extract_first('')
+                    project['ProjectUUID'] = uuid.uuid3(uuid.NAMESPACE_DNS,
+                                                        project['RealEstateProjectID'] + project['ProjectName'])
+                    project['HousingCount'] = tr.xpath('/td[2]/text()').extract_first('')
+                    project['HouseSoldCount'] = tr.xpath('/td[3]/text()').extract_first('')
+                    project['HouseCount'] = tr.xpath('/td[4]/text()').extract_first('')
+                    project['UnHouseSoldCount'] = tr.xpath('/td[5]/text()').extract_first('')
+                    project['UnHouseCount'] = tr.xpath('/td[6]/text()').extract_first('')
 
-        if response.meta.get('PageType') == 'ProjectBase':
-            page_count = get_total_page()
-            for i in range(1, page_count + 1):
-                page_url = "http://scxx.fgj.wuhan.gov.cn/xmqk.asp?page=%d&domain=&blname=&bladdr=&prname=" % i
-                result.append(Request(url=page_url, method='GET', headers=self.headers, meta={
-                    'PageType': 'ProjectList'}))  # 爬取每一页内容,ProjectBase作为标识
-        elif response.meta.get('PageType') == 'ProjectList':
-            pro_list = response.xpath('//tr[@bgcolor="#FFFFFF"]')  # td的父级
-            for tr in pro_list:
-                pb = ProjectBaseItem()
-                href = tr.xpath('td[1]/a/@href').extract_first()
-                base_code = href.split('=')[1]
-                uu = urllib.parse.quote(base_code.encode(
-                    'gbk', 'replace'))  # gb2312 转gbk
-                sphref = href.split('=')[0] + '=' + uu
-                http = urlparse.urljoin(response.url, sphref)
-                pb['ProjectUUID'] = str(uuid.uuid3(uuid.NAMESPACE_DNS, http))
-                pb['ProjectUrl'] = http
-                pb['ProjectName'] = tr.xpath(
-                    'td[1]/a/span/text()').extract_first() or ''
-                pb['Allnumber'] = tr.xpath(
-                    'td[2]/text()').extract_first().strip()
-                pb['Home_have_sale'] = tr.xpath(
-                    'td[3]/text()').extract_first().strip()
-                pb['Home_sale'] = tr.xpath(
-                    'td[4]/text()').extract_first().strip()
-                pb['NoHome_have_sale'] = tr.xpath(
-                    'td[5]/text()').extract_first().strip()
-                pb['NoHome_sale'] = tr.xpath(
-                    'td[6]/text()').extract_first().strip()
-                result.append(pb)
+                    req = Request(url=url,
+                                  headers=self.settings.get('DEFAULT_REQUEST_HEADERS'),
+                                  dont_filter=True,
+                                  meta={'PageType': 'ProjectInfo',
+                                        'item': project})
+                    result.append(req)
 
         return result
 
 
+# 项目详细信息
 class ProjectInfoHandleMiddleware(object):
-    headers = {
-        'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8',
-        'Accept-Encoding': 'gzip, deflate',
-        'Accept-Language': 'zh-CN,zh;q=0.9',
-        'Cache-Control': 'max-age=0',
-        'Connection': 'keep-alive',
-        'Host': 'scxx.fgj.wuhan.gov.cn',
-        'Upgrade-Insecure-Requests': 1,
-    }
-
     def __init__(self, settings):
         self.settings = settings
 
     @classmethod
     def from_crawler(cls, crawler):
-        return cls(crawler.settings)  #
+        return cls(crawler.settings)
+
+    def process_spider_exception(self, response, exception, spider):
+        return
 
     def process_spider_output(self, response, result, spider):
-
+        if not (200 <= response.status < 300):  # common case
+            return result if result else []
+        if response.meta.get('PageType') != 'ProjectInfo':
+            return result if result else []
         result = list(result)
-        if not(200 <= response.status < 300):  # common case
-            if result:
-                return result
-            return []
-        if response.meta.get('PageType') not in ('ProjectInfo'):  # 判断类型是否吻合  (给定一个标识)
-            if result:
-                return result
-            return []
-        # newres = Selector(text=response.body_as_unicode())
         print('ProjectInfoHandleMiddleware')
+        project = response.meta.get('item')
 
-        if response.meta.get('PageType') == 'ProjectInfo':
-            href = response.xpath('//tr/td[1]/p/font/a/@href').extract_first()
-            if href:
-                info_code = href.split('=')[1]
-                uu = urllib.parse.quote(info_code.encode('gbk', 'replace'))
-                sphref = href.split('=')[0] + '=' + uu
-                part_http = "http://scxx.fgj.wuhan.gov.cn/" + sphref
-                result.append(Request(url=part_http,
-                              meta={'PageType': 'BuildingInfo',
-                                    'pjuuid': response.meta.get('pjuuid') or '',
-                                    'pjname': response.meta.get('pjname') or ''}))
-            item['ProjectName'] = response.meta.get('pjname') or ''
-            item['location'] = (response.xpath(
-                '//table[2]/tbody/tr[2]/td[2]/text()').extract_first() or '').strip()
-            item['start_work_time'] = (response.xpath(
-                '//table[2]/tbody/tr[3]/td[2]/text()').extract_first() or '').strip()
-            item['completed_time'] = (response.xpath(
-                '//table[2]/tbody/tr[3]/td[4]/text()').extract_first() or '').strip()
-            item['land_area'] = (response.xpath(
-                '//table[2]/tbody/tr[4]/td[3]/text()').extract_first() or '').strip()
-            item['land_year'] = (response.xpath(
-                '//table[2]/tbody/tr[4]/td[5]/text()').extract_first() or '').strip()
-            item['land_purpose'] = (response.xpath(
-                '//table[2]/tbody/tr[5]/td[2]/text()').extract_first() or '').strip()
-            item['Land_grade'] = (response.xpath(
-                '//table[2]/tbody/tr[5]/td[4]/text()').extract_first() or '').strip()
-            item['building_area'] = (response.xpath(
-                '//table[2]/tbody/tr[6]/td[2]/text()').extract_first() or '').strip()
-            item['Volume_rate'] = (response.xpath(
-                '//table[2]/tbody/tr[6]/td[4]/text()').extract_first() or '').strip()
-            item['home_Tnumber'] = (response.xpath(
-                '//table[2]/tbody/tr[7]/td[2]/text()').extract_first() or '').strip()
-            item['home_Dnumber'] = (response.xpath(
-                '//table[2]/tbody/tr[7]/td[4]/text()').extract_first() or '').strip()
-            item['market_time'] = (response.xpath(
-                '//table[2]/tbody/tr[8]/td[2]/text()').extract_first() or '').strip()
-            item['His_rights'] = (response.xpath(
-                '//table[2]/tbody/tr[8]/td[4]/text()').extract_first() or '').strip()
-            item['PermitNumberOfConstructionLandPlanning'] = (response.xpath(
-                '//table[2]/tbody/tr[9]/td[4]/text()').extract_first() or '').strip()
-            item['CertificateOfUseOfStateOwnedLand'] = (response.xpath(
-                '//table[2]/tbody/tr[9]/td[6]/text()').extract_first() or '').strip()
-            item['ConstructionProjectPlanningPermitNumber'] = (response.xpath(
-                '//table[2]/tbody/tr[10]/td[4]/text()').extract_first() or '').strip()
-            item['ConstructionPermitNumber'] = (response.xpath(
-                '//table[2]/tbody/tr[10]/td[2]/text()').extract_first() or '').strip()
-            item['LicenseNumberOfCommercialHousingPresale'] = (response.xpath(
-                '//table[2]/tbody/tr[11]/td[2]/text()').extract_first() or '').strip()
-            item['DevelopEnterpriseQualificationNumber'] = (response.xpath(
-                '//table[2]/tbody/tr[11]/td[4]/text()').extract_first() or '').strip()
-            item['DevelopmentEnterprise'] = (response.xpath(
-                '//table[2]/tbody/tr[12]/td[2]/text()').extract_first() or '').strip()
-            item['Phone1'] = (response.xpath(
-                '//table[2]/tbody/tr[13]/td[2]/text()').extract_first() or '').strip()
-            item['AgencyCompany'] = (response.xpath(
-                '//table[2]/tbody/tr[14]/td[2]/text()').extract_first() or '').strip()
-            item['Phone2'] = (response.xpath(
-                '//table[2]/tbody/tr[15]/td[2]/text()').extract_first() or '').strip()
-            item['ProjectFilingAuthority'] = (response.xpath(
-                '//table[2]/tbody/tr[16]/td[2]/text()').extract_first() or '').strip()
-            item['InfoUrl'] = response.url
-            item['ProjectUUID'] = response.meta.get('pjuuid') or ''
-            result.append(item)
+        if not project['ProjectName']:
+            project['ProjectName'] = response.xpath('//*[@id="xiangmmc"]/text()').extract_first('')
+        project['ProjectAddress'] = response.xpath('//*[@id="MenPhm"]/text()').extract_first('')
+        project['EarliestStartDate'] = response.xpath('//*[@id="kaigsj"]/text()').extract_first('')
+        project['CompletionDate'] = response.xpath('//*[@id="jungsj"]/text()').extract_first('')
+        project['FloorArea'] = response.xpath('//*[@id="TuDmj"]/text()').extract_first('')
+        project['PropertyRightsDescription'] = response.xpath('//*[@id="ShiYnx"]/text()').extract_first('')
+        project['LandUse'] = response.xpath('//*[@id="TuDyt"]/text()').extract_first('')
+        project['LandLevel'] = response.xpath('//*[@id="TuDdj"]/text()').extract_first('')
+        project['TotalBuidlingArea'] = response.xpath('//*[@id="JianZmj"]/text()').extract_first('')
+        project['FloorAreaRatio'] = response.xpath('//*[@id="rongjl"]/text()').extract_first('')
+        if not project['HousingCount']:
+            project['HousingCount'] = response.xpath('//*[@id="zts"]/text()').extract_first('')
+        project['HouseBuildingCount'] = response.xpath('//*[@id="ZDongS"]/text()').extract_first('')
+        project['ProjectBookingData'] = response.xpath('//*[@id="xiaossj"]/text()').extract_first('')
+        project['OtheRights'] = response.xpath('//*[@id="TaXql"]/text()').extract_first('')
 
+        project['LandUsePermit'] = response.xpath('//*[@id="JianzYDGHXKZH"]/text()').extract_first('')
+        project['CertificateOfUseOfStateOwnedLand'] = response.xpath('//*[@id="TuDsyqzh"]/text()').extract_first('')
+        project['BuildingPermit'] = response.xpath('//*[@id="JianZghxkzh"]/text()').extract_first('')
+        project['ConstructionPermitNumber'] = response.xpath('//*[@id="ShiGxkzh"]/text()').extract_first('')
+        project['PresalePermitNumber'] = response.xpath('//*[@id="shangPfysxkz"]/text()').extract_first('')
+        project['QualificationNumber'] = response.xpath('//*[@id="KaiFQYZZ"]/text()').extract_first('')
+
+        project['Developer'] = response.xpath('//*[@id="KaiFs"]/text()').extract_first('')
+        project['Contact'] = response.xpath('//*[@id="LianXdh"]/text()').extract_first('')
+        project['PresaleRegistrationManagementDepartment'] = response.xpath('//*[@id="shiqs"]/text()').extract_first('')
+
+        result.append(project)
         return result
 
 
 class BuildingListHandleMiddleware(object):
-    headers = {
-        'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8',
-        'Accept-Encoding': 'gzip, deflate',
-        'Accept-Language': 'zh-CN,zh;q=0.9',
-        'Cache-Control': 'max-age=0',
-        'Connection': 'keep-alive',
-        'Host': 'scxx.fgj.wuhan.gov.cn',
-        'Upgrade-Insecure-Requests': '1',
-    }
-
     def __init__(self, settings):
         self.settings = settings
 
@@ -202,77 +160,58 @@ class BuildingListHandleMiddleware(object):
     def from_crawler(cls, crawler):
         return cls(crawler.settings)
 
+    def process_spider_exception(self, response, exception, spider):
+        return
+
     def process_spider_output(self, response, result, spider):
 
+        if not (200 <= response.status < 300):  # common case
+            return result if result else []
+        if response.meta.get('PageType') != 'BuildingList':
+            return result if result else []
         result = list(result)
-        if not(200 <= response.status < 300):  # common case
-            if result:
-                return result
-            return []
-        if response.meta.get('PageType') != 'BuildingInfo':
-            if result:
-                return result
-            return []
         print('BuildingListHandleMiddleware')
+        ProjectUUID = response.meta.get('ProjectUUID')
+        ProjectName = response.meta.get('ProjectName')
 
-        if response.meta.get('PageType') == 'BuildingInfo':
-            tr_list = response.xpath('//tr[@bgcolor="#FFFFFF"]')
+        tr_arr = response.xpath('//div[@class="tabls"]/table[last()]/tr')
+        for tr in tr_arr[1:]:
+            building = BuildingInfoItem()
+            building['ProjectUUID'] = ProjectUUID
+            building['ProjectName'] = ProjectName
 
-            for tr in tr_list:
-                BuilItem = BuildingInfoItem()
-                href = tr.xpath('td[1]/a/@href').extract_first()
-                code0 = href.split('=')[0]
-                code1 = href.split('=')[1]
-                code2 = href.split('=')[2]
-                uu1 = urllib.parse.quote(code1.encode(
-                    'gbk', 'replace'))  # gb2312  转gbk
-                np = uu1.split('%26')
-                uu2 = urllib.parse.quote(code2.encode(
-                    'gbk', 'replace'))  # gb2312  转gbk
-                sphref = code0 + '=' + np[0] + \
-                    '&' + np[1] + "=" + uu2  # 拼接href
-                houses_url = "http://scxx.fgj.wuhan.gov.cn/" + sphref
-                BuilItem['ProjectName'] = response.meta.get('pjname') or ''
-                BuilItem['BuildingName'] = tr.xpath(
-                    'td[1]/a/span/text()').extract_first(default='').strip()
-                BuilItem['BuildingURL'] = houses_url
-                BuilItem['Building_structure'] = tr.xpath(
-                    'td[2]/text()').extract_first(default='').strip()
-                BuilItem['Layer_number'] = tr.xpath(
-                    'td[3]/text()').extract_first(default='').strip()
-                BuilItem['Set_number'] = tr.xpath(
-                    'td[4]/text()').extract_first(default='').strip()
-                BuilItem['ProjectUUID'] = response.meta.get('pjuuid') or ''
-                BuilItem['BuildingUUID'] = str(uuid.uuid3(
-                    uuid.NAMESPACE_DNS, str(houses_url) + BuilItem['BuildingName']))
-                result.append(BuilItem)
+            urltext = tr.xpath('./td[1]/a/@onclick').extract_first('')
+            c = regex.search("\('(?<url>.*)'\)", urltext)
+            if c:
+                url = urlparse.urljoin(response.url, c.group(1))
+                param = getParamsDict(url)
+                building['SourceUrl'] = url
+                building['BuildingID'] = param.get('houseDengJh', '')
+                building['BuildingName'] = tr.xpath('/td[1]/a/text()').extract_first('')
+                building['BuildingUUID'] = uuid.uuid3(uuid.NAMESPACE_DNS,
+                                                      ProjectUUID + building['BuildingID'] + building['BuildingName'])
+
+                building['BuildingStructure'] = tr.xpath('/td[2]/text()').extract_first('')
+                building['Floors'] = tr.xpath('/td[3]/text()').extract_first('')
+                building['HousingCount'] = tr.xpath('/td[4]/text()').extract_first('')
+                result.append(building)
         return result
 
 
-class HouseInfoHandleMiddleware(object):
-
-    headers_next = {
-        'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8',
-        'Accept-Encoding': 'gzip, deflate',
-        'Accept-Language': 'zh-CN,zh;q=0.9',
-        'Cache-Control': 'max-age=0',
-        'Connection': 'keep-alive',
-        'Host': '202.103.39.36',
-        'Upgrade-Insecure-Requests': '1',
-    }
-
+class HouseListHandleMiddleware(object):
     def __init__(self, settings):
         self.settings = settings
 
     @classmethod
     def from_crawler(cls, crawler):
-        # This method is used by Scrapy to create your spiders.
         return cls(crawler.settings)
 
-    def process_spider_output(self, response, result, spider):
+    def process_spider_exception(self, response, exception, spider):
+        return
 
-        def get_house_state(string):  # 户状态
-            STATE_TAB = {
+    def process_spider_output(self, response, result, spider):
+        def get_house_state(key):
+            state_dict = {
                 '#CCFFFF': '未销售',
                 '#FF0000': '已网上销售',
                 '#FFFF00': '已抵押',
@@ -280,57 +219,62 @@ class HouseInfoHandleMiddleware(object):
                 '#000000': '限制出售',
                 '#FFFFFF': '状态不明',
             }
-            state = ''
-            for key in STATE_TAB:
-                if key == string:
-                    state = STATE_TAB[key]
-                    break
-            return state
+            return state_dict.get(key, '')
 
+        if not (200 <= response.status < 300):
+            return result if result else []
+        if response.meta.get('PageType') not in ('HouseList', 'HouseInfoDetail'):
+            return result if result else []
         result = list(result)
-        if not (200 <= response.status < 300):  # common case
-            if result:
-                return result
-            return []
-        if response.meta.get('PageType') not in ('HouseInfo', 'HouseInfoDetail'):
-            if result:
-                return result
-            return []
-        print('HouseInfoHandleMiddleware')
+        if response.meta.get('PageType') == 'HouseList':
+            print('HouseListHandleMiddleware')
+            ProjectUUID = response.meta.get('ProjectUUID')
+            ProjectName = response.meta.get('ProjectName')
+            BuildingUUID = response.meta.get('BuildingUUID')
+            BuildingName = response.meta.get('BuildingName')
+            tr_arr = response.xpath('//div[@class="xinjia"]/table/tr')
+            for tr in tr_arr[1:]:
+                td_arr = tr.xpath('./td[@bgcolor]')
+                for td in td_arr:
+                    house = HouseInfoItem()
+                    house['ProjectUUID'] = ProjectUUID
+                    house['ProjectName'] = ProjectName
+                    house['BuildingUUID'] = BuildingUUID
+                    house['BuildingName'] = BuildingName
 
-        if response.meta.get('PageType') == 'HouseInfo':
-            tr_list = response.xpath(
-                "//tr[2]/td/table[3]//tr/td/table//tr[@bgcolor and td[@bgcolor]]")
-            for tr in tr_list:
-                builnum = tr.xpath('td[1]/text()').extract_first()
-                unit = tr.xpath('td[2]/text()').extract_first()
-                floornum = tr.xpath('td[3]/text()').extract_first()
-                tds = tr.xpath('td[@bgcolor]')
-                for td in tds:
-                    hinfo = HouseInfoItem()
-                    roomurl = td.xpath(
-                        './a/@href | ./font/a/@href').extract_first(default='')
-                    roomnum = td.xpath(
-                        './a/text() | ./font/a/text()').extract_first(default='')
-                    hinfo['Unit'] = unit
-                    hinfo['FloorNum'] = floornum
-                    hinfo['BuildingNum'] = builnum
+                    house['BuildingNumber'] = tr.xpath('./td[1]/text()').extract_first('')
+                    house['UnitName'] = tr.xpath('./td[2]/text()').extract_first('')
+                    house['FloorName'] = tr.xpath('./td[3]/text()').extract_first('')
+                    house['HouseName'] = td.xpath('./a/text() |./text()')
 
-                    hinfo['HouseName'] = roomnum
-                    hinfo['HouseUrl'] = response.url
-                    hinfo['HouseSubUrl'] = roomurl
+                    house['HouseUrl'] = td.xpath(
+                        './a/@href | ./font/a/@href').extract_first('')
+                    house['HouseName'] = td.xpath(
+                        './a/text() | ./font/a/text()').extract_first('')
 
-                    hinfo['ProjectName'] = response.meta.get('pjname', '')
-                    hinfo['BuildingName'] = response.meta.get('BuilName', '')
-                    hinfo['ProjectUUID'] = response.meta.get('pjuuid', '')
-                    hinfo['BuildingUUID'] = response.meta.get('builuuid', '')
-                    hinfo['HouseUUID'] = str(uuid.uuid3(uuid.NAMESPACE_DNS, str(
-                        hinfo['ProjectName']) + str(builnum) + str(unit) + str(floornum) + str(roomnum) + str(roomurl)))
-                    hinfo['State'] = get_house_state(
-                        td.xpath('@bgcolor').extract_first(default=''))
-                    result.append(Request(url=roomurl, method='GET', headers=self.headers_next,
-                                          meta={'PageType': 'HouseInfoDetail', 'item': hinfo}))
-        if response.meta.get('PageType') == 'HouseInfoDetail':
+                    house['HouseState'] = get_house_state(td.xpath('@bgcolor').extract_first(''))
+                    house['HouseUUID'] = uuid.uuid3(uuid.NAMESPACE_DNS,
+                                                    house['ProjectName'] +
+                                                    house['BuildingName'] +
+                                                    house['BuildingNumber'] +
+                                                    house['UnitName'] +
+                                                    house['HouseName'])
+
+                    parmam = getParamsDict(house['HouseUrl'])
+                    if parmam.get('gid') == '00000000-0000-0000-0000-000000000000':
+                        result.append(house)
+                    else:
+                        result.append(Request(url=house['HouseUrl'], method='GET', headers={
+                            'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8',
+                            'Accept-Encoding': 'gzip, deflate',
+                            'Accept-Language': 'zh-CN,zh;q=0.9',
+                            'Cache-Control': 'max-age=0',
+                            'Connection': 'keep-alive',
+                            'Upgrade-Insecure-Requests': '1',
+                        },
+                                              meta={'PageType': 'HouseInfoDetail', 'item': house}))
+        elif response.meta.get('PageType') == 'HouseInfoDetail':
+            # 暂时未遇到改版后能访问的url,2018-06-08
             hinfo = response.meta.get('item')
             if hinfo:
                 hinfo['House_located'] = response.xpath(
@@ -344,54 +288,5 @@ class HouseInfoHandleMiddleware(object):
                 hinfo['Record_unit_price'] = urlparse.urljoin(response.url, response.xpath(
                     '//tr[5]/td[2]/img/@src').extract_first(default='').strip())
                 result.append(hinfo)
-        return result
 
-
-class SignInfoHandleMiddleware(object):
-
-    def __init__(self, settings):
-        self.settings = settings
-
-    @classmethod
-    def from_crawler(cls, crawler):
-        # This method is used by Scrapy to create your spiders.
-        return cls(crawler.settings)
-
-    def process_spider_output(self, response, result, spider):
-
-        result = list(result)
-        if not (200 <= response.status < 300):  # common case
-            if result:
-                return result
-            return []
-        if response.meta.get('PageType') not in ('SignInfoBase', 'SignInfo'):
-            if result:
-                return result
-            return []
-        print('SignInfoHandleMiddleware')
-
-        if response.meta.get('PageType') == 'SignInfoBase':
-            sign_url = urlparse.urljoin(response.url, response.xpath(
-                '//tr[2]/td/table[1]//tr/td[1]/a/@href').extract_first(default=''))
-            result.append(Request(url=sign_url, meta={'PageType': 'SignInfo'}))
-        elif response.meta.get('PageType') == "SignInfo":
-            SignItem = SignInfoItem()
-            SignItem['SellInfo'] = {}
-            s_info_list = response.xpath(
-                '//div[@id="artibody"]/table/tbody/tr[position()>2]')[:-2]
-            for s_info in s_info_list:
-                s_dict = {s_info.xpath('./td[1]/text()').extract_first(default='').strip(): {
-                    'HousingSoldNum': s_info.xpath('./td[2]/text()').extract_first(default='').strip(),
-                    'HousingSoldArea': s_info.xpath('./td[3]/text()').extract_first(default='').strip(),
-                    'OfficeSoldNum': s_info.xpath('./td[4]/text()').extract_first(default='').strip(),
-                    'OfficeSoldArea': s_info.xpath('./td[5]/text()').extract_first(default='').strip(),
-                    'BussinessSoldNum': s_info.xpath('./td[6]/text()').extract_first(default='').strip(),
-                    'BussinessSoldArea': s_info.xpath('./td[7]/text()').extract_first(default='').strip(),
-                    'OtherSoldNum': s_info.xpath('./td[8]/text()').extract_first(default='').strip(),
-                    'OtherSoldArea': s_info.xpath('./td[9]/text()').extract_first(default='').strip(),
-                    'AllSoldNum': s_info.xpath('./td[10]/text()').extract_first(default='').strip(),
-                    'AllSoldArea': s_info.xpath('./td[11]/text()').extract_first(default='').strip()
-                }}
-                SignItem['SellInfo'].update(s_dict)
-            result.append(SignItem)
         return result
