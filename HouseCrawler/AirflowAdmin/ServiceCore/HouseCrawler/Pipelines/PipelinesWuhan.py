@@ -4,8 +4,9 @@ import os
 import logging
 import uuid
 import datetime
-from HouseNew.models import *
 from HouseCrawler.Items.ItemsWuhan import *
+from scrapy.exceptions import DropItem
+
 sys.path.append(os.path.abspath('.'))
 sys.path.append(os.path.abspath('..'))
 sys.path.append(os.path.abspath('../..'))
@@ -53,12 +54,8 @@ class WuhanPipeline(object):
     def check_item_exist(self, item):  # 检查item是否存在
         exist_flag = False
         q_object = item.django_model.objects
-        if isinstance(item, ProjectBaseItem):
-            res_object = q_object.filter(ProjectUUID=item['ProjectUUID']).latest(
-                field_name='CurTimeStamp')
-            if res_object:
-                exist_flag = True
-        elif isinstance(item, ProjectInfoItem):
+
+        if isinstance(item, ProjectInfoItem):
             res_object = q_object.filter(ProjectUUID=item['ProjectUUID']).latest(
                 field_name='CurTimeStamp')
             if res_object:
@@ -90,8 +87,8 @@ class WuhanPipeline(object):
                 if self.sum_value_hash(item.get(key)) != self.sum_value_hash(getattr(res_object, key)):
                     diff_flag = True
             if diff_flag:
-                for key in ('State',):
-                    item[key + 'Latest'] = getattr(res_object, key)
+
+                    item['HouseStateLatest'] = getattr(res_object, 'HouseState')
 
         elif isinstance(item, ProjectInfoItem):
             res_object = q_object.filter(ProjectUUID=item['ProjectUUID']).latest(
@@ -114,18 +111,6 @@ class WuhanPipeline(object):
                 if self.sum_value_hash(item.get(key)) != self.sum_value_hash(getattr(res_object, key)):
                     diff_flag = True
                     break
-
-        elif isinstance(item, ProjectBaseItem):  # 判断item 是否是ProjectBaseItem的一个实例
-            res_object = q_object.filter(ProjectUUID=item['ProjectUUID']).latest(
-                field_name='CurTimeStamp')
-            for key in item:
-                if not hasattr(res_object, key):
-                    diff_flag = True
-                    break
-                if self.sum_value_hash(item.get(key)) != self.sum_value_hash(getattr(res_object, key)):
-                    diff_flag = True
-                    break
-
         return diff_flag, item
 
     def storage_item(self, item):  # 存储 item
@@ -151,4 +136,6 @@ class WuhanPipeline(object):
                     logger.debug("item: %(item)s met first",
                                  {'item': item})
                     self.storage_item(item)
+            else:
+                raise DropItem('Drop item')
             return item

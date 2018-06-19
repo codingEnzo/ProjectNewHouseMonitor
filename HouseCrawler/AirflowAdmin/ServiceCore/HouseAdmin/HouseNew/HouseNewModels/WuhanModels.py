@@ -5,106 +5,53 @@ from django_mongoengine import *
 from django_mongoengine import fields
 
 
-class ProjectBaseWuhan(Document):
-    TYPE = ((0, '已售房'),
-            (1, '可售房')),
-    RecordID = fields.UUIDField(
-        default=uuid.uuid1(), binary=True, primary_key=True, null=False)
-    CurTimeStamp = fields.StringField(default=str(
-        datetime.datetime.now()), max_length=255, index=True)
-    ProjectUUID = fields.StringField(default='', max_length=255, null=False)
-    ProjectUrl = fields.URLField(default=None, null=True, blank=True)
-    ProjectName = fields.StringField(default='', max_length=255, null=False)
-    Allnumber = fields.StringField(default='', max_length=255, null=False)
-    Home_have_sale = fields.StringField(default='', max_length=255, null=False)
-    Home_sale = fields.StringField(default='', max_length=255, null=False)
-    NoHome_have_sale = fields.StringField(
-        default='', max_length=255, null=False)
-    NoHome_sale = fields.StringField(default='', max_length=255, null=False)
-    meta = {
-        'indexes': [
-            'CurTimeStamp',
-            'ProjectUUID',
-            'ProjectName',
-            'Allnumber',
-            'Home_have_sale',
-            'Home_sale',
-            'NoHome_have_sale',
-            'NoHome_sale',
-        ]
-    }
-
-
 class ProjectInfoWuhan(Document):
     RecordID = fields.UUIDField(
         default=uuid.uuid1(), binary=True, primary_key=True, null=False)
     CurTimeStamp = fields.StringField(
         default=str(datetime.datetime.now()), index=True)
-    ProjectUUID = fields.StringField(default='', max_length=255, null=False)
-    ProjectName = fields.StringField(default='', max_length=255, null=False)
-    InfoUrl = fields.URLField(default=None, null=True, blank=True)
-    location = fields.StringField(default='', max_length=255, null=False)
-    start_work_time = fields.StringField(
-        default='', max_length=255, null=False)
-    completed_time = fields.StringField(default='', max_length=255, null=False)
-    land_area = fields.StringField(default='', max_length=255, null=False)
-    building_area = fields.StringField(default='', max_length=255, null=False)
-    land_year = fields.StringField(default='', max_length=255, null=False)
-    land_purpose = fields.StringField(default='', max_length=255, null=False)
-    home_Tnumber = fields.StringField(default='', max_length=255, null=False)
-    home_Dnumber = fields.StringField(default='', max_length=255, null=False)
-    market_time = fields.StringField(default='', max_length=255, null=False)
-    His_rights = fields.StringField(default='', max_length=255, null=False)
-    Phone1 = fields.StringField(default='', max_length=255, null=False)
-    Phone2 = fields.StringField(default='', max_length=255, null=False)
-    AgencyCompany = fields.StringField(default='', max_length=255, null=False)
-    Volume_rate = fields.StringField(default='', max_length=255, null=False)
-    Land_grade = fields.StringField(default='', max_length=255, null=False)
-    PermitNumberOfConstructionLandPlanning = fields.StringField(
-        default='', max_length=255, null=False)
-    CertificateOfUseOfStateOwnedLand = fields.StringField(
-        default='', max_length=255, null=False)
-    ConstructionProjectPlanningPermitNumber = fields.StringField(
-        default='', max_length=255, null=False)
-    ConstructionPermitNumber = fields.StringField(
-        default='', max_length=255, null=False)
-    LicenseNumberOfCommercialHousingPresale = fields.StringField(
-        default='', max_length=820, null=False)
-    DevelopEnterpriseQualificationNumber = fields.StringField(
-        default='', max_length=255, null=False)
-    DevelopmentEnterprise = fields.StringField(
-        default='', max_length=255, null=False)
-    ProjectFilingAuthority = fields.StringField(
-        default='', max_length=255, null=False)
+    RealEstateProjectID = fields.StringField(default='', max_length=255, null=False)
+    ProjectUUID = fields.UUIDField(default=uuid.uuid3(uuid.NAMESPACE_DNS, ''), binary=False, null=False)
+    ProjectName = fields.StringField(default='', max_length=255, null=False)  # 项目名称
+    HousingCount = fields.StringField(default='', max_length=255, null=False)  # 总套数(套)
+    HouseSoldCount = fields.StringField(default='', max_length=255, null=False)  # 住房已售(套)
+    HouseCount = fields.StringField(default='', max_length=255, null=False)  # 住房可售(套)
+    UnHouseSoldCount = fields.StringField(default='', max_length=255, null=False)  # 非住房已售(套)
+    UnHouseCount = fields.StringField(default='', max_length=255, null=False)  # 非住房可售(套)
+    SourceUrl = fields.URLField(default=None, null=True, blank=True)
+
+    ProjectAddress = fields.StringField(default='', max_length=255, null=False)  # 项目坐落
+    EarliestStartDate = fields.StringField(default='', max_length=255, null=False)  # 开工时间
+    CompletionDate = fields.StringField(default='', max_length=255, null=False)  # 竣工时间(预计)
+
+    # 项目基本情况
+    FloorArea = fields.StringField(default='', max_length=255, null=False)  # 用地面积
+    PropertyRightsDescription = fields.StringField(default='', max_length=255, null=False)  # 土地使用年限
+    LandUse = fields.StringField(default='', max_length=255, null=False)  # 土地用途
+    LandLevel = fields.StringField(default='', max_length=255, null=False)  # 土地等级
+    TotalBuidlingArea = fields.StringField(default='', max_length=255, null=False)  # 建筑面积
+    FloorAreaRatio = fields.StringField(default='', max_length=255, null=False)  # 容积率
+    HouseBuildingCount = fields.StringField(default='', max_length=255, null=False)  # 房屋栋数
+    ProjectBookingData = fields.StringField(default='', max_length=255, null=False)  # 销售时间
+    OtheRights = fields.StringField(default='', max_length=255, null=False)  # 他项权利情况
+
+    # 项目证件情况
+    LandUsePermit = fields.StringField(default='', max_length=255, null=False)  # 建设用地规划许可证号
+    CertificateOfUseOfStateOwnedLand = fields.StringField(default='', max_length=255, null=False)  # 国有土地使用证号
+    BuildingPermit = fields.StringField(default='', max_length=255, null=False)  # 建设工程规划许可证号
+    ConstructionPermitNumber = fields.StringField(default='', max_length=255, null=False)  # 施工许可证号
+    PresalePermitNumber = fields.StringField(default='', max_length=255, null=False)  # 商品房预售许可证号
+    QualificationNumber = fields.StringField(default='', max_length=255, null=False)  # 开发企业资质证号
+    Developer = fields.StringField(default='', max_length=255, null=False)  # 开发企业
+    Contact = fields.StringField(default='', max_length=255, null=False)  # 联系电话
+    PresaleRegistrationManagementDepartment = fields.StringField(default='', max_length=255, null=False)  # 项目备案机关
+
     meta = {
         'indexes': [
             'CurTimeStamp',
             'ProjectUUID',
             'ProjectName',
-            'location',
-            'start_work_time',
-            'completed_time',
-            'land_area',
-            'building_area',
-            'land_year',
-            'land_purpose',
-            'home_Tnumber',
-            'home_Dnumber',
-            'market_time',
-            'His_rights',
-            'Phone1',
-            'AgencyCompany',
-            'Phone2',
-            'Volume_rate',
-            'Land_grade',
-            'PermitNumberOfConstructionLandPlanning',
-            'CertificateOfUseOfStateOwnedLand',
-            'ConstructionProjectPlanningPermitNumber',
-            'ConstructionPermitNumber',
-            'LicenseNumberOfCommercialHousingPresale',
-            'DevelopEnterpriseQualificationNumber',
-            'DevelopmentEnterprise',
-            'ProjectFilingAuthority',
+            'SourceUrl',
         ]
     }
 
@@ -114,88 +61,58 @@ class BuildingInfoWuhan(Document):
         default=uuid.uuid1(), binary=True, primary_key=True, null=False)
     CurTimeStamp = fields.StringField(
         default=str(datetime.datetime.now()), index=True)
-    ProjectUUID = fields.StringField(default='', max_length=255, null=False)
-    BuildingUUID = fields.StringField(default='', max_length=255, null=False)
-    ProjectName = fields.StringField(default='', max_length=255, null=False)
-    BuildingName = fields.StringField(default='', max_length=255, null=False)
-    Building_structure = fields.StringField(
-        default='', max_length=255, null=False)
-    Layer_number = fields.StringField(default='', max_length=255, null=False)
-    Set_number = fields.StringField(default='', max_length=255, null=False)
-    BuildingURL = fields.URLField(default=None, null=True, blank=True)
+    ProjectUUID = fields.UUIDField(default=uuid.uuid3(uuid.NAMESPACE_DNS, ''), binary=False, null=False)
+    ProjectName = fields.StringField(default='', max_length=255, null=False)  # 项目名称
+    BuildingID = fields.StringField(default='', max_length=255, null=False)  # 楼栋ID
+    BuildingUUID = fields.UUIDField(default=uuid.uuid3(uuid.NAMESPACE_DNS, ''), binary=False, null=False)
+    BuildingName = fields.StringField(default='', max_length=255, null=False)  # 楼栋名称
+    BuildingStructure = fields.StringField(default='', max_length=255, null=False)  # 建筑结构
+    Floors = fields.StringField(default='', max_length=255, null=False)  # 总层数
+    HousingCount = fields.StringField(default='', max_length=255, null=False)  # 总套数
+    SourceUrl = fields.URLField(default=None, null=True, blank=True)
     meta = {
         'indexes': [
-            'BuildingUUID',
-            'ProjectUUID',
             'CurTimeStamp',
+            'ProjectUUID',
+            'ProjectName',
+            'BuildingUUID',
             'BuildingName',
-            'BuildingURL',
-            'Building_structure',
-            'Layer_number',
-            'Set_number',
+            'SourceUrl',
         ]
     }
 
 
 class HouseInfoWuhan(Document):
-
     RecordID = fields.UUIDField(
         default=uuid.uuid1(), binary=True, primary_key=True, null=False)
-    CurTimeStamp = fields.StringField(
-        default=str(datetime.datetime.now()), index=True)
-    HouseUUID = fields.StringField(default='', max_length=255, null=False)
-    ProjectUUID = fields.StringField(default='', max_length=255, null=False)
-    BuildingUUID = fields.StringField(default='', max_length=255, null=False)
-    ProjectName = fields.StringField(default='', max_length=255, null=False)
-    BuildingName = fields.StringField(default='', max_length=255, null=False)
+    CurTimeStamp = fields.StringField(default=str(datetime.datetime.now()), index=True)
+
+    ProjectUUID = fields.UUIDField(default=uuid.uuid3(uuid.NAMESPACE_DNS, ''), binary=False, null=False)
+    ProjectName = fields.StringField(default='', max_length=255, null=False)  # 项目名称
+    BuildingUUID = fields.UUIDField(default=uuid.uuid3(uuid.NAMESPACE_DNS, ''), binary=False, null=False)
+    BuildingName = fields.StringField(default='', max_length=255, null=False)  # 楼栋名称
+
+    HouseUUID = fields.UUIDField(default=uuid.uuid3(uuid.NAMESPACE_DNS, ''), binary=False, null=False)
     HouseName = fields.StringField(default='', max_length=255, null=False)
-    BuildingNum = fields.StringField(default='', max_length=255, null=False)
-    Unit = fields.StringField(default='', max_length=255, null=False)
-    FloorNum = fields.StringField(default='', max_length=255, null=False)
+
+    BuildingNumber = fields.StringField(default='', max_length=255, null=False)  # 栋号
+    UnitName = fields.StringField(default='', max_length=255, null=False)  # 单元
+    FloorName = fields.StringField(default='', max_length=255, null=False)  # 层名
+    HouseState = fields.StringField(default='', max_length=50)  # 当前状态
+    HouseStateLatest = fields.StringField(default='', max_length=255, null=False, blank=True)  # 上次状态
     HouseUrl = fields.URLField(default=None, null=True, blank=True)
-    HouseSubUrl = fields.StringField(default='', max_length=255, null=False)
-    State = fields.StringField(default='', max_length=255, null=False)
-    House_located = fields.StringField(default='', max_length=255, null=False)
-    Pre_sale_license_number = fields.StringField(
-        default='', max_length=255, null=False)
-    Predicted_area = fields.StringField(default='', max_length=255, null=False)
-    Measured_area = fields.StringField(default='', max_length=255, null=False)
-    Record_unit_price = fields.StringField(
-        default='', max_length=255, null=False)
-    StateLatest = fields.StringField(default='', max_length=1023, null=False)
-    NewCurTimeStamp = fields.StringField(
-        default=str(datetime.datetime.now()), index=True)
+
     meta = {
         'indexes': [
-            'HouseUUID',
-            'BuildingUUID',
+            'CurTimeStamp',
             'ProjectUUID',
-
-            'CurTimeStamp',
-            'BuildingNum',
+            'ProjectName',
+            'BuildingUUID',
             'BuildingName',
-            'Unit',
-            'FloorNum',
-            'State',
-
-            'House_located',
-            'Pre_sale_license_number',
-            'Predicted_area',
-            'Measured_area',
-            'Record_unit_price',
-        ]
-    }
-
-
-class SignInfoWuhan(Document):
-    RecordID = fields.UUIDField(
-        default=uuid.uuid1(), binary=True, primary_key=True, null=False)
-    CurTimeStamp = fields.StringField(
-        default=str(datetime.datetime.now()), index=True)
-    SellInfo = fields.DictField(default={'null': True}, null=True)
-    meta = {
-        'indexes': [
-            'RecordID',
-            'CurTimeStamp',
+            'HouseUUID',
+            'HouseName',
+            'HouseState',
+            'HouseStateLatest',
+            'HouseUrl',
         ]
     }
