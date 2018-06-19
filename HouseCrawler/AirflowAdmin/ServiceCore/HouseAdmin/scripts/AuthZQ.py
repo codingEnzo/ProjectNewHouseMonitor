@@ -12,7 +12,7 @@ def run():
                 proxy_tmp = "http://%s" % proxy.decode()
                 authURL = 'http://61.146.213.163:8011/user_kfs.aspx'
                 res = req.get(authURL, proxies={
-                    'http': proxy_tmp, 'https': proxy_tmp}, timeout=5)
+                    'http': proxy_tmp, 'https': proxy_tmp}, timeout=10)
                 r.set(proxy_tmp, 'ASP.NET_SessionId: %s' %
                       res.cookies.get('ASP.NET_SessionId', ''))
                 r.expire(proxy_tmp, 30)
