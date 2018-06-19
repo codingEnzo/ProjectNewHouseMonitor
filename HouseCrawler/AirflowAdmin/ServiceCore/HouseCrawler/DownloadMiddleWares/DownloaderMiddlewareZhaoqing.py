@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 try:
+    import redis
     import logging
 
     logger = logging.getLogger(__name__)
@@ -11,6 +12,7 @@ except Exception:
 class CookiesDownloaderMiddleware(object):
 
     def __init__(self, crawler):
+        self.r = redis.Redis(host='10.30.1.20', port=6379)
         self.settings = crawler.settings
 
     @classmethod
@@ -18,11 +20,9 @@ class CookiesDownloaderMiddleware(object):
         return cls(crawler)
 
     def process_request(self, request, spider):
-        import requests as req
-        authURL = 'http://61.146.213.163:8011/user_kfs.aspx'
         proxy = request.meta.get('proxy')
-        res = req.get(authURL, proxies={
-                      'http': proxy, 'https': proxy}, timeout=5)
-        request.headers.setdefault(
-            'Cookie', 'ASP.NET_SessionId: %s' % res.cookies.get('ASP.NET_SessionId', ''))
-        logger.debug('Activate On Zhaoqing')
+        sid = self.r.get(proxy)
+        if sid:
+            request.headers.setdefault(
+                'Cookie', sid.decode())
+            logger.debug('Activate On Zhaoqing')
