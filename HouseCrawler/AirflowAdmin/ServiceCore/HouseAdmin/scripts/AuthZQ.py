@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import time
 import redis
 import requests as req
 
@@ -12,6 +13,7 @@ def run():
             r.set('ZQSID', 'ASP.NET_SessionId: %s' %
                   res.cookies.get('ASP.NET_SessionId', ''))
             print(res.cookies.get('ASP.NET_SessionId', ''))
+            time.sleep(15)
         except Exception:
             import traceback
             traceback.print_exc()
