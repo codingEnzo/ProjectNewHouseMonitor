@@ -20,8 +20,7 @@ class CookiesDownloaderMiddleware(object):
         return cls(crawler)
 
     def process_request(self, request, spider):
-        proxy = request.meta.get('proxy')
-        sid = self.r.get(proxy)
+        sid = self.r.get('ZQSID')
         if sid:
             request.headers.setdefault(
                 'Cookie', sid.decode())

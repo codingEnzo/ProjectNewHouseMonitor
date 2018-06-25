@@ -72,7 +72,7 @@ spider_settings = {
     'EXTENSIONS': {
         # 'HouseCrawler.Extensions.responselog.ResponseLog': 301,
     },
-    'RETRY_ENABLE': True,
+    'RETRY_ENABLE': False,
     'CLOSESPIDER_TIMEOUT': 3600 * 2.7,
     'CONCURRENT_REQUESTS': 8,
     'PROXY_LEVEL': 'high',
