@@ -83,10 +83,6 @@ spider_settings = {
         'Upgrade-Insecure-Requests': '1',
         'Content-Type': 'application/x-www-form-urlencoded'
     },
-    'DOWNLOADER_MIDDLEWARES': {
-        'scrapy.downloadermiddlewares.httpproxy.HttpProxyMiddleware': None,
-        'HouseCrawler.DownloadMiddleWares.ProxyMiddleWares.ProxyMiddleware': None,
-    },
     'EXTENSIONS': {
         # 'HouseCrawler.Extensions.responselog.ResponseLog': 301,
     },
