@@ -89,7 +89,7 @@ t1 = PythonOperator(
         ]
     },
     dag=dag,
-    execution_timeout=timedelta(hours=7)
+    execution_timeout=timedelta(seconds=3600 * 7.5)
 )
 
 project_info_list = []
@@ -110,7 +110,8 @@ t2 = PythonOperator(
     op_kwargs={'spiderName': 'DefaultCrawler',
                'settings': spider_settings,
                'urlList': project_info_list},
-    dag=dag
+    dag=dag,
+    execution_timeout=timedelta(seconds=3600 * 7.5)
 )
 t2.set_upstream(t1)
 
@@ -164,5 +165,5 @@ for cur, index in enumerate(list(range(0, len(building_info_list), index_skip)))
                    'urlList': building_info_list[index:index + index_skip],
                    'spider_count': 96},
         dag=dag,
-        execution_timeout=timedelta(hours=7))
+        execution_timeout=timedelta(seconds=3600 * 7.5))
     t4.set_upstream(t3)

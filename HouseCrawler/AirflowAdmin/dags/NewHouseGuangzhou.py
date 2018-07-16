@@ -108,7 +108,7 @@ t1 = PythonOperator(
             ]
     },
     dag=dag,
-    execution_timeout=timedelta(hours=11)
+    execution_timeout=timedelta(seconds=3600 * 11.5)
 )
 
 cur = ProjectInfoGuangzhou.objects.aggregate(*[
@@ -157,6 +157,6 @@ for cur, index in enumerate(list(range(0, len(buildingList_info_list), index_ski
                    'settings': spider_settings,
                    'urlList': buildingList_info_list},
         dag=dag,
-        execution_timeout=timedelta(hours=11))
+        execution_timeout=timedelta(seconds=3600 * 11.5))
 
     t2.set_upstream(t1)
