@@ -108,6 +108,7 @@ t1 = PythonOperator(
 
 def cacheLoader(key=REDIS_CACHE_KEY):
     r = dj_settings.REDIS_CACHE
+    r.delete(key)
     cur = BuildingInfoHefei.objects.aggregate(*[{"$sort": {"CurTimeStamp": -1}},
                                                 {'$group': {
                                                     '_id': "$BuildingUUID",
@@ -131,7 +132,7 @@ def cacheLoader(key=REDIS_CACHE_KEY):
         except Exception:
             import traceback
             traceback.print_exc()
-        r.expire(key, int(spider_settings.get('CLOSESPIDER_TIMEOUT')))
+        # r.expire(key, int(spider_settings.get('CLOSESPIDER_TIMEOUT')))
 
 
 t3 = PythonOperator(

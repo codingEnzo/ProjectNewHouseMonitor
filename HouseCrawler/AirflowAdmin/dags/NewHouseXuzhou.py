@@ -161,6 +161,7 @@ t3.set_upstream(t2)
 
 def building_cache_query():
     r = dj_settings.REDIS_CACHE
+    r.delete(REDIS_PESELL_CACHE_KEY)
     cur = PresellInfoXuzhou.objects.aggregate(*[
         {'$sort': {'CurTimeStamp': -1}},
         {
@@ -191,7 +192,7 @@ def building_cache_query():
         except Exception:
             import traceback
             traceback.print_exc()
-    r.expire(REDIS_PESELL_CACHE_KEY, 3600)
+    # r.expire(REDIS_PESELL_CACHE_KEY, 3600)
 
 
 t4 = PythonOperator(
@@ -219,6 +220,7 @@ t5.set_upstream(t4)
 
 def house_cache_query():
     r = dj_settings.REDIS_CACHE
+    r.delete(REDIS_HOUSE_CACHE_KEY)
     cur = BuildingInfoXuzhou.objects.aggregate(*[
         {'$sort': {'CurTimeStamp': -1}},
         {
@@ -253,7 +255,7 @@ def house_cache_query():
         except Exception:
             import traceback
             traceback.print_exc()
-    r.expire(REDIS_HOUSE_CACHE_KEY, 3600)
+    # r.expire(REDIS_HOUSE_CACHE_KEY, 3600)
 
 
 t6 = PythonOperator(
